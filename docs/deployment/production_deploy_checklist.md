@@ -9,9 +9,9 @@
 - 上线前执行：
 
 ```bash
-go run ./cmd/golang-cc tenant migrate version --json
-go run ./cmd/golang-cc tenant migrate up
-go run ./cmd/golang-cc tenant migrate version --json
+go run ./cmd/niuma tenant migrate version --json
+go run ./cmd/niuma tenant migrate up
+go run ./cmd/niuma tenant migrate version --json
 ```
 
 - 确认关键表存在：`tenants`、`tenant_users`、`tenant_skills`、`tenant_sessions`、`tenant_session_messages`、`tenant_audit_logs`、`tenant_telemetry_events`。
@@ -19,9 +19,9 @@ go run ./cmd/golang-cc tenant migrate version --json
 
 ## Server 配置
 
-- `GOLANG_CC_MYSQL_DSN` 或 `MYSQL_DSN` 指向生产 MySQL。
+- `NIUMA_MYSQL_DSN` 或 `MYSQL_DSN` 指向生产 MySQL。
 - `--auth-token` 使用高强度 token，不能使用示例值。
-- `GOLANG_CC_MOBILE_JWT_SECRET` 或 `MOBILE_JWT_SECRET` 必须配置；生产环境不要开启 `GOLANG_CC_MOBILE_DEV_AUTH=true`。
+- `NIUMA_MOBILE_JWT_SECRET` 或 `MOBILE_JWT_SECRET` 必须配置；生产环境不要开启 `NIUMA_MOBILE_DEV_AUTH=true`。
 - 如启用 WebUI，确认 `/webui/` 仅暴露在受控网络或受统一鉴权保护的入口后。
 - 生产日志不应记录 JWT、API key、完整聊天正文、附件私有 URL 或语音全文。
 
@@ -29,12 +29,12 @@ go run ./cmd/golang-cc tenant migrate version --json
 
 - 配置 mobile policy：允许模型、每分钟限流、日消息配额、日 token 配额。
 - 如需要真实上传，配置 S3/OSS/MinIO-compatible presign：
-  - `GOLANG_CC_MOBILE_S3_BUCKET`
-  - `GOLANG_CC_MOBILE_S3_REGION`
-  - `GOLANG_CC_MOBILE_S3_ENDPOINT`
-  - `GOLANG_CC_MOBILE_S3_ACCESS_KEY_ID`
-  - `GOLANG_CC_MOBILE_S3_SECRET_ACCESS_KEY`
-  - `GOLANG_CC_MOBILE_S3_PUBLIC_BASE_URL`
+  - `NIUMA_MOBILE_S3_BUCKET`
+  - `NIUMA_MOBILE_S3_REGION`
+  - `NIUMA_MOBILE_S3_ENDPOINT`
+  - `NIUMA_MOBILE_S3_ACCESS_KEY_ID`
+  - `NIUMA_MOBILE_S3_SECRET_ACCESS_KEY`
+  - `NIUMA_MOBILE_S3_PUBLIC_BASE_URL`
 - 当前未内置 APNs/FCM、服务端二进制代理上传、病毒扫描/转码和套餐计费；如生产需要，应接入外部服务后再开放对应产品能力。
 
 ## 验收
@@ -42,19 +42,19 @@ go run ./cmd/golang-cc tenant migrate version --json
 基础验收：
 
 ```bash
-GOLANG_CC_PREPROD_BASE_URL=https://your-api.example.com \
-GOLANG_CC_PREPROD_AUTH_TOKEN="$AUTH_TOKEN" \
-GOLANG_CC_PREPROD_MYSQL_DSN="$GOLANG_CC_MYSQL_DSN" \
+NIUMA_PREPROD_BASE_URL=https://your-api.example.com \
+NIUMA_PREPROD_AUTH_TOKEN="$AUTH_TOKEN" \
+NIUMA_PREPROD_MYSQL_DSN="$NIUMA_MYSQL_DSN" \
   scripts/tenant-preprod-acceptance.sh
 ```
 
 真实模型 runtime 验收：
 
 ```bash
-GOLANG_CC_TENANT_SKILLS_SMOKE_QUERY=1 \
-GOLANG_CC_TENANT_SKILLS_SMOKE_BASE_URL=https://your-api.example.com \
-GOLANG_CC_TENANT_SKILLS_SMOKE_AUTH_TOKEN="$AUTH_TOKEN" \
-GOLANG_CC_TENANT_SKILLS_SMOKE_MYSQL_DSN="$GOLANG_CC_MYSQL_DSN" \
+NIUMA_TENANT_SKILLS_SMOKE_QUERY=1 \
+NIUMA_TENANT_SKILLS_SMOKE_BASE_URL=https://your-api.example.com \
+NIUMA_TENANT_SKILLS_SMOKE_AUTH_TOKEN="$AUTH_TOKEN" \
+NIUMA_TENANT_SKILLS_SMOKE_MYSQL_DSN="$NIUMA_MYSQL_DSN" \
   scripts/tenant-skills-runtime-smoke.sh
 ```
 

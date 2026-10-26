@@ -919,7 +919,7 @@ func TestFastPathObservationAutoLaunchesHostWindow(t *testing.T) {
 		},
 	}
 	service.forceEmptyObservation = true
-	service.observation.ActiveWindow.BundleID = cu.GoE2EHostBundleID
+	service.observation.ActiveWindow.BundleID = cu.NiumaHostBundleID
 	tc := testContext(service)
 	tc.ComputerUseFastPath = true
 	result := New().Run(context.Background(), json.RawMessage(`{"action":"observe","target_id":"workbuddy"}`), tc)

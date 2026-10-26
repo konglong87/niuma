@@ -387,7 +387,7 @@ func newComputerBackend(ctx context.Context) (cu.Backend, error) {
 	}
 	return macbackend.New(ctx, macbackend.Config{
 		HelperPath:             path,
-		HostBundleID:           cu.GoE2EHostBundleID,
+		HostBundleID:           cu.NiumaHostBundleID,
 		RequestTimeout:         computerRequestTimeout,
 		RequestHostPermissions: macbackend.RequestHostPermissions,
 		CheckHostPermissions:   macbackend.CheckHostPermissions,

@@ -1,16 +1,16 @@
 # API Server Remote Deploy
 
-本文档说明如何在另一台机器启动 `golang-cc` API server，并让前端访问。
+本文档说明如何在另一台机器启动 `niuma` API server，并让前端访问。
 
 ## 1. 准备项目
 
 ```bash
-git clone git@github.com:konglong87/go-e2e.git go-e2e
-cd go-e2e
+git clone https://github.com/konglong87/niuma.git niuma
+cd niuma
 
 go version
 go mod download
-go build -o bin/golang-cc ./cmd/golang-cc
+go build -o bin/niuma ./cmd/niuma
 ```
 
 建议 Go 版本使用项目 `go.mod` 中声明的版本或更高兼容版本。
@@ -55,14 +55,14 @@ fallback:
 如果前端需要 tenant/session/message/mobile chat 持久化，先创建数据库：
 
 ```sql
-CREATE DATABASE golang_cc DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE niuma DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 配置 DSN 并执行 migration：
 
 ```bash
-export GOLANG_CC_MYSQL_DSN='user:pass@tcp(127.0.0.1:3306)/golang_cc?multiStatements=true&parseTime=true&charset=utf8mb4'
-./bin/golang-cc tenant migrate up
+export NIUMA_MYSQL_DSN='user:pass@tcp(127.0.0.1:3306)/niuma?multiStatements=true&parseTime=true&charset=utf8mb4'
+./bin/niuma tenant migrate up
 ```
 
 ## 4. 启动 API Server
@@ -75,10 +75,10 @@ export GOLANG_CC_MYSQL_DSN='user:pass@tcp(127.0.0.1:3306)/golang_cc?multiStateme
 不配 token。
 
 ```bash
-export GOLANG_CC_ENV=prod
-export GOLANG_CC_MYSQL_DSN='user:pass@tcp(127.0.0.1:3306)/golang_cc?multiStatements=true&parseTime=true&charset=utf8mb4'
+export NIUMA_ENV=prod
+export NIUMA_MYSQL_DSN='user:pass@tcp(127.0.0.1:3306)/niuma?multiStatements=true&parseTime=true&charset=utf8mb4'
 
-./bin/golang-cc server \
+./bin/niuma server \
   --host 0.0.0.0 \
   --port 8080 \
   --auth-token 'replace-with-a-long-random-token'
@@ -201,5 +201,5 @@ http://127.0.0.1:8080/v1/chat/completions
 - 配置日志级别方便排查：
 
 ```bash
-export GOLANG_CC_LOG_LEVEL=info
+export NIUMA_LOG_LEVEL=info
 ```

@@ -72,7 +72,7 @@ func TestLoadDesktopConfigClearsMissingWorkspace(t *testing.T) {
 	}
 }
 
-func TestDesktopDataDirDefaultsToGoE2EOwnedHomeDirectory(t *testing.T) {
+func TestDesktopDataDirDefaultsToNiumaOwnedHomeDirectory(t *testing.T) {
 	root := t.TempDir()
 	t.Setenv("HOME", root)
 	t.Setenv("NIUMA_DESKTOP_CONFIG_DIR", "")

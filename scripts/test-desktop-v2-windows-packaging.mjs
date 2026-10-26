@@ -37,7 +37,7 @@ test("NSIS requires the exact staged sidecar beside the installed desktop execut
   assert.equal(source, path.join(root, "desktop-v2", defines.SIDECAR_EXECUTABLE));
   assert.ok(build.includes(`Join-Path $desktop "${defines.SIDECAR_EXECUTABLE}"`));
   assert.ok(build.includes('"-ldflags", "-s -w"'));
-  assert.doesNotMatch(build, /compatibilityBinary|niuma\.exe/);
+  assert.doesNotMatch(build, /compatibilityBinary/);
   assert.ok(build.includes(`"-o", "${defines.PRODUCT_EXECUTABLE}"`));
   const install = nsis.slice(nsis.indexOf("\nSection\n"), nsis.indexOf("SectionEnd"));
   assert.match(install, /SetOutPath "\$INSTDIR"\s+!insertmacro wails\.files\s+File/);

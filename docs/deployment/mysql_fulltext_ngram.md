@@ -28,7 +28,7 @@ migration `000009_knowledge_fulltext_ngram` 把该索引换成 `WITH PARSER ngra
 3. 再执行 migration：
 
    ```bash
-   go run ./cmd/golang-cc tenant migrate up
+   go run ./cmd/niuma tenant migrate up
    ```
 
    顺序反了（先建索引再改 `ngram_token_size`）会让索引里的 token 宽度和查询时的宽度不一致，必须 `DROP` 后重建索引。
@@ -46,7 +46,7 @@ migration `000009_knowledge_fulltext_ngram` 把该索引换成 `WITH PARSER ngra
 opt-in e2e 会对中文 query 断言 `search_mode == "fulltext"`：
 
 ```bash
-GOLANG_CC_MYSQL_E2E_DSN='user:pass@tcp(127.0.0.1:3306)/db?multiStatements=true&parseTime=true&charset=utf8mb4' \
+NIUMA_MYSQL_E2E_DSN='user:pass@tcp(127.0.0.1:3306)/db?multiStatements=true&parseTime=true&charset=utf8mb4' \
   go test ./internal/tenant -run TestMySQLE2EKnowledgeChineseSearchUsesFulltext -count=1 -v
 ```
 

@@ -4,7 +4,7 @@
 
 2026-09-16：首次公开使用经过审核的源码快照，不携带原始私有 Git 历史；
 桌面首页与使用文档见
-[go-e2e 入口验收](../manual_testing/desktop_v2_entry.md)。
+[Niuma 入口验收](../manual_testing/desktop_v2_entry.md)。
 历史扫描要求针对**实际拟公开 refs**，并且不能替代当前源码、安全、版权和发布验收。
 
 这份清单用于把仓库从“可开发”推进到“可公开”。公开仓库是不可逆的外部状态变化：即使随后删除文件，fork、缓存、搜索索引和 Git 历史中仍可能保留副本。因此，发布结论必须基于扫描结果与人工复核，而不是仅凭当前工作区看起来干净。
@@ -65,8 +65,8 @@
 ## 6. 安装与发布产物
 
 - [ ] 在干净环境验证 README 的 clone、配置、`doctor`、CLI 和 server 快速开始命令。
-- [ ] 验证源码目录安装：`go install ./cmd/golang-cc`。
-- [ ] 验证远程安装：`go install github.com/konglong87/go-e2e/cmd/golang-cc@<version>`。
+- [ ] 验证源码目录安装：`go install ./cmd/niuma`。
+- [ ] 验证远程安装：`go install github.com/konglong87/niuma/cmd/niuma@<version>`。
 - [ ] 确认 `go.mod` 不含会阻断远程模块构建的本地 `replace`，或在文档中明确阻塞状态。
 - [ ] 在 Linux、macOS、Windows 的目标架构验证 release 二进制、校验和与版本信息。
 - [ ] tag、GitHub Release、变更日志、二进制和容器镜像指向同一 commit。
