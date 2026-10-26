@@ -6,7 +6,7 @@ source "$ROOT_DIR/scripts/lib/product-env.sh"
 GO_BIN="${GO_BIN:-go}"
 OUT_DIR="${OUT_DIR:-/tmp/gocc-tui-session-replay-$(date +%Y%m%d-%H%M%S)}"
 FIXTURE_DIR="${TUI_REPLAY_FIXTURE_DIR:-${ROOT_DIR}/internal/tui/testdata/session-replay}"
-SESSION_DIR="${NIUMA_SESSION_DIR:-${GO_CLAUDE_SESSION_DIR:-$HOME/.niuma/projects}}"
+SESSION_DIR="${NIUMA_SESSION_DIR:-$HOME/.niuma/projects}}"
 # Recorded sessions are machine-local, so they are replayed as an advisory extra
 # pass only. Set to 0 to replay the in-repo fixtures alone.
 LOCAL_SESSION_LIMIT="${TUI_REPLAY_LOCAL_SESSIONS:-2}"
@@ -98,16 +98,16 @@ fi
 gate_csv="$(IFS=,; echo "${gate_files[*]}")"
 
 cd "$ROOT_DIR"
-GO_CLAUDE_TUI_SESSION_REPLAY_OUT="$OUT_DIR" \
-GO_CLAUDE_TUI_SESSION_REPLAY_FILES="$gate_csv" \
+NIUMA_TUI_SESSION_REPLAY_OUT="$OUT_DIR" \
+NIUMA_TUI_SESSION_REPLAY_FILES="$gate_csv" \
   "$GO_BIN" test ./internal/tui -run TestModelSessionReplayAcceptanceExport -count=1
 
 if [[ "${#local_files[@]}" -gt 0 ]]; then
   local_out="$OUT_DIR/local-sessions"
   mkdir -p "$local_out"
   local_csv="$(IFS=,; echo "${local_files[*]}")"
-  if GO_CLAUDE_TUI_SESSION_REPLAY_OUT="$local_out" \
-    GO_CLAUDE_TUI_SESSION_REPLAY_FILES="$local_csv" \
+  if NIUMA_TUI_SESSION_REPLAY_OUT="$local_out" \
+    NIUMA_TUI_SESSION_REPLAY_FILES="$local_csv" \
     "$GO_BIN" test ./internal/tui -run TestModelSessionReplayAcceptanceExport -count=1 \
     >"$local_out/replay.log" 2>&1; then
     local_status="ok"

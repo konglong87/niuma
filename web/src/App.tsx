@@ -560,7 +560,7 @@ export function App() {
           <button className={showWelcome ? "brand-lockup active" : "brand-lockup"} onClick={showWelcomePage} type="button">
             <img alt="" className="brand-mark" src={niumaMark} />
             <div>
-              <strong>niuma</strong>
+              <strong>{t("webui2.brand")}</strong>
               <span>{t("app.workbench")}</span>
             </div>
           </button>

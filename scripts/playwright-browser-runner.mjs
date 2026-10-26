@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 
 const productEnv = suffix => {
-  for (const prefix of ["NIUMA_", "NIUMA_", "GOLANG_CLAUDE_CODE_"]) {
+  for (const prefix of ["NIUMA_", "NIUMA_", "NIUMA_"]) {
     const value = process.env[`${prefix}${suffix}`];
     if (value !== undefined) return value;
   }

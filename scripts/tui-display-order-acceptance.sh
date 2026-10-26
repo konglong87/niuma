@@ -8,7 +8,7 @@ OUT_DIR="${OUT_DIR:-/tmp/gocc-tui-display-order-$(date +%Y%m%d-%H%M%S)}"
 mkdir -p "$OUT_DIR"
 
 cd "$ROOT_DIR"
-GO_CLAUDE_TUI_DISPLAY_ORDER_OUT="$OUT_DIR" "$GO_BIN" test ./internal/tui -run TestModelLiveDisplayOrderAcceptanceExport -count=1
+NIUMA_TUI_DISPLAY_ORDER_OUT="$OUT_DIR" "$GO_BIN" test ./internal/tui -run TestModelLiveDisplayOrderAcceptanceExport -count=1
 
 python3 - "$OUT_DIR" <<'PY'
 import json

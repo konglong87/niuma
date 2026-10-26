@@ -353,11 +353,11 @@ a:focus-visible {
   place-items: center;
   width: 36px;
   height: 36px;
-  border: 1px solid #bfdbfe;
-  border-radius: var(--radius);
-  background: #2563eb;
-  box-shadow: 0 9px 16px rgb(37 99 235 / 16%);
-  color: white;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
   font-weight: 800;
 }
 
@@ -991,11 +991,11 @@ a:focus-visible {
   width: 62px;
   height: 62px;
   margin-bottom: 18px;
-  border: 1px solid #bfdbfe;
-  border-radius: 13px;
-  background: #2563eb;
-  box-shadow: 0 16px 30px rgb(37 99 235 / 16%);
-  color: white;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
   font-size: 24px;
   font-weight: 900;
 }

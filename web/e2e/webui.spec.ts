@@ -900,7 +900,7 @@ test("opens web agent from the main webui navigation in Chinese", async ({ page 
   await expect(page.getByText("当前租户还没有 Web Agent 会话。")).toBeVisible();
 });
 
-test("migrates legacy product storage keys in a real browser", async ({ page }) => {
+test("keeps Niuma browser storage isolated in a real browser", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem("go-claude-webui.language.v1", "zh");
     window.localStorage.setItem("go-claude-webui.sidebar-width.v1", "320");
@@ -908,13 +908,13 @@ test("migrates legacy product storage keys in a real browser", async ({ page }) 
 
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "niuma WebUI" })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "一级导航" })).toBeVisible();
-  const migrated = await page.evaluate(() => ({
+  await expect(page.getByRole("heading", { name: "Niuma WebUI" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
+  const imported = await page.evaluate(() => ({
     language: window.localStorage.getItem("niuma-webui.language.v1"),
     sidebarWidth: window.localStorage.getItem("niuma-webui.sidebar-width.v1")
   }));
-  expect(migrated).toEqual({ language: "zh", sidebarWidth: "320" });
+  expect(imported).toEqual({ language: null, sidebarWidth: null });
 });
 
 test("renders codex-style web agent route with real API state only", async ({ page }) => {

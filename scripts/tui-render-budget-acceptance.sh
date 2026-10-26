@@ -7,7 +7,7 @@ OUT_DIR="${OUT_DIR:-/tmp/gocc-tui-render-budget-$(date +%Y%m%d-%H%M%S)}"
 
 mkdir -p "$OUT_DIR"
 
-GO_CLAUDE_TUI_RENDER_BUDGET_OUT="$OUT_DIR" "$GO_BIN" test ./internal/tui -run TestModelRenderBudgetAcceptanceExport -count=1
+NIUMA_TUI_RENDER_BUDGET_OUT="$OUT_DIR" "$GO_BIN" test ./internal/tui -run TestModelRenderBudgetAcceptanceExport -count=1
 
 if command -v tmux >/dev/null 2>&1; then
   for spec in 150x40 120x32 96x24; do

@@ -73,7 +73,7 @@ describe("WebUI v2 translations", () => {
       const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
       const literals: string[] = [];
       function visit(node: ts.Node): void {
-        if (ts.isJsxText(node) && /[A-Za-z\u4e00-\u9fff]/.test(node.text) && !node.text.includes("niuma")) {
+        if (ts.isJsxText(node) && /[A-Za-z\u4e00-\u9fff]/.test(node.text) && !/niuma/i.test(node.text)) {
           literals.push(`${file}:${node.text.trim()}`);
         }
         if (ts.isJsxAttribute(node) && ["aria-label", "placeholder", "title"].includes(node.name.getText(sourceFile)) && node.initializer && ts.isStringLiteral(node.initializer) && /[A-Za-z\u4e00-\u9fff]/.test(node.initializer.text)) {
@@ -92,7 +92,7 @@ describe("WebUI v2 translations", () => {
     storage.set("niuma-webui.language.v1", "zh");
     act(() => root.render(<I18nProvider><Labels /></I18nProvider>));
 
-    expect(host.textContent).toContain("niuma");
+    expect(host.textContent).toContain("牛马 Niuma");
     expect(host.textContent).toContain("新建会话");
     expect(host.textContent).toContain("设置");
   });

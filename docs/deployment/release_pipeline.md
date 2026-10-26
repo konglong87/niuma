@@ -27,7 +27,7 @@ workflow 始终生成未签名 Preview artifact。
 
 未签名 macOS 包的首次打开：
 
-1. 双击 `.dmg`，将 `go-e2e.app` 拖入“应用程序”。
+1. 双击 `.dmg`，将 `niuma.app` 拖入“应用程序”。
 2. 首次打开被阻止时，打开“系统设置 → 隐私与安全性 → 安全性”。
 3. 点击“仍要打开”，按系统提示确认。
 
@@ -52,15 +52,15 @@ git push origin v0.1.0
 Release workflow 会并行生成：
 
 ```text
-go-e2e-v0.1.0-macos-arm64.dmg
-go-e2e-v0.1.0-macos-amd64.dmg
-go-e2e_v0.1.0_linux_amd64.tar.gz
-go-e2e-desktop_v0.1.0_linux_amd64.tar.gz
-go-e2e_v0.1.0_linux_arm64.tar.gz
-go-e2e_v0.1.0_darwin_amd64.tar.gz
-go-e2e_v0.1.0_darwin_arm64.tar.gz
-go-e2e_v0.1.0_windows_amd64.zip
-go-e2e-setup.exe
+niuma-v0.1.0-macos-arm64.dmg
+niuma-v0.1.0-macos-amd64.dmg
+niuma_v0.1.0_linux_amd64.tar.gz
+niuma-desktop_v0.1.0_linux_amd64.tar.gz
+niuma_v0.1.0_linux_arm64.tar.gz
+niuma_v0.1.0_darwin_amd64.tar.gz
+niuma_v0.1.0_darwin_arm64.tar.gz
+niuma_v0.1.0_windows_amd64.zip
+niuma-setup.exe
 SHA256SUMS
 RELEASE_NOTES.md
 ```
@@ -81,7 +81,7 @@ CLI 和桌面 Linux 归档使用不同名称，不能合并为同一个文件。
 1. macOS DMG 挂载、安装复制和启动是否通过；签名模式校验会在配置
    Developer ID 时执行，未签名模式会跳过 Gatekeeper 评估。
 2. Windows 安装程序是否能安装、启动和卸载，并保留用户数据。
-3. Linux 归档是否能解包，`go-e2e-desktop` 与旁边的 `go-e2e` 是否都存在，sidecar 版本是否正确。
+3. Linux 归档是否能解包，`niuma-desktop` 与旁边的 `niuma` 是否都存在，sidecar 版本是否正确。
 4. 各平台下载的资产校验和是否通过。
 5. Release 页面、README 安装说明和版本 tag 是否指向同一个 commit。
 

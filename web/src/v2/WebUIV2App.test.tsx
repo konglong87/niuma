@@ -113,7 +113,7 @@ describe("WebUIV2App", () => {
     renderAt("/");
     await act(async () => { await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve())); });
     expect(host.querySelector(".webui2-route-error")).toBeNull();
-    expect(host.querySelector('img[alt="niuma"]')).not.toBeNull();
+    expect(host.querySelector('img[alt="Niuma mascot"]')).not.toBeNull();
 
     window.history.pushState({}, "", "/webui/v2/sessions/tenant%3Aseed-1");
     act(() => window.dispatchEvent(new PopStateEvent("popstate")));
@@ -122,7 +122,7 @@ describe("WebUIV2App", () => {
     window.history.replaceState({}, "", "/");
     act(() => window.dispatchEvent(new PopStateEvent("popstate")));
     expect(host.querySelector(".webui2-route-error")).toBeNull();
-    expect(host.querySelector('img[alt="niuma"]')).not.toBeNull();
+    expect(host.querySelector('img[alt="Niuma mascot"]')).not.toBeNull();
 
     window.history.replaceState({}, "", "/webui/v2/sessions/not-a-ref");
     act(() => window.dispatchEvent(new PopStateEvent("popstate")));
@@ -161,7 +161,7 @@ describe("WebUIV2App", () => {
 	renderAt("/webui/v2");
 	await act(async () => { await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve())); });
 
-	expect(host.querySelector('img[alt="niuma"]')).not.toBeNull();
+	expect(host.querySelector('img[alt="Niuma mascot"]')).not.toBeNull();
 	expect(host.textContent).toContain("Create a session");
   });
 

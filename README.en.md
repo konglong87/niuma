@@ -114,7 +114,7 @@ when done and handing off when it hits a boundary. See the [brand guide](docs/br
 ## Origin and license
 
 Niuma is an independent project based on the source snapshot of
-[`konglong87/go-e2e`](https://github.com/konglong87/go-e2e) at
+[`go-e2e`](https://github.com/konglong87/go-e2e) at
 `fffd62dd06d7b3a09dbc6eebdbbccbb814cea827`, and is distributed under Apache-2.0. See
 [`UPSTREAM.md`](UPSTREAM.md) and [`LICENSE`](LICENSE) for details.
 

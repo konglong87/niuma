@@ -87,8 +87,8 @@ copy_auth_settings() {
   local source_settings=""
   if [[ -n "$HOST_HOME" && -f "$HOST_HOME/.niuma/settings.json" ]]; then
     source_settings="$HOST_HOME/.niuma/settings.json"
-  elif [[ -n "$HOST_HOME" && -f "$HOST_HOME/.go-claude/settings.json" ]]; then
-    source_settings="$HOST_HOME/.go-claude/settings.json"
+  elif [[ -n "$HOST_HOME" && -f "$HOST_HOME/.niuma-legacy/settings.json" ]]; then
+    source_settings="$HOST_HOME/.niuma-legacy/settings.json"
   fi
   if [[ -n "$source_settings" ]]; then
     mkdir -p "$target_home/.niuma"

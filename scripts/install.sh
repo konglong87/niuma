@@ -25,7 +25,7 @@ usage() {
 Usage: scripts/install.sh [-h|--help]
 
 Builds niuma from this checkout (via scripts/build.sh) and installs
-it as $BIN_DIR/niuma. A niuma compatibility copy is installed beside it.
+it as $BIN_DIR/niuma. The Niuma CLI is installed as `niuma`.
 
 Environment:
   PREFIX   install prefix, binary goes to $PREFIX/bin (default: $HOME/.local)

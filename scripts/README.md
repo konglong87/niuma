@@ -96,7 +96,7 @@ Each builds its own deterministic TUI harness with a fake provider.
 
 `tui-session-replay-acceptance.sh` gates on the in-repo fixture transcripts, and
 additionally replays the two most recent size-appropriate sessions from
-`~/.go-claude/projects` as an advisory pass: that pass is machine-dependent, so a
+`~/.niuma-legacy/projects` as an advisory pass: that pass is machine-dependent, so a
 failure is recorded in `status.json` (`local_session_status`) and printed as a
 warning without failing the script. Set `TUI_REPLAY_LOCAL_SESSIONS=0` to replay
 the fixtures alone. If neither source yields a transcript the script reports
@@ -197,8 +197,8 @@ Two sibling repositories, neither vendored here:
 
 By default both are looked up as siblings of this repository's main checkout
 (resolved via `git rev-parse --git-common-dir`, so it works from a worktree too).
-`NIUMA_COMPANION_ROOT` moves both at once. Legacy `NIUMA_*` and
-`GO_CLAUDE_*` names remain fallbacks. See `lib/external-repos.sh`.
+`NIUMA_COMPANION_ROOT` moves both at once. Niuma `NIUMA_*` and
+`NIUMA_*` names are the canonical inputs. See `lib/external-repos.sh`.
 
 ```
 agent-cancelled-side-by-side-compare.sh          agent-child-error-side-by-side-compare.sh

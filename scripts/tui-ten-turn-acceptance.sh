@@ -8,7 +8,7 @@ OUT_DIR="${OUT_DIR:-/tmp/gocc-tui-ten-turn-$(date +%Y%m%d-%H%M%S)}"
 mkdir -p "$OUT_DIR"
 
 cd "$ROOT_DIR"
-GO_CLAUDE_TUI_TEN_TURN_OUT="$OUT_DIR" "$GO_BIN" test ./internal/tui -run TestModelTenTurnTranscriptAcceptanceExport -count=1
+NIUMA_TUI_TEN_TURN_OUT="$OUT_DIR" "$GO_BIN" test ./internal/tui -run TestModelTenTurnTranscriptAcceptanceExport -count=1
 
 python3 - "$OUT_DIR" <<'PY'
 import json

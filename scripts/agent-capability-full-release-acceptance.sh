@@ -329,11 +329,11 @@ fi
 # fix is "go run APG first" (AUDIT-P0-19). Collect every gap and say so once.
 preflight_errors=()
 
-if ! require_companion_dir "$UPSTREAM_DIR" "claude_code_src_2026" "GO_CLAUDE_UPSTREAM_DIR" 2>/dev/null; then
-  preflight_errors+=("companion checkout missing: claude_code_src_2026 (expected at $UPSTREAM_DIR; override with GO_CLAUDE_UPSTREAM_DIR or --upstream-dir)")
+if ! require_companion_dir "$UPSTREAM_DIR" "claude_code_src_2026" "NIUMA_UPSTREAM_DIR" 2>/dev/null; then
+  preflight_errors+=("companion checkout missing: claude_code_src_2026 (expected at $UPSTREAM_DIR; override with NIUMA_UPSTREAM_DIR or --upstream-dir)")
 fi
 if [[ ! -d "$APG_DIR" ]]; then
-  preflight_errors+=("companion checkout missing: agent-proving-ground (expected at $APG_DIR; override with GO_CLAUDE_APG_DIR)")
+  preflight_errors+=("companion checkout missing: agent-proving-ground (expected at $APG_DIR; override with NIUMA_APG_DIR)")
 fi
 
 missing_apg_artifacts=()

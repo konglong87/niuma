@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { readProductStorage } from "./productStorage";
 
-describe("product storage migration", () => {
+describe("product storage isolation", () => {
   beforeEach(() => {
     const storage = new Map<string, string>();
     Object.defineProperty(window, "localStorage", {
@@ -15,17 +15,14 @@ describe("product storage migration", () => {
     });
   });
 
-  it("prefers the canonical key", () => {
+  it("reads the canonical Niuma key", () => {
     window.localStorage.setItem("niuma-webui.language.v1", "zh");
-    window.localStorage.setItem("go-claude-webui.language.v1", "en");
-
     expect(readProductStorage("niuma-webui.language.v1")).toBe("zh");
   });
 
-  it("copies a legacy value to the canonical key", () => {
+  it("does not import another product's browser data", () => {
     window.localStorage.setItem("go-claude-webui.language.v1", "zh");
-
-    expect(readProductStorage("niuma-webui.language.v1")).toBe("zh");
-    expect(window.localStorage.getItem("niuma-webui.language.v1")).toBe("zh");
+    expect(readProductStorage("niuma-webui.language.v1")).toBeNull();
+    expect(window.localStorage.getItem("niuma-webui.language.v1")).toBeNull();
   });
 });

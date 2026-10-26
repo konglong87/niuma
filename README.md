@@ -111,7 +111,7 @@ Niuma 的配置、任务状态、会话、记忆和调度数据使用独立的 `
 
 ## 来源与许可
 
-Niuma 是基于 [`konglong87/go-e2e`](https://github.com/konglong87/go-e2e) 在
+Niuma 是基于 [`go-e2e`](https://github.com/konglong87/go-e2e) 在
 `fffd62dd06d7b3a09dbc6eebdbbccbb814cea827` 的源码快照建立的独立项目，采用 Apache-2.0。
 来源记录与许可见 [`UPSTREAM.md`](UPSTREAM.md) 和 [`LICENSE`](LICENSE)。
 

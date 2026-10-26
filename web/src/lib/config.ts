@@ -26,7 +26,7 @@ export function isDesktopV2Host(): boolean {
 }
 
 function hasExplicitDevProxy(): boolean {
-	  return import.meta.env.DEV && Boolean((import.meta.env.VITE_NIUMA_API_TARGET || import.meta.env.VITE_GO_CLAUDE_API_TARGET)?.trim());
+	  return import.meta.env.DEV && Boolean(import.meta.env.VITE_NIUMA_API_TARGET?.trim());
 }
 
 function defaultAPIBase(): string {

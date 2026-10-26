@@ -31,7 +31,7 @@ describe("EmptyState", () => {
     const button = host.querySelector<HTMLButtonElement>("button");
 
     expect(image?.getAttribute("src")).toMatch(/^data:image\/svg\+xml/);
-    expect(image?.getAttribute("alt")).toBe("niuma");
+    expect(image?.getAttribute("alt")).toBe("Niuma 牛马机器人");
     expect(button?.textContent).toBe("新建会话");
     act(() => button?.click());
     expect(onCreateSession).toHaveBeenCalledTimes(1);

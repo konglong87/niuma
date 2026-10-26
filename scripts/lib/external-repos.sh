@@ -17,7 +17,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/product-env.sh"
 # companion_root prints the directory the companion checkouts live in.
 # Resolved from the main checkout, so this works from a git worktree too.
 companion_root() {
-  local override="${NIUMA_COMPANION_ROOT:-${GO_CLAUDE_COMPANION_ROOT:-}}"
+  local override="${NIUMA_COMPANION_ROOT:-}}"
   if [[ -n "$override" ]]; then
     printf '%s\n' "$override"
     return
@@ -34,7 +34,7 @@ companion_root() {
 
 # default_upstream_dir prints the original Claude Code checkout to compare against.
 default_upstream_dir() {
-  local override="${NIUMA_UPSTREAM_DIR:-${GO_CLAUDE_UPSTREAM_DIR:-}}"
+  local override="${NIUMA_UPSTREAM_DIR:-}}"
   if [[ -n "$override" ]]; then
     printf '%s\n' "$override"
     return
@@ -44,7 +44,7 @@ default_upstream_dir() {
 
 # default_apg_dir prints the agent-proving-ground checkout.
 default_apg_dir() {
-  local override="${NIUMA_APG_DIR:-${GO_CLAUDE_APG_DIR:-}}"
+  local override="${NIUMA_APG_DIR:-}}"
   if [[ -n "$override" ]]; then
     printf '%s\n' "$override"
     return
