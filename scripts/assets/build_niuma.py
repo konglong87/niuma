@@ -4,7 +4,6 @@ Run: blender --background --python-exit-code 1 --python scripts/assets/build_niu
 No downloaded model, generated raster billboard, textures or external services.
 """
 
-import math
 import sys
 from pathlib import Path
 
@@ -13,7 +12,7 @@ import bpy
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pet_pipeline import reset_scene, make_material, ellipsoid, export_glb, render_poster
-from pet_sculpt import empty, rounded_mass, carve_ellipsoid, tapered_stroke, leaf, localize_joint, fuse_masses
+from pet_sculpt import empty, rounded_mass, carve_ellipsoid, tapered_stroke, leaf, localize_joint, fuse_masses, trim_local_z
 
 # Linear material values: deliberately darker than the previous pastel robot.
 COLORS = {
@@ -21,6 +20,8 @@ COLORS = {
     "ear_inner": (0.32, 0.060, 0.023),
     "cream": (0.70, 0.57, 0.38),
     "eye": (0.86, 0.82, 0.68),
+    "eye_detail": (0.065, 0.038, 0.022),
+    "catchlight": (0.94, 0.90, 0.82),
     "charcoal": (0.035, 0.028, 0.025),
     "cavity": (0.095, 0.057, 0.030),
     "mint": (0.25, 0.65, 0.46),
@@ -51,8 +52,31 @@ def build_body(root, arms, materials):
                  materials["mint"], root, .45, segments=16, rings=10)
 
 
+def build_gentle_eyes(head, materials):
+    """Relax the stare without changing the established A head silhouette."""
+    for side in SIDES:
+        eye_x = side * .43
+        detail = materials["eye_detail"]
+        ellipsoid(f"Eye_{side}", (eye_x, -.494, 2.91), (.196, .128, .143), materials["eye"], head)
+        # Centered, larger warm-brown pupils replace the sideways skeptical stare.
+        pupil = ellipsoid(f"Pupil_{side}", (eye_x, -.617, 2.90), (.091, .028, .106), detail, head)
+        trim_local_z(pupil, .67, keep_upper=False)
+        ellipsoid(f"Catchlight_{side}", (eye_x - .027, -.644, 2.937),
+                  (.022, .009, .024), materials["catchlight"], head)
+        # A thin cap follows the eyeball surface: no protruding lid bulb and no
+        # harsh eyeliner. Trim geometry rather than flattening all lower vertices.
+        lid = ellipsoid(f"RelaxedLid_{side}", (eye_x, -.494, 2.91),
+                        (.203, .135, .148), materials["orange"], head)
+        trim_local_z(lid, .42, keep_upper=True)
+        # Soft horizontal arches, not sharp V-shaped angry inner eyebrows.
+        brow_lift = .015 if side > 0 else 0
+        tapered_stroke(f"Brow_{side}", [(side * .25, -.46, 3.16 + brow_lift),
+                       (eye_x, -.42, 3.205 + brow_lift), (side * .61, -.34, 3.17 + brow_lift)],
+                       [.3, 1, .3], .027, detail, head)
+
+
 def build_face(head, materials):
-    orange, cream, dark = materials["orange"], materials["cream"], materials["charcoal"]
+    orange, cream = materials["orange"], materials["cream"]
     rounded_mass("Head", (0, .015, 2.65), (.77, .56, .73), orange, head, .86)
     muzzle = rounded_mass("SculptedMuzzle", (0, -.58, 2.32), (.82, .45, .46), cream, head, .78)
     for side in SIDES:
@@ -61,20 +85,7 @@ def build_face(head, materials):
         # Dark backing is recessed well behind the carved opening.
         ellipsoid(f"NostrilInterior_{side}", (side * .43, -.792, 2.46),
                   (.125, .075, .15), materials["cavity"], head)
-        eye_x = side * .43
-        ellipsoid(f"Eye_{side}", (eye_x, -.494, 2.89), (.206, .128, .146), materials["eye"], head)
-        ellipsoid(f"Pupil_{side}", (eye_x + .026, -.614, 2.865), (.070, .025, .089), dark, head)
-        # Upper-lid geometry deliberately covers the top half, not big round eyes.
-        lid = ellipsoid(f"HeavyLid_{side}", (eye_x, -.506, 2.94), (.215, .14, .17), orange, head)
-        for vertex in lid.data.vertices:
-            vertex.co.z = max(vertex.co.z, -.06)
-        tapered_stroke(f"LidRim_{side}", [(eye_x - .195, -.554, 2.929),
-                       (eye_x, -.647, 2.912), (eye_x + .195, -.554, 2.90)],
-                       [.25, 1, .25], .022, dark, head)
-        brow_lift = .035 if side > 0 else 0
-        tapered_stroke(f"Brow_{side}", [(side * .24, -.49, 3.08),
-                       (eye_x, -.45, 3.14 + brow_lift), (side * .62, -.34, 3.15 + brow_lift)],
-                       [.12, 1, .08], .043, dark, head)
+    build_gentle_eyes(head, materials)
     fuse_masses([muzzle], "SculptedMuzzle", head, voxel_size=.027)
     # One restrained off-center downturned mouth, not a friendly generic smile.
     tapered_stroke("SkepticalMouth", [(.22, -.995, 2.111), (.40, -.989, 2.12), (.59, -.93, 2.073)],

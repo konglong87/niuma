@@ -3,6 +3,7 @@
 import math
 
 import bpy
+import bmesh
 from mathutils import Vector
 
 from pet_pipeline import ellipsoid, tube
@@ -134,3 +135,14 @@ def fuse_masses(objects, name, parent, voxel_size=.045):
         face.use_smooth = True
     body.parent = parent
     return body
+
+
+def trim_local_z(obj, height, keep_upper):
+    """Trim a surface in mesh-local coordinates (hidden eye/lid boundaries)."""
+    mesh = bmesh.new()
+    mesh.from_mesh(obj.data)
+    bmesh.ops.bisect_plane(mesh, geom=list(mesh.verts) + list(mesh.edges) + list(mesh.faces),
+                          plane_co=(0, 0, height), plane_no=(0, 0, 1),
+                          clear_inner=keep_upper, clear_outer=not keep_upper)
+    mesh.to_mesh(obj.data)
+    mesh.free()

@@ -61,3 +61,18 @@ README desktop screenshot replaced with the actual restarted native capture
 README local images resolve; the removed brand-reference sentence stays removed.
 Documentation slice reviewed; its final commit/push result is recorded in the
 ignored evidence EVIDENCE.md and delivery response. No implementation items remain.
+
+## Follow-up: gentler eyes — 2026-10-27
+
+User feedback: the initial A eyes looked too fierce. Reused the same character,
+rigs and generation pipeline; changed only the eye-region geometry/materials:
+centered warm-brown pupils, small non-emissive catchlights, thin surface-following
+upper lids and softer curved brows. Silhouette, nose, mouth, ears and body remain.
+
+Verified: focused assets/settings tests (11), typecheck, changed-test lint, six
+browser E2E cases, local Wails build/signature and actual native settings/workspace
+screenshots. Non-eye vertex positions (canonicalized to 1e-5) and node transforms
+match the previous model; all six legacy GLB/PNG files remain byte-identical.
+README capture refreshed from the native window, without compositing. No backend
+or runtime behavior changed; no new release. Evidence and final delivery hashes:
+`desktop-v2/build/validation/20261027/niuma-gentle-eyes/` (ignored).

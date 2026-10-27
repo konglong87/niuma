@@ -32,7 +32,7 @@ describe("shipped companion assets", () => {
         const names = doc.nodes.map((node: { name: string }) => node.name);
         expect(names).not.toContain("Beacon");
         expect(names).not.toContain("ChestLight");
-        for (const feature of ["SculptedMuzzle", "SeamlessBody", "Horn_-1", "Horn_1", "Forelock_0", "HeavyLid_-1", "EarOuter_1", "MintBadge"]) {
+        for (const feature of ["SculptedMuzzle", "SeamlessBody", "Horn_-1", "Horn_1", "Forelock_0", "RelaxedLid_-1", "RelaxedLid_1", "Catchlight_-1", "Catchlight_1", "EarOuter_1", "MintBadge"]) {
           // Curve-only features must not disappear during glTF export.
           expect(doc.nodes.find((node: { name: string }) => node.name === feature)?.mesh).toBeTypeOf("number");
         }
