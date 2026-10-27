@@ -26,8 +26,19 @@
 </p>
 
 <p align="center">
-  <img src="docs/web_agent/images/niuma-desktop-v2.png" alt="Niuma desktop workspace" width="900">
+  <img src="docs/web_agent/images/niuma-desktop-v2.png" alt="Niuma Desktop — real workspace with the new logo and Niuma 3D companion" width="900">
 </p>
+
+<p align="center"><em>Actual Niuma desktop workspace (Chinese UI), with the new logo and Niuma 3D pet—not a composited mockup.</em></p>
+
+### Meet your desktop Niuma
+
+<p align="center">
+  <img src="web/public/assets/pets/niuma.png" alt="Niuma 3D model render with an orange body, cream muzzle and mint work beacon" width="168">
+</p>
+
+Enable it in **Settings → Pet**. **Niuma** is the default model; **Go Companion** and **Chinese Dragon** remain available. Existing saved selections are preserved.
+Switch between idle, focus and celebration animations, drag, resize or hide your companion. The small portrait above is a transparent render of the same model, not a desktop screenshot. See [desktop personalization](docs/usage/desktop-personalization.md).
 
 ## What is Niuma?
 

@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState, type JSX } from "react";
 import { useI18n } from "../../lib/i18n";
 import { isDesktopV2Host } from "../../lib/config";
 import type { IdentityConfig } from "../../lib/types";
+import niumaMark from "../assets/niuma-mark.svg";
 
 type Props = {
   identity: IdentityConfig;
@@ -17,7 +18,7 @@ export function SidebarAccountFooter({ identity, onOpenSettings }: Props): JSX.E
   const desktop = isDesktopV2Host();
   const accountLabel = desktop ? t("webui2.brand") : (identity.tenantKey || t("webui2.brand"));
   const accountDetail = desktop ? t("webui2.localWorkspace") : (identity.userId || "—");
-  const avatar = desktop ? "G" : (identity.userId || "U").slice(0, 1).toUpperCase();
+  const avatar = (identity.userId || "U").slice(0, 1).toUpperCase();
 
   useEffect(() => {
     if (!open) return;
@@ -47,7 +48,7 @@ export function SidebarAccountFooter({ identity, onOpenSettings }: Props): JSX.E
       <button aria-label={t("webui2.systemSettings")} onClick={openSettings} role="menuitem" type="button"><Settings aria-hidden="true" size={17} />{t("webui2.systemSettings")}</button>
     </div> : null}
     <button aria-controls={menuID} aria-expanded={open} aria-haspopup="menu" aria-label={t("webui2.accountMenu")} className="webui2-account-trigger" onClick={() => setOpen((current) => !current)} type="button">
-      <span className="webui2-sidebar-avatar" aria-hidden="true">{avatar}</span>
+      <span className="webui2-sidebar-avatar" aria-hidden="true">{desktop ? <img src={niumaMark} alt="" width={24} height={24} /> : avatar}</span>
       <span className="webui2-account-copy"><strong>{accountLabel}</strong><small>{accountDetail}</small></span>
       <ChevronUp aria-hidden="true" className="webui2-account-chevron" size={16} />
     </button>

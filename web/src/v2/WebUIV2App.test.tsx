@@ -1,3 +1,4 @@
+import niumaMark from "./assets/niuma-mark.svg";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -495,6 +496,7 @@ describe("WebUIV2App", () => {
     ));
     expect(host.querySelector(".webui2-desktop-readiness")?.getAttribute("data-state")).toBe("starting");
     expect(host.querySelector(".webui2-chat-shell")).not.toBeNull();
+    expect(host.querySelector(".webui2-sidebar-avatar img")?.getAttribute("src")).toBe(niumaMark);
     expect(host.querySelector(".webui2-desktop-readiness")?.textContent).toContain("Preparing your workspace");
     expect(host.querySelector(".webui2-desktop-readiness button")).toBeNull();
     expect(host.querySelector<HTMLButtonElement>(".webui2-new-session")?.disabled).toBe(true);

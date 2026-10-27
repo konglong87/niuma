@@ -26,8 +26,19 @@
 </p>
 
 <p align="center">
-  <img src="docs/web_agent/images/niuma-desktop-v2.png" alt="Niuma desktop workspace" width="900">
+  <img src="docs/web_agent/images/niuma-desktop-v2.png" alt="Niuma Desktop — real workspace with the new logo and Niuma 3D companion" width="900">
 </p>
+
+<p align="center"><em>真实 Niuma 桌面工作区：新 Logo 与牛马 3D 宠物，非拼接效果图。</em></p>
+
+### 你的桌面牛马
+
+<p align="center">
+  <img src="web/public/assets/pets/niuma.png" alt="牛马 Niuma 3D 模型渲染：橙色身体、奶油色口鼻、薄荷绿工作灯" width="168">
+</p>
+
+在 **设置 → 宠物** 中启用。默认形象是 **牛马 Niuma**，原来的 **Go 伙伴** 和 **中国龙** 均保留，可以随时切换；已有选择不会被升级覆盖。
+支持待机、专注、庆祝动画，以及拖动、缩放和隐藏。上图小像为同一模型的透明渲染海报，不是桌面截图。详见[桌面个性化](docs/usage/desktop-personalization.md)。
 
 ## 牛马是什么？
 
