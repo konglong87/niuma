@@ -41,3 +41,11 @@ Niuma 是一个本地优先、开源、面向长期任务的 AI Agent 执行工�
 - 强调长期任务、后台推进、恢复与交接，不宣称无限运行或保证成功。
 - 不将“24/7”解释为无预算、无权限或无故障边界。
 - 描述速度、可靠性和模型效果时必须有可复现的实测依据。
+
+## 3D 桌面伙伴
+
+- 资产：`web/public/assets/pets/niuma.glb` 和同目录 `niuma.png`（透明降级海报）。
+- 生成：`blender --background --python-exit-code 1 --python scripts/assets/build_niuma.py`；复用 `scripts/assets/pet_pipeline.py`。
+- 原创程序化几何体，不引入外部模型、远程纹理或新依赖。GLB 仅包含角色层级，不导出海报灯光与相机。
+- 新默认模型 ID 为 `niuma`；Go 伙伴、中国龙保留原 ID/资源，已保存选择优先。宠物仍需用户启用。
+- 沿用待机、专注、庆祝三种动画；状态气泡展示运行状态，不代替任务进度或执行证据。

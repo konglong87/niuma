@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { SettingsDoc } from "../../lib/types";
 import type { DesktopBackgroundImage } from "../desktopServiceBridge";
+import { DEFAULT_PET_MODEL } from "../components/petAssets";
 import { settingsValue, type SettingsPath } from "./globalSettingsDraft";
 
 export const APPEARANCE_ROOT = ["appearance"] as const satisfies SettingsPath;
@@ -50,7 +51,7 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
 export const DEFAULT_PET: PetSettings = {
   enabled: false,
   visible: true,
-  model: "go-companion",
+  model: DEFAULT_PET_MODEL,
   scale: 1,
   right: 24,
   bottom: 20,

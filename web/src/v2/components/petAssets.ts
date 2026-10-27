@@ -1,13 +1,21 @@
-export const DEFAULT_PET_MODEL = "go-companion";
+export const DEFAULT_PET_MODEL = "niuma";
 
 export type PetAsset = {
   url: string;
   poster: string;
   label: { en: string; zh: string };
   camera: { distance: number; fov: number };
+  motion?: "niuma" | "chinese-dragon";
 };
 
 export const PET_ASSETS = {
+  niuma: {
+    url: "/assets/pets/niuma.glb",
+    poster: "/assets/pets/niuma.png",
+    label: { en: "Niuma", zh: "牛马 Niuma" },
+    motion: "niuma",
+    camera: { distance: 4.5, fov: 32 }
+  },
   "go-companion": {
     url: "/assets/pets/go-companion.glb",
     poster: "/assets/pets/go-companion.png",
@@ -18,6 +26,7 @@ export const PET_ASSETS = {
     url: "/assets/pets/chinese-dragon.glb",
     poster: "/assets/pets/chinese-dragon.png",
     label: { en: "Chinese Dragon", zh: "中国龙" },
+    motion: "chinese-dragon",
     camera: { distance: 4.8, fov: 30 }
   }
 } as const satisfies Record<string, PetAsset>;
@@ -25,7 +34,7 @@ export const PET_ASSETS = {
 export type PetModel = keyof typeof PET_ASSETS;
 
 export function petAsset(model: string): PetAsset {
-  return PET_ASSETS[model as PetModel] ?? PET_ASSETS[DEFAULT_PET_MODEL];
+  return Object.hasOwn(PET_ASSETS, model) ? PET_ASSETS[model as PetModel] : PET_ASSETS[DEFAULT_PET_MODEL];
 }
 
 export function petAssetOptions(language: "en" | "zh"): Array<{ value: PetModel; label: string }> {

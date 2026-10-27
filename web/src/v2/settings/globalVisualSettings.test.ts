@@ -52,6 +52,14 @@ describe("global visual settings", () => {
     });
   });
 
+  it("defaults new installations to the Niuma companion while preserving selectable legacy pets", () => {
+    expect(DEFAULT_PET.model).toBe("niuma");
+    expect(readVisualSettings({}).pet.model).toBe("niuma");
+    for (const model of ["niuma", "go-companion", "chinese-dragon"]) {
+      expect(readVisualSettings({ pet: { model } }).pet.model).toBe(model);
+    }
+  });
+
   it("rejects unsafe visual values and clamps numeric values without changing unrelated settings", () => {
     const settings = readVisualSettings({
       provider: "custom",

@@ -138,6 +138,21 @@ test("renders pet preview and reads actual observability records", async ({ page
   expect(dragonPixels).toBeLessThan(0.8);
   const before = await canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL());
   await expect.poll(() => canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL())).not.toBe(before);
+  await chooseSettingsSelect(page, "Model asset", "Niuma");
+  await expect(scene).toHaveAttribute("data-render-state", "ready");
+  await expect(scene).toHaveAttribute("data-asset", "/assets/pets/niuma.glb");
+  const niumaPixels = await canvasColorRatio(canvas);
+  expect(niumaPixels).toBeGreaterThan(0.1);
+  expect(niumaPixels).toBeLessThan(0.8);
+  const niumaFrame = await canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL());
+  await expect.poll(() => canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL())).not.toBe(niumaFrame);
+  await chooseSettingsSelect(page, "Animation", "Focus");
+  // Focus mode must be stable, not a second independently moving joint loop.
+  await expect.poll(async () => {
+    const first = await canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL());
+    await page.waitForTimeout(100);
+    return first === await canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL());
+  }).toBe(true);
   await chooseSettingsSelect(page, "Model asset", "Go Companion");
   await expect(scene).toHaveAttribute("data-render-state", "ready");
   await expect(scene).toHaveAttribute("data-asset", "/assets/pets/go-companion.glb");
