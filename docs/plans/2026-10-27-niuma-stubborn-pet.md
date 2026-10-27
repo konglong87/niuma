@@ -21,7 +21,7 @@ Initial worktree: clean, HEAD 4955ec6; pulled origin/main before changes.
    GLB geometry, rig origins, resource budget, fallback poster, motion / focus.
 3. Verified: full frontend tests + typecheck; build and sign local Wails app;
    actual native clicks, all four model choices, saved default after restart.
-4. Next: real native screenshot for README; update brand/personalization copy,
+4. Verified: real native screenshot for README; update brand/personalization copy,
    review diff, commit each verified slice and push origin/main.
 
 Acceptance: inspect actual model renders and actual native screenshots, not only
@@ -55,6 +55,9 @@ Tests, visual review, commits and push results to be recorded after execution.
 - No backend code changed, so no new backend test run is claimed. No autonomous
   model calls, live task success, Windows native run or notarization claimed.
 
-Remaining: replace README desktop screenshot with actual restarted native capture,
-finish documentation review and publish the documentation slice. Final commit/push
-results recorded in the ignored evidence EVIDENCE.md and delivery response.
+Implementation slice committed as bf82665 and pushed to origin/main.
+README desktop screenshot replaced with the actual restarted native capture
+05-niuma-a-workspace-restarted.jpg, converted to PNG with identical decoded pixels.
+README local images resolve; the removed brand-reference sentence stays removed.
+Documentation slice reviewed; its final commit/push result is recorded in the
+ignored evidence EVIDENCE.md and delivery response. No implementation items remain.

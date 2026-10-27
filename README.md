@@ -26,18 +26,18 @@
 </p>
 
 <p align="center">
-  <img src="docs/web_agent/images/niuma-desktop-v2.png" alt="Niuma Desktop — real workspace with the new logo and Niuma 3D companion" width="900">
+  <img src="docs/web_agent/images/niuma-desktop-v2.png" alt="Niuma Desktop — real workspace with the Niuma logo and stubborn A-version 3D companion" width="900">
 </p>
 
-<p align="center"><em>真实 Niuma 桌面工作区：新 Logo 与牛马 3D 宠物，非拼接效果图。</em></p>
+<p align="center"><em>真实 Niuma 桌面工作区：牛马 Logo 与 A 版「犟种丑萌」3D 宠物，非拼接效果图。</em></p>
 
 ### 你的桌面牛马
 
 <p align="center">
-  <img src="web/public/assets/pets/niuma.png" alt="牛马 Niuma 3D 模型渲染：橙色身体、奶油色口鼻、薄荷绿工作灯" width="168">
+  <img src="web/public/assets/pets/niuma.png" alt="牛马 Niuma 3D 模型渲染：犟种丑萌形象、大鼻子、半眯眼与歪耳朵" width="168">
 </p>
 
-在 **设置 → 宠物** 中启用。默认形象是 **牛马 Niuma**，原来的 **Go 伙伴** 和 **中国龙** 均保留，可以随时切换；已有选择不会被升级覆盖。
+在 **设置 → 宠物** 中启用。默认形象是 **牛马 Niuma · 犟种丑萌版**，此前的 **牛马经典版**、**Go 伙伴** 和 **中国龙** 均保留，可以随时切换。Go 伙伴和中国龙的已有选择不变；此前选择牛马的用户会看到 A 版，也可以改选牛马经典版。
 支持待机、专注、庆祝动画，以及拖动、缩放和隐藏。上图小像为同一模型的透明渲染海报，不是桌面截图。详见[桌面个性化](docs/usage/desktop-personalization.md)。
 
 ## 牛马是什么？
@@ -117,7 +117,7 @@ Niuma 的配置、任务状态、会话、记忆和调度数据使用独立的 `
 
 **让 AI 当牛马，人类去生活。**
 
-角色是一只原创的牛角马耳小机器人：勤快但不逞强，做完展示证据，遇到边界就交接。
+角色是一只原创的牛角马耳小牛马：大鼻子、半眯眼、歪耳朵，一脸不服，事情照干。勤快但不逞强，做完展示证据，遇到边界就交接。
 
 ## 来源与许可
 
