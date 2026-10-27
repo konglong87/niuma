@@ -1,148 +1,141 @@
-import bpy
-import sys
+"""Build the approved A / stubborn Niuma as actual, self-contained GLB meshes.
+
+Run: blender --background --python-exit-code 1 --python scripts/assets/build_niuma.py
+No downloaded model, generated raster billboard, textures or external services.
+"""
+
 import math
-from mathutils import Vector
+import sys
 from pathlib import Path
+
+import bpy
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pet_pipeline import reset_scene, make_material, export_glb, render_poster
+from pet_pipeline import reset_scene, make_material, ellipsoid, export_glb, render_poster
+from pet_sculpt import empty, rounded_mass, carve_ellipsoid, tapered_stroke, leaf, localize_joint, fuse_masses
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "web" / "public" / "assets" / "pets"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
-GLB_PATH = OUT_DIR / "niuma.glb"
-POSTER_PATH = OUT_DIR / "niuma.png"
-
-# Niuma's visual language: warm orange, cream, charcoal, and a mint work signal.
+# Linear material values: deliberately darker than the previous pastel robot.
 COLORS = {
-    "orange": (0.95, 0.29, 0.14, 1.0),
-    "orange_dark": (0.55, 0.12, 0.06, 1.0),
-    "cream": (0.96, 0.86, 0.68, 1.0),
-    "cream_light": (1.0, 0.95, 0.83, 1.0),
-    "charcoal": (0.035, 0.05, 0.07, 1.0),
-    "mint": (0.42, 0.88, 0.70, 1.0),
-    "hoof": (0.10, 0.12, 0.14, 1.0),
+    "orange": (0.43, 0.105, 0.025),
+    "ear_inner": (0.32, 0.060, 0.023),
+    "cream": (0.70, 0.57, 0.38),
+    "eye": (0.86, 0.82, 0.68),
+    "charcoal": (0.035, 0.028, 0.025),
+    "cavity": (0.095, 0.057, 0.030),
+    "mint": (0.25, 0.65, 0.46),
 }
+ROOT_NAME = "NiumaPet"
+OUTPUT_MODEL = "niuma.glb"
+OUTPUT_POSTER = "niuma.png"
+PREVIEW_DIRECTORY = Path(__file__).resolve().parents[2] / "output/imagegen/niuma-stubborn-model"
+SIDES = (-1, 1)
 
 
-reset_scene()
-MATS = {name: make_material(name, color[:3], roughness=0.55) for name, color in COLORS.items()}
-MATS["mint"].node_tree.nodes["Principled BSDF"].inputs["Emission Color"].default_value = COLORS["mint"]
-MATS["mint"].node_tree.nodes["Principled BSDF"].inputs["Emission Strength"].default_value = 0.35
+def build_body(root, arms, materials):
+    orange, dark = materials["orange"], materials["charcoal"]
+    body_parts = [rounded_mass("PearBody", (0, .10, 1.28), (.72, .50, .91), orange, root, .95)]
+    for side, arm in zip(SIDES, arms):
+        body_parts.append(ellipsoid(f"Haunch_{side}", (side * .40, .06, .62), (.29, .33, .42), orange, root))
+        body_parts.append(rounded_mass(f"Shin_{side}", (side * .41, .01, .40), (.22, .24, .29), orange, root))
+        # Two rounded halves make a real cloven hoof silhouette.
+        for half in SIDES:
+            rounded_mass(f"Hoof_{side}_{half}", (side * .43 + half * .125, -.11, .17),
+                         (.123, .32, .14), dark, root, .65, segments=20, rings=12)
+        tapered_stroke(f"Arm_{side}", [(side * .52, .04, 1.93), (side * .70, -.05, 1.50),
+                       (side * .77, -.19, 1.08)], [1, 1, .82], .18, orange, arm)
+        rounded_mass(f"Hand_{side}", (side * .78, -.21, .99), (.18, .19, .20), dark, arm, .72,
+                     segments=20, rings=12)
+    fuse_masses(body_parts, "SeamlessBody", root)
+    rounded_mass("MintBadge", (.30, -.388, 1.78), (.072, .035, .073),
+                 materials["mint"], root, .45, segments=16, rings=10)
 
 
-def assign(obj, mat):
-    obj.data.materials.append(mat)
-    return obj
+def build_face(head, materials):
+    orange, cream, dark = materials["orange"], materials["cream"], materials["charcoal"]
+    rounded_mass("Head", (0, .015, 2.65), (.77, .56, .73), orange, head, .86)
+    muzzle = rounded_mass("SculptedMuzzle", (0, -.58, 2.32), (.82, .45, .46), cream, head, .78)
+    for side in SIDES:
+        carve_ellipsoid(muzzle, f"NostrilCut_{side}", (side * .43, -.973, 2.46),
+                        (.166, .235, .192), (0, side * -.30, 0))
+        # Dark backing is recessed well behind the carved opening.
+        ellipsoid(f"NostrilInterior_{side}", (side * .43, -.792, 2.46),
+                  (.125, .075, .15), materials["cavity"], head)
+        eye_x = side * .43
+        ellipsoid(f"Eye_{side}", (eye_x, -.494, 2.89), (.206, .128, .146), materials["eye"], head)
+        ellipsoid(f"Pupil_{side}", (eye_x + .026, -.614, 2.865), (.070, .025, .089), dark, head)
+        # Upper-lid geometry deliberately covers the top half, not big round eyes.
+        lid = ellipsoid(f"HeavyLid_{side}", (eye_x, -.506, 2.94), (.215, .14, .17), orange, head)
+        for vertex in lid.data.vertices:
+            vertex.co.z = max(vertex.co.z, -.06)
+        tapered_stroke(f"LidRim_{side}", [(eye_x - .195, -.554, 2.929),
+                       (eye_x, -.647, 2.912), (eye_x + .195, -.554, 2.90)],
+                       [.25, 1, .25], .022, dark, head)
+        brow_lift = .035 if side > 0 else 0
+        tapered_stroke(f"Brow_{side}", [(side * .24, -.49, 3.08),
+                       (eye_x, -.45, 3.14 + brow_lift), (side * .62, -.34, 3.15 + brow_lift)],
+                       [.12, 1, .08], .043, dark, head)
+    fuse_masses([muzzle], "SculptedMuzzle", head, voxel_size=.027)
+    # One restrained off-center downturned mouth, not a friendly generic smile.
+    tapered_stroke("SkepticalMouth", [(.22, -.995, 2.111), (.40, -.989, 2.12), (.59, -.93, 2.073)],
+                   [.06, 1, .06], .020, materials["cavity"], head)
 
 
-def smooth(obj):
-    if hasattr(obj.data, "polygons"):
-        for poly in obj.data.polygons:
-            poly.use_smooth = True
-    return obj
+def build_head_silhouette(head, materials):
+    orange, cream, dark = materials["orange"], materials["cream"], materials["charcoal"]
+    for side in SIDES:
+        height = .05 if side < 0 else 0
+        tapered_stroke(f"Horn_{side}", [(side * .51, .02, 3.13), (side * .89, .025, 3.17),
+                       (side * 1.08, .035, 3.34), (side * 1.06, .02, 3.57 + height)],
+                       [1, .86, .55, .015], .19, cream, head, sides=3)
+    ears = [((- .52, .10, 3.21), (-.76, .09, 3.91), .22),
+            ((.66, .11, 3.01), (1.16, .02, 2.68), .23)]
+    for index, (start, end, width) in enumerate(ears):
+        leaf(f"EarOuter_{index}", start, end, width, .10, orange, head)
+        inner_start = (start[0], start[1] - .075, start[2])
+        inner_end = (end[0] * .97, end[1] - .085, end[2])
+        leaf(f"EarInner_{index}", inner_start, inner_end, width * .65, .027, materials["ear_inner"], head)
+    # Broad tapered forelock blades read as one crooked tuft at 112px, not beads.
+    for index, offset in enumerate((-.16, 0, .16)):
+        tapered_stroke(f"Forelock_{index}", [(.28 + offset, -.02, 3.29),
+                       (.10 + offset, -.28, 3.47), (-.21 + offset, -.46, 3.30),
+                       (-.38 + offset, -.47, 3.12)], [1, 1.05, .75, .015], .135, dark, head)
+    for index, z in enumerate((3.12, 2.83, 2.54)):
+        tapered_stroke(f"Mane_{index}", [(0, .47, z + .17), (0, .65, z), (0, .61, z - .26)],
+                       [1, .9, .02], .17, dark, head)
 
 
-def uv(name, location, scale, mat, segments=20, rings=12, parent=None):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments, ring_count=rings, location=location)
-    obj = bpy.context.object
-    obj.name = name
-    obj.scale = scale
-    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-    assign(obj, mat)
-    smooth(obj)
-    if parent:
-        obj.parent = parent
-    return obj
+def build_tail(tail, materials):
+    tapered_stroke("Tail", [(.27, .49, 1.1), (.61, .60, .99), (.84, .50, .76)],
+                   [1, .9, .55], .085, materials["orange"], tail)
+    for index, offset in enumerate((-.10, 0, .10)):
+        tapered_stroke(f"TailTuft_{index}", [(.81 + offset, .51, .83), (.92 + offset, .47, .65),
+                       (1.0 + offset, .39, .50)], [1, .9, .015], .12, materials["charcoal"], tail)
 
 
-def cone(name, location, radius1, radius2, depth, mat, rotation=(0, 0, 0), parent=None):
-    bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=radius1, radius2=radius2, depth=depth, location=location, rotation=rotation)
-    obj = bpy.context.object
-    obj.name = name
-    assign(obj, mat)
-    smooth(obj)
-    if parent:
-        obj.parent = parent
-    return obj
+def main():
+    reset_scene()
+    materials = {name: make_material(name, color, roughness=.72) for name, color in COLORS.items()}
+    root = empty(ROOT_NAME)
+    head, tail = empty("HeadRig", root), empty("TailRig", root)
+    arms = [empty("LeftArmRig", root), empty("RightArmRig", root)]
+    build_body(root, arms, materials)
+    build_face(head, materials)
+    build_head_silhouette(head, materials)
+    build_tail(tail, materials)
+    for joint, origin in [(head, (0, .02, 2.10)), (tail, (.27, .49, 1.1)),
+                          (arms[0], (-.52, .04, 1.93)), (arms[1], (.52, .04, 1.93))]:
+        localize_joint(joint, origin)
+    export_glb(root, OUTPUT_MODEL)
+    render_poster(OUTPUT_POSTER, look_at=(0, 0, 1.99), camera=(2.1, -9, 3.2), ortho_scale=4.35)
+    # Optional review output is ignored and never shipped instead of a real model.
+    if "--preview" in sys.argv:
+        PREVIEW_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        scene = bpy.context.scene
+        scene.render.resolution_x = scene.render.resolution_y = 1000
+        scene.render.filepath = str(PREVIEW_DIRECTORY / "niuma-a-model.png")
+        bpy.ops.render.render(write_still=True)
 
 
-def cyl(name, location, radius, depth, mat, rotation=(0, 0, 0), parent=None):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=radius, depth=depth, location=location, rotation=rotation)
-    obj = bpy.context.object
-    obj.name = name
-    assign(obj, mat)
-    smooth(obj)
-    if parent:
-        obj.parent = parent
-    return obj
-
-
-def empty(name, parent=None):
-    obj = bpy.data.objects.new(name, None)
-    bpy.context.collection.objects.link(obj)
-    if parent:
-        obj.parent = parent
-    return obj
-
-
-root = empty("NiumaPet")
-head_rig = empty("HeadRig", root)
-tail_rig = empty("TailRig", root)
-left_arm_rig = empty("LeftArmRig", root)
-right_arm_rig = empty("RightArmRig", root)
-
-# Compact body with a friendly horse/cow silhouette.
-uv("Body", (0.0, 0.0, 1.55), (0.82, 0.56, 0.98), MATS["orange"], parent=root)
-uv("Chest", (0.0, -0.42, 1.57), (0.55, 0.24, 0.62), MATS["orange"], parent=root)
-
-# Head and cream muzzle.
-uv("Head", (0.0, -0.04, 2.42), (0.70, 0.56, 0.64), MATS["orange"], parent=head_rig)
-uv("Muzzle", (0.0, -0.57, 2.25), (0.50, 0.23, 0.29), MATS["cream_light"], parent=head_rig)
-for x in (-0.18, 0.18):
-    uv("Nostril", (x, -0.78, 2.27), (0.065, 0.035, 0.055), MATS["charcoal"], segments=12, rings=8, parent=head_rig)
-
-# Large expressive eyes with mint glints.
-for x in (-0.29, 0.29):
-    uv("EyeWhite", (x, -0.49, 2.56), (0.18, 0.08, 0.23), MATS["cream_light"], parent=head_rig)
-    uv("Pupil", (x, -0.57, 2.57), (0.085, 0.035, 0.13), MATS["charcoal"], segments=16, rings=10, parent=head_rig)
-    uv("EyeGlint", (x - 0.025, -0.605, 2.65), (0.022, 0.012, 0.032), MATS["cream_light"], segments=10, rings=6, parent=head_rig)
-
-# Ears and horns: unmistakable Niuma shape without looking aggressive.
-for x, sign in ((-0.43, -1), (0.43, 1)):
-    uv("EarOuter", (x, 0.02, 2.96), (0.23, 0.18, 0.36), MATS["orange"], parent=head_rig)
-    uv("EarInner", (x, -0.12, 2.98), (0.11, 0.055, 0.22), MATS["cream"], segments=16, rings=10, parent=head_rig)
-    cone("Horn", (x + sign * 0.10, -0.03, 3.26), 0.115, 0.018, 0.48, MATS["cream"], rotation=(0, sign * -0.38, 0), parent=head_rig)
-
-# Mint work beacon, echoing the existing Niuma logo accent.
-cyl("BeaconStem", (0.0, 0.0, 3.18), 0.035, 0.20, MATS["charcoal"], parent=head_rig)
-uv("Beacon", (0.0, 0.0, 3.34), (0.12, 0.12, 0.12), MATS["mint"], segments=16, rings=10, parent=head_rig)
-
-# Dark mane along the back.
-for i, z in enumerate((2.72, 2.43, 2.14, 1.85, 1.56, 1.27)):
-    uv(f"Mane{i}", (0.0, 0.43, z), (0.22, 0.16, 0.20), MATS["orange_dark"], segments=16, rings=10, parent=root)
-
-# Four short legs and hooves.
-for x, y, rig in ((-0.42, -0.26, left_arm_rig), (0.42, -0.26, right_arm_rig), (-0.42, 0.28, root), (0.42, 0.28, root)):
-    cyl("Leg", (x, y, 0.77), 0.16, 0.72, MATS["orange"], parent=rig)
-    uv("Hoof", (x, y - 0.035, 0.35), (0.22, 0.25, 0.14), MATS["hoof"], segments=16, rings=10, parent=rig)
-
-# Small mint badge on the chest.
-uv("WorkBadge", (0.0, -0.66, 1.68), (0.16, 0.055, 0.16), MATS["mint"], segments=16, rings=10, parent=root)
-
-# Tail with a darker tuft.
-cyl("TailBase", (0.0, 0.62, 1.67), 0.10, 0.42, MATS["orange"], rotation=(math.radians(65), 0, 0), parent=tail_rig)
-uv("TailTuft", (0.0, 0.91, 1.88), (0.22, 0.17, 0.26), MATS["orange_dark"], segments=16, rings=10, parent=tail_rig)
-
-# Give joints anatomically local origins while preserving their rest-pose geometry.
-for rig, origin in ((head_rig, (0, 0, 2.32)), (tail_rig, (0, .5, 1.67)),
-                    (left_arm_rig, (-.42, -.26, 1.1)), (right_arm_rig, (.42, -.26, 1.1))):
-    for child in rig.children:
-        child.location -= Vector(origin)
-    rig.location = origin
-
-export_glb(root, "niuma.glb")
-render_poster("niuma.png", look_at=(0, 0, 1.65), camera=(3.3, -8.0, 3.1), ortho_scale=3.95)
-print(f"created {GLB_PATH}")
-print(f"created {POSTER_PATH}")
+if __name__ == "__main__":
+    main()

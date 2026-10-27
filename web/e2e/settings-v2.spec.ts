@@ -153,6 +153,10 @@ test("renders pet preview and reads actual observability records", async ({ page
     await page.waitForTimeout(100);
     return first === await canvas.evaluate((node) => (node as HTMLCanvasElement).toDataURL());
   }).toBe(true);
+  await chooseSettingsSelect(page, "Model asset", "Niuma Classic");
+  await expect(scene).toHaveAttribute("data-render-state", "ready");
+  await expect(scene).toHaveAttribute("data-asset", "/assets/pets/niuma-classic.glb");
+  expect(await canvasColorRatio(canvas)).toBeGreaterThan(0.1);
   await chooseSettingsSelect(page, "Model asset", "Go Companion");
   await expect(scene).toHaveAttribute("data-render-state", "ready");
   await expect(scene).toHaveAttribute("data-asset", "/assets/pets/go-companion.glb");

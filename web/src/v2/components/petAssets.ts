@@ -16,6 +16,13 @@ export const PET_ASSETS = {
     motion: "niuma",
     camera: { distance: 4.5, fov: 32 }
   },
+  "niuma-classic": {
+    url: "/assets/pets/niuma-classic.glb",
+    poster: "/assets/pets/niuma-classic.png",
+    label: { en: "Niuma Classic", zh: "牛马经典版" },
+    motion: "niuma",
+    camera: { distance: 4.5, fov: 32 }
+  },
   "go-companion": {
     url: "/assets/pets/go-companion.glb",
     poster: "/assets/pets/go-companion.png",
