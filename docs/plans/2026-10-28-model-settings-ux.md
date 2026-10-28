@@ -46,21 +46,32 @@ this task. No branches/worktrees or changes to the original go-e2e project.
 3. Visual browser acceptance: Chinese light/dark desktop and mobile screenshots
    inspected; English layouts checked. Screenshots contain fixture settings.
 4. Native build: Wails macOS build and nested local signature validation pass.
-5. BLOCKED — final native UI acceptance: CUA reports the Mac is locked and asks
-   for manual unlock. Earlier native screenshots show an intermediate build,
-   not this final version. Do not count them as final acceptance. Unlock, launch
-   the final local build and verify quick/advanced/computer/image transitions.
+5. Native UI acceptance passed after manual unlock on 2026-10-28, using the
+   final local Wails build (4045e55), not the earlier intermediate process.
+   Actual clicks verified all four sections, 13 existing backup connections,
+   masked credentials, 0/14 explicitly enabled screenshot routes, optional
+   capability navigation, and collapsed/expanded image Worker settings.
+   Keyboard Tab navigation scrolled the lower controls into view; screenshots
+   confirmed the shared save toolbar and readable layout. CUA's scroll command
+   returned noWindowsAvailable, so wheel/trackpad scrolling was not verified
+   in this native pass. Returning to Quick setup preserved the original values
+   and the unchanged-draft / disabled-save state. No real configuration values
+   were edited or saved; no live provider tests or inference were requested.
 6. Delivery: tested source slice committed/pushed; see git history and the ignored
    evidence ledger for the exact hash. No release/download package published.
 
 Evidence: desktop-v2/build/validation/20261028/model-settings-ux/ (ignored).
-Final screenshots are browser fixture evidence, not native screenshots.
+Native evidence: native-01-quick.jpg, native-02-advanced.jpg,
+native-03-computer.jpg, native-04-image.jpg, native-05-quick-details.jpg,
+and native-06-image-worker.jpg. These are actual app-window captures and remain
+local/ignored; browser fixture evidence is separately stored in screenshots/.
 The existing Appearance E2E selector was stale; it now uses the actual unchanged
 `Appearance · Skin` heading/navigation label. No appearance UI logic changed.
 
 ## Remaining / explicitly deferred
 
-Highest priority: native acceptance after manual unlock; no backend or model-task
-acceptance is claimed. Provider-specific templates, automatic model discovery,
+Phase 1 implementation, automated verification and native UI acceptance are
+closed. No backend or autonomous model-task acceptance is claimed.
+Provider-specific templates, automatic model discovery,
 protocol detection, paid minimal-inference tests, capability verification and
 runtime hot-reload are later phases, not implemented or advertised here.
