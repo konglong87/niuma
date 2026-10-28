@@ -133,7 +133,11 @@ function SettingsEnvironmentContent(props: Props & { globalIdentity: IdentityCon
       <div className={`settings-content settings-content-${section}`}>
         <div className="settings-active-environment">{zh ? "设置环境" : "Settings environment"}: <strong>{isolated ? props.environment.label : (zh ? "Web 对话" : "Web chat")}</strong></div>
         {section !== "feishu" && section !== "provisioning" ? <div className="settings-page-heading"><div><h1>{zh ? item.zh : item.en}</h1><p>{item.description[zh ? 0 : 1]}</p></div>{dirty ? <span className="settings-badge settings-badge-warning">{zh ? "有未保存的更改" : "Unsaved changes"}</span> : null}</div> : null}
-        {props.settingsPath && (section === "models" || section === "json" || section === "effective") ? <div className="settings-environment-notice"><strong>{props.sharedSettings ? (zh ? "全局配置由 Web 服务与渠道 Worker 共用" : "Global settings shared by Web and channel workers") : (zh ? "全局配置文件" : "Global settings file")}</strong><code>{props.settingsPath}</code>{props.sharedSettings ? <span>{zh ? "保存影响共用此文件的服务；运行中的任务不变，部分配置需重启对应服务生效。" : "Saving affects services sharing this file. Active runs are unchanged; some settings require a service restart."}</span> : null}{isolated && section === "effective" ? <span>{zh ? "启动快照来自当前管理服务，不代表 screen worker 的进程内配置。" : "Startup snapshot belongs to this management service, not the screen workers."}</span> : null}</div> : null}
+        {props.settingsPath && (section === "models" || section === "json" || section === "effective") ? section === "models" ?
+          <details className="model-config-details">
+            <summary>{zh ? "配置保存位置与生效范围" : "Storage location and when changes take effect"}</summary>
+            <SettingsStorageNotice path={props.settingsPath} shared={props.sharedSettings} />
+          </details> : <SettingsStorageNotice path={props.settingsPath} shared={props.sharedSettings} snapshotWarning={isolated && section === "effective"} /> : null}
         {navigationError ? <p role="alert" className="settings-error">{navigationError}</p> : null}
         {!sectionAvailable ? <p role="alert" className="settings-environment-notice">{zh ? "此环境不支持该设置，请选择 Web 对话环境。" : "This section is unavailable in this environment. Select the Web chat environment."}</p> : null}
         {visited.has("general") ? <div hidden={section !== "general"}><GeneralSettings {...props} identity={{ ...identity, tenantKey: props.environment.tenant_key, userId: props.environment.user_id }} /></div> : null}
@@ -180,5 +184,16 @@ function GeneralSettings({ identity, theme, onThemeChange, inspectorOpen, onInsp
       <div className="settings-preference-row"><div><strong>{zh ? "显示方式" : "Display mode"}</strong><p>{zh ? "空闲时隐藏，需要操作时自动显示；也可以固定为紧凑浮层或展开面板。" : "Hide when idle and show when needed, or keep a compact launcher or expanded panel visible."}</p></div><SettingsSelect ariaLabel={zh ? "Computer Use 显示方式" : "Computer Use display mode"} className="settings-preference-select" id="settings-computer-display-mode" value={computerDisplayMode} onChange={updateComputerDisplayMode} options={[{ value: COMPUTER_WORKSPACE_DISPLAY_MODES.AUTO, label: zh ? "自动显示（推荐）" : "Automatic (recommended)" }, { value: COMPUTER_WORKSPACE_DISPLAY_MODES.COMPACT, label: zh ? "始终显示紧凑浮层" : "Always show compact launcher" }, { value: COMPUTER_WORKSPACE_DISPLAY_MODES.EXPANDED, label: zh ? "始终展开详细面板" : "Always show expanded panel" }]} /></div>
     </div></section>
     <section className="settings-section"><h2>{zh ? "连接身份" : "Connection identity"}</h2><dl className="settings-identity-fields"><div><dt>{zh ? "租户" : "Tenant"}</dt><dd>{identity.tenantKey || "—"}</dd></div><div><dt>{zh ? "用户" : "User"}</dt><dd>{identity.userId || "—"}</dd></div></dl><div className="settings-notice"><ShieldCheck size={16} /><span>{identity.apiToken ? t("webui2.authTokenPresent") : t("webui2.authTokenMissing")}</span><span>{identity.mobileJwt ? t("webui2.authMobilePresent") : t("webui2.authMobileMissing")}</span></div></section>
+  </div>;
+}
+
+function SettingsStorageNotice({ path, shared, snapshotWarning }: { path: string; shared?: boolean; snapshotWarning?: boolean }) {
+  const { language } = useI18n();
+  const zh = language === "zh";
+  return <div className="settings-environment-notice">
+    <strong>{shared ? (zh ? "全局配置由 Web 服务与渠道 Worker 共用" : "Global settings shared by Web and channel workers") : (zh ? "全局配置文件" : "Global settings file")}</strong>
+    <code>{path}</code>
+    {shared && <span>{zh ? "保存影响共用此文件的服务；运行中的任务不变，部分配置需重启对应服务生效。" : "Saving affects services sharing this file. Active runs are unchanged; some settings require a service restart."}</span>}
+    {snapshotWarning && <span>{zh ? "启动快照来自当前管理服务，不代表 screen worker 的进程内配置。" : "Startup snapshot belongs to this management service, not the screen workers."}</span>}
   </div>;
 }

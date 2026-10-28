@@ -30,6 +30,11 @@ function Observer({ view, currentIdentity = identity, enabled = true }: { view?:
 async function render(view?: "models" | "json", currentIdentity = identity) {
   await act(async () => root.render(<Observer view={view} currentIdentity={currentIdentity} />));
 }
+function openAdvancedModelEditor(): void {
+  const tabs = host.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+  expect(tabs[1]).toBeDefined();
+  act(() => tabs[1].click());
+}
 
 beforeEach(() => {
   const storage = new Map<string, string>();
@@ -55,14 +60,88 @@ afterEach(() => {
 });
 
 describe("shared global settings draft", () => {
+
+  it("shows a localized quick form, one save action and no invented health claims", async () => {
+    window.localStorage.setItem("niuma-webui.language.v1", "en");
+    await render("models");
+    expect(host.textContent).not.toMatch(/[\u3400-\u9fff]/);
+    const quick = host.querySelector('[role="tabpanel"]:not([hidden])')!;
+    expect(quick.querySelectorAll("input")).toHaveLength(3);
+    expect(quick.textContent).toContain("Catalog connection not tested");
+    expect(quick.textContent).not.toContain("Needs setup"); // Env credentials may be present.
+    expect(quick.querySelector('.model-status-icon')?.getAttribute("data-result")).toBe("unknown");
+    expect([...host.querySelectorAll("button")].filter(b => b.textContent === "Save changes")).toHaveLength(1);
+    expect(draft.doc).toEqual(fixture);
+    expect(draft.dirty).toBe(false);
+  });
+
+  it("does not show a fallback catalog result as a healthy primary model", async () => {
+    await render("models");
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true, kind: "catalog_connection", message: "backup ok" }));
+    await act(async () => { await draft.testProvider("backup"); });
+    expect(host.querySelector('.model-status')?.textContent).toContain("尚未测试目录连接");
+    expect(host.querySelector('.model-status')?.textContent).not.toContain("backup ok");
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true, kind: "catalog_connection", message: "catalog only" }));
+    await act(async () => { await draft.testProvider(); });
+    expect(host.querySelector('.model-status')?.textContent).toContain("模型目录可访问");
+    expect(host.querySelector('.model-connection-test')?.textContent).toContain("不验证对话、工具或看图能力");
+    act(() => draft.setField(["model"], "new-draft-model"));
+    expect(host.querySelector('.model-status')?.textContent).toContain("尚未测试目录连接");
+  });
+
+  it("supports Auth Token-only and unknown providers without mutating hidden settings", async () => {
+    const doc = { ...fixture, provider: "custom-provider", authToken: SETTINGS_SECRET_SENTINEL };
+    fetchMock.mockResolvedValueOnce(jsonResponse(snapshot(doc)));
+    await render("models");
+    const quick = host.querySelector('[role="tabpanel"]:not([hidden])')!;
+    expect(quick.querySelector<HTMLInputElement>('input[aria-label="Auth Token"]')?.type).toBe("password");
+    expect(quick.querySelector('input[aria-label="API Key"]')).toBeNull();
+    expect(quick.textContent).toContain("custom-provider");
+    expect(draft.doc).toEqual(doc);
+    expect(draft.dirty).toBe(false);
+    act(() => draft.setField(["model"], "edited-model"));
+    openAdvancedModelEditor();
+    act(() => host.querySelector<HTMLButtonElement>('[role="tab"][data-section="images"]')!.click());
+    act(() => host.querySelector<HTMLButtonElement>('[role="tab"][data-section="quick"]')!.click());
+    expect(draft.doc).toEqual({ ...doc, model: "edited-model" });
+  });
+
+  it("returns quick-form protocol actions to the primary provider, not the last fallback", async () => {
+    await render("models");
+    openAdvancedModelEditor();
+    act(() => host.querySelectorAll<HTMLButtonElement>(".global-settings-provider-list button")[1].click());
+    expect(host.querySelector(".global-settings-provider-heading")?.textContent).toContain("backup");
+    act(() => host.querySelector<HTMLButtonElement>('[role="tab"][data-section="quick"]')!.click());
+    act(() => host.querySelector<HTMLButtonElement>(".model-advanced-hint > button")!.click());
+    expect(host.querySelector(".global-settings-provider-heading")?.textContent).toContain("全局主模型");
+    expect(draft.dirty).toBe(false);
+  });
+
+  it("opens the requested capability without enabling it and supports keyboard tabs", async () => {
+    await render("models");
+    const quick = host.querySelector('[role="tabpanel"]:not([hidden])')!;
+    const computer = [...quick.querySelectorAll<HTMLButtonElement>('.model-capability-list button')][1];
+    act(() => computer.click());
+    const selected = host.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')!;
+    expect(selected.dataset.section).toBe("computer");
+    expect(document.activeElement).toBe(selected);
+    act(() => selected.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true })));
+    expect(host.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.dataset.section).toBe("images");
+    expect(draft.doc).toEqual(fixture);
+    expect(draft.dirty).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("updates form and JSON in both directions while retaining unknown fields and masked env keys", async () => {
     await render("models");
+    openAdvancedModelEditor();
     act(() => draft.setField(["model"], "form-model"));
     await render("json");
     expect((host.querySelector("textarea") as HTMLTextAreaElement).value).toContain('"model": "form-model"');
     const fromJSON = { ...JSON.parse(draft.raw), model: "json-model", brandNew: { nested: true } };
     act(() => draft.setRaw(JSON.stringify(fromJSON)));
     await render("models");
+    openAdvancedModelEditor();
     expect((host.querySelector('input[aria-label="默认模型"]') as HTMLInputElement).value).toBe("json-model");
     expect(draft.doc?.env).toEqual(fixture.env);
     expect(draft.doc?.future).toEqual(fixture.future);
@@ -227,6 +306,7 @@ describe("shared global settings draft", () => {
     };
     fetchMock.mockResolvedValueOnce(jsonResponse(snapshot(document)));
     await render("models");
+    openAdvancedModelEditor();
     act(() => (host.querySelectorAll(".global-settings-provider-list button")[1] as HTMLButtonElement).click());
     expect(host.querySelector(".global-settings-promote")).not.toBeNull();
     fetchMock.mockResolvedValueOnce(jsonResponse({
@@ -261,6 +341,7 @@ describe("shared global settings draft", () => {
   it("does not probe the primary model for an unnamed fallback provider", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(snapshot({ fallback: { providers: [{ type: "custom", model: "unnamed" }] } })));
     await render("models");
+    openAdvancedModelEditor();
     const providerButtons = host.querySelectorAll(".global-settings-provider-list button");
     act(() => (providerButtons[1] as HTMLButtonElement).click());
     expect(host.textContent).toContain("请先填写供应商名称");
@@ -277,6 +358,7 @@ describe("shared global settings draft", () => {
     const provider = { type: "custom", apiKey: "private-draft-credential" };
     fetchMock.mockResolvedValueOnce(jsonResponse(snapshot({ fallback: { providers: [provider, provider] } })));
     await render("models");
+    openAdvancedModelEditor();
     expect(errors.mock.calls.flat().join(" ")).not.toContain("private-draft-credential");
     expect(errors.mock.calls.flat().join(" ")).not.toContain("same key");
   });
@@ -296,9 +378,11 @@ describe("shared global settings draft", () => {
     };
     fetchMock.mockResolvedValueOnce(jsonResponse(snapshot(doc)));
     await render("models");
+    openAdvancedModelEditor();
     expect(host.textContent).toContain("普通模型 Fallback 链");
     expect(host.textContent).toContain("Computer Use 桌面操作");
     expect(host.textContent).toContain("普通请求和 Computer Use 分开配置");
+    act(() => host.querySelector<HTMLButtonElement>('[role="tab"][data-section="computer"]')!.click());
     const routes = host.querySelectorAll<HTMLInputElement>(".global-settings-computer-route input");
     expect(routes).toHaveLength(3);
     expect(routes[0].checked).toBe(true);
@@ -318,6 +402,7 @@ describe("shared global settings draft", () => {
     window.localStorage.setItem("niuma-webui.language.v1", "en");
     const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
     await render("models");
+    openAdvancedModelEditor();
     expect(host.textContent).toContain("Primary model");
     expect(host.textContent).toContain("Image generation");
     expect(host.textContent).not.toMatch(/[\u3400-\u9fff]/);

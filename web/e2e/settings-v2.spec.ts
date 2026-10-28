@@ -80,11 +80,11 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("renders the compact settings registry and previews appearance changes with reset", async ({ page }, testInfo) => {
-  await expect(page.getByRole("heading", { name: "Appearance", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Appearance · Skin", exact: true })).toBeVisible();
   const openNavigation = page.getByRole("button", { name: "Open settings navigation", exact: true });
   if (await openNavigation.isVisible()) await openNavigation.click();
   await expect(page.getByRole("navigation", { name: "Settings categories" }).getByRole("button", { name: "General", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Appearance", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("button", { name: "Appearance · Skin", exact: true })).toHaveAttribute("aria-current", "page");
   const closeNavigation = page.getByRole("complementary").getByRole("button", { name: "Close settings navigation", exact: true });
   if (await closeNavigation.isVisible()) await closeNavigation.click();
 
@@ -243,13 +243,101 @@ test("drags the desktop pet, persists position, and closes with per-device recov
   await expect(page.locator(".webui2-desktop-pet")).toBeVisible();
 });
 
+test("shows the beginner model setup first and keeps the full editor behind advanced setup", async ({ page }, testInfo) => {
+  await page.goto("/webui/v2/settings/models");
+  await expect(page.getByRole("heading", { name: "Models", exact: true })).toBeVisible();
+  const quick = page.getByRole("tab", { name: "Quick setup", exact: true });
+  await expect(quick).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "Quickly configure the primary model", exact: true })).toBeVisible();
+  await expect(page.getByLabel("API protocol", { exact: true })).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "Save changes", exact: true })).toHaveCount(1);
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: testInfo.outputPath("models-quick.png"), fullPage: true });
+  await quick.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("tab", { name: "Advanced setup", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "Advanced model settings", exact: true })).toBeVisible();
+  await expect(page.getByLabel("API protocol", { exact: true })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: testInfo.outputPath("models-advanced.png"), fullPage: true });
+});
+
+test("keeps Chinese quick setup readable in light and dark themes", async ({ page }, testInfo) => {
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => {
+      localStorage.setItem("niuma-webui.language.v1", "zh");
+      localStorage.setItem("niuma-webui.v2.theme.v1", theme);
+    }, theme);
+    await page.goto("/webui/v2/settings/models");
+    await expect(page.getByRole("tab", { name: "快速配置", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByLabel("模型名称", { exact: true })).toHaveValue("fixture-model");
+    await expect(page.getByRole("tabpanel", { name: "快速配置", exact: true }).getByLabel("API Key", { exact: true })).toHaveAttribute("type", "password");
+    await expectNoHorizontalOverflow(page);
+    await page.getByLabel("模型名称", { exact: true }).scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`models-quick-zh-${theme}.png`), fullPage: false });
+  }
+});
+
+test("quick setup saves only edited values and preserves hidden credentials and advanced fields", async ({ page }) => {
+  const original = { ...structuredClone(settingsDoc), apiKey: "••••••", authToken: "••••••", future: { keep: true }, imageGeneration: { enabled: false, worker: { maxAttempts: 7 } }, responses: { store: false } };
+  let document = structuredClone(original);
+  let writes = 0;
+  let tests = 0;
+  await page.route("**/runtime/settings", async route => {
+    if (route.request().method() === "PUT") { document = route.request().postDataJSON(); writes++; return route.fulfill({ json: { saved: true, revision: "r2" } }); }
+    return route.fulfill({ json: { doc: document, revision: writes ? "r2" : "r1", exists: true, masked: ["apiKey", "authToken"] } });
+  });
+  await page.route("**/runtime/settings/test-provider", async route => {
+    tests++;
+    expect(route.request().postDataJSON().doc.model).toBe("edited-model");
+    return route.fulfill({ json: { ok: true, kind: "catalog_connection", message: "Fixture catalog reachable." } });
+  });
+  await page.goto("/webui/v2/settings/models");
+  await page.getByLabel("Model name", { exact: true }).fill("edited-model");
+  await page.getByRole("tab", { name: "Image generation", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Image generation", exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Quick setup", exact: true }).click();
+  await expect(page.getByLabel("Model name", { exact: true })).toHaveValue("edited-model");
+  expect(writes).toBe(0);
+  expect(tests).toBe(0);
+  await page.getByRole("button", { name: "Test connection", exact: true }).click();
+  await expect(page.locator('.model-status')).toContainText("Model catalog reachable");
+  await expect(page.getByRole("tabpanel", { name: "Quick setup", exact: true }).getByText("This test checks only the model catalog, not chat, tool or vision capabilities.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Saved and verified by readback." })).toBeVisible();
+  expect(document).toEqual({ ...original, model: "edited-model" });
+  expect(writes).toBe(1);
+  await page.reload();
+  await expect(page.getByLabel("Model name", { exact: true })).toHaveValue("edited-model");
+});
+
+test("capability links open the requested panel without granting screenshot routes or making requests", async ({ page }) => {
+  let requests = 0;
+  page.on("request", request => { if (request.method() !== "GET" && request.url().includes('/runtime/settings')) requests++; });
+  await page.goto("/webui/v2/settings/models");
+  await page.locator('.model-capability-list button').filter({ hasText: "Computer use" }).click();
+  await expect(page.getByRole("tab", { name: "Computer use", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "Computer Use desktop operations", exact: true })).toBeVisible();
+  for (const route of await page.locator('.global-settings-computer-route input').all()) await expect(route).not.toBeChecked();
+  await expect(page.getByRole("button", { name: "Save changes", exact: true })).toBeDisabled();
+  expect(requests).toBe(0);
+  await page.getByRole("tab", { name: "Quick setup", exact: true }).click();
+  await page.locator('.model-capability-list button').filter({ hasText: "Image generation" }).click();
+  await expect(page.getByRole("tab", { name: "Image generation", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByLabel("Worker maximum concurrency", { exact: true })).not.toBeVisible();
+  await page.getByText("Image task worker", { exact: true }).click();
+  await expect(page.getByLabel("Worker maximum concurrency", { exact: true })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
 test("promotes a selected fallback model, saves it, and confirms the new primary route", async ({ page }, testInfo) => {
   await page.goto("/webui/v2/settings/models");
   await expect(page.getByRole("heading", { name: "Models", exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Advanced setup", exact: true }).click();
   await page.getByRole("button", { name: /glm-5\.2/ }).click();
   await expect(page.getByRole("button", { name: "Set as primary model", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Set as primary model", exact: true }).click();
-  await expect(page.getByText("Primary model", { exact: true }).last()).toBeVisible();
+  await expect(page.locator(".global-settings-provider-actions .global-settings-badge")).toBeVisible();
   await expect(page.locator(".global-settings-footer-status")).toContainText("Unsaved changes");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: "Saved and verified by readback." })).toBeVisible();
