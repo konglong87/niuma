@@ -11,7 +11,7 @@ const evidence = (name: string) => resolve(process.cwd(), `../desktop-v2/build/v
 type Binding = { ref: string; profile_id?: number; profile_key: string; profile_version: number };
 type Template = { id: number; key: string; version: number; name: string; agents: Binding[]; definition: { nodes: { id: string; agent_ref: string; depends_on: string[]; instruction: string; retry: { max_attempts: number } }[] } };
 type Attempt = { number: number; status: string; failure?: { code: string; retryable: boolean } };
-type Run = { id: string; status: string; revision: number; last_sequence: number; plan: { definition: Template["definition"]; agents: { tools: string[] | null }[] }; nodes: { node_id: string; status: string; attempts: Attempt[]; output?: string }[]; artifacts: { content: string; node_id: string }[]; usage: { input_tokens: number; output_tokens: number } };
+type Run = { id: string; team_version: number; status: string; revision: number; last_sequence: number; plan: { definition: Template["definition"]; agents: { tools: string[] | null }[] }; nodes: { node_id: string; status: string; attempts: Attempt[]; output?: string }[]; artifacts: { content: string; node_id: string }[]; usage: { input_tokens: number; output_tokens: number } };
 type Event = { sequence: number; type: string; node_id?: string; attempt_no?: number; status?: string };
 type ProviderState = { service: string; requests: number; inflight: number; max_inflight: number; calls: { mode: string; dependency_count: number; outcome: string }[] };
 let agentID = 0;
@@ -157,6 +157,17 @@ test("create a primary-model Agent without named providers, save sequential depe
   await page.reload(); await expect(page.locator(".workflow-run > header .workflow-status")).toHaveText("Completed"); await expect(page.locator(".workflow-timeline")).toContainText("run_completed");
   expect((await runReadback(request, run.id)).artifacts).toEqual(run.artifacts);
   await page.getByRole("heading", { name: "Artifacts", exact: true }).scrollIntoViewIfNeeded(); await page.screenshot({ path: evidence("sequential-sqlite-readback") });
+  // Saving a new immutable Team version must not bury the previous Run.
+  await page.goto(`/webui/v2/workflows/edit/${encodeURIComponent(template.key)}`);
+  await page.getByRole("textbox", { name: "Name", exact: true }).fill("Integrated custom chain v2");
+  const nextVersion = await save(page, true);
+  expect(nextVersion.version).toBe(template.version + 1);
+  const history = page.getByRole("heading", { name: "Run history · all versions" });
+  await expect(history).toBeVisible();
+  const oldRun = page.getByRole("button", { name: /Integrated custom chain · v1 · Completed/ });
+  await expect(oldRun).toBeVisible(); await oldRun.click();
+  await expect(page.locator(".workflow-run > header .workflow-status")).toHaveText("Completed");
+  expect((await runReadback(request, run.id)).team_version).toBe(template.version);
 });
 
 test("both real builtins create private Profiles; parallel join passes two declared artifacts and overlaps calls", async ({ page, request }) => {

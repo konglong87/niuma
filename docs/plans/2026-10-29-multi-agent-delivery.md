@@ -236,3 +236,16 @@ acceptance. Requested native evidence is retained under
 - Next: commit/push correction, rebuild clean source, replace every native PNG
   with final-build captures, verify primary-model editing plus restart/recovery,
   minimum desktop layout and final evidence cleanup/closure.
+
+### Native-discovered historical Run navigation correction
+
+- Saving Team v2 retained v1 checkpoint rows, but the editor called runs with
+  version=v2 and thus hid all older Runs from normal UI. Fixed the editor's
+  history read to request every version (existing backend version=0), display
+  each Run's immutable version and open the exact Run detail; only current
+  version is offered for new execution. No database changes or new endpoint.
+- New focused component regression verifies old v1 result remains clickable
+  on latest v2 Team. Real SQLite/HTTP/SSE integration now saves v2, confirms
+  old v1 history is visible and clickable, and checks persisted team_version.
+- Typecheck, focused Vitest and real-backend 5/5 E2E PASS (15.6s). This UI fix
+  requires another clean-source Wails rebuild and new final native captures.

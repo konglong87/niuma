@@ -5,9 +5,10 @@ import { I18nProvider } from "../../lib/i18n";
 import type { IdentityConfig } from "../../lib/types";
 import type { WorkflowRoute } from "../routes";
 import { agentClientFixture, agentFixture, eventFixture, runFixture, templateFixture, workflowClientFixture } from "./testFixtures";
-import { WorkflowWorkbench } from "./WorkflowWorkbench";
-import { WorkflowRunDetail } from "./WorkflowRunDetail";
 import type { WorkflowEvent } from "./types";
+import { WorkflowRunDetail } from "./WorkflowRunDetail";
+import { WorkflowWorkbench } from "./WorkflowWorkbench";
+
 const identity: IdentityConfig = { apiBase: "/api", apiToken: "", mobileJwt: "", tenantKey: "t", userId: "u", deviceId: "d", model: "" };
 let host: HTMLDivElement; let root: Root;
 beforeEach(() => {
@@ -40,6 +41,18 @@ describe("Workflow workbench", () => {
     await act(async () => { host.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); }); await settle();
     expect(context.client.save).toHaveBeenCalledWith(expect.objectContaining({ key: "review", name: "New review", agents: templateFixture().agents.map((binding) => ({ ...binding, profile_id: 1 })) }));
     const saved = vi.mocked(context.client.save).mock.calls[0][0]; expect(saved).not.toHaveProperty("id"); expect(saved).not.toHaveProperty("version"); expect(context.onDirtyChange).toHaveBeenCalledWith(false); expect(context.client.start).not.toHaveBeenCalled();
+  });
+  it("shows prior-version runs after saving a new Team version, with version labels", async () => {
+    const context = mount({ kind: "workflows", page: "edit", key: "review" });
+    vi.mocked(context.client.list).mockResolvedValue([{ ...templateFixture(), version: 2 }]);
+    vi.mocked(context.client.runs).mockResolvedValue([runFixture({ id: "old-run", team_version: 1, name: "Old result", status: "completed" })]);
+    context.render(); await settle();
+    expect(context.client.runs).toHaveBeenCalledWith("review", 0);
+    expect(host.textContent).toContain("Run history · all versions");
+    expect(host.textContent).toContain("Old result · v1 · Completed");
+    const historicalButton = [...host.querySelectorAll("button")].find((button) => button.textContent?.startsWith("Old result · v1 · Completed"));
+    expect(historicalButton).toBeDefined(); act(() => historicalButton!.click()); await settle();
+    expect(context.onNavigate).toHaveBeenCalledWith("/webui/v2/workflows/runs/old-run");
   });
   it("never offers ID=0 or draft profiles as step bindings", async () => {
     const context = mount({ kind: "workflows", page: "new" }); vi.mocked(context.agentClient.list).mockResolvedValue([{ ...agentFixture(), record: { ...agentFixture().record, id: 0, display_name: "Builtin zero" } }, { ...agentFixture(), record: { ...agentFixture().record, id: 2, status: "draft", display_name: "Draft" } }]); context.render(); await settle();

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { isWorkflowBindableAgent, type AgentOption, type WorkflowAgentClient } from "./agentClient";
+import { type AgentOption, isWorkflowBindableAgent, type WorkflowAgentClient } from "./agentClient";
 import { resolveAgentBinding, withAgentBindingIDs, workflowAgentChoices } from "./bindings";
 import type { WorkflowClient } from "./client";
-import { blankNode, blankTemplate, nextNodeID, removeNode, validateTemplate, withPreset, type DependencyPreset } from "./editor";
+import { blankNode, blankTemplate, type DependencyPreset, nextNodeID, removeNode, validateTemplate, withPreset } from "./editor";
 import { useWorkflowText } from "./i18n";
-import { WORKFLOW, type Binding, type Run, type Template, type TemplateInput, type WorkflowNode } from "./types";
+import { type Binding, type Run, type Template, type TemplateInput, WORKFLOW, type WorkflowNode } from "./types";
 import { message } from "./useWorkflowRun";
 export function WorkflowEditor({ template, client, agentClient, onSaved, onRun, onDirtyChange, onAgents }: {
   template?: Template; client: WorkflowClient; agentClient: WorkflowAgentClient; onSaved: (template: Template) => void;
@@ -26,7 +26,7 @@ export function WorkflowEditor({ template, client, agentClient, onSaved, onRun, 
   useEffect(() => {
     let active = true;
     void agentClient.list().then((value) => { if (active) setAgents(value.filter(isWorkflowBindableAgent)); }).catch((reason) => { if (active) setError(message(reason)); });
-    if (template) void client.runs(template.key, template.version).then((value) => { if (active) setRuns(value); }).catch((reason) => { if (active) setRunError(message(reason)); });
+    if (template) void client.runs(template.key, 0).then((value) => { if (active) setRuns(value); }).catch((reason) => { if (active) setRunError(message(reason)); });
     return () => { active = false; };
   }, [client, agentClient, template]);
   const update = (next: TemplateInput) => { setDraft(next); setDirty(true); onDirtyChange(true); };
@@ -77,7 +77,7 @@ export function WorkflowEditor({ template, client, agentClient, onSaved, onRun, 
         <button className="workflow-primary" type="submit">{busy ? text("busy") : text(template ? "saveVersion" : "save")}</button>
       </fieldset>{error ? <p role="alert">{error}</p> : null}
     </form>
-    {template ? <section className="workflow-card"><h2>{text("start")}</h2><p className="workflow-muted">{text("startHint")}</p><label>{text("input")}<textarea value={input} onChange={(event) => setInput(event.target.value)} rows={4} disabled={busy} /></label><button className="workflow-primary" disabled={busy || dirty || !input.trim()} onClick={() => { void start(); }} type="button">{busy ? text("busy") : text("start")}</button>{runError ? <p role="alert">{runError}</p> : null}<h3>{text("runs")} · v{template.version}</h3>{!runs.length ? <p>{text("noRuns")}</p> : <ul className="workflow-plain-list">{runs.map((run) => <li key={run.id}><button type="button" onClick={() => onRun(run.id)}>{run.name || run.id} · {text(run.status)} · {new Date(run.created_at).toLocaleString()}</button></li>)}</ul>}</section> : null}
+    {template ? <section className="workflow-card"><h2>{text("start")}</h2><p className="workflow-muted">{text("startHint")}</p><label>{text("input")}<textarea value={input} onChange={(event) => setInput(event.target.value)} rows={4} disabled={busy} /></label><button className="workflow-primary" disabled={busy || dirty || !input.trim()} onClick={() => { void start(); }} type="button">{busy ? text("busy") : text("start")}</button>{runError ? <p role="alert">{runError}</p> : null}<h3>{text("runs")} · {text("allVersions")}</h3>{!runs.length ? <p>{text("noRuns")}</p> : <ul className="workflow-plain-list">{runs.map((run) => <li key={run.id}><button type="button" onClick={() => onRun(run.id)}>{run.name || run.id} · v{run.team_version} · {text(run.status)} · {new Date(run.created_at).toLocaleString()}</button></li>)}</ul>}</section> : null}
   </div>;
 }
 function NumberField({ label, value, min = 1, max, onChange }: { label: string; value: number; min?: number; max: number; onChange: (value: number) => void }) {
