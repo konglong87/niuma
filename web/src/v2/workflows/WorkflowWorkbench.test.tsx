@@ -34,6 +34,14 @@ describe("Workflow workbench", () => {
     const context = mount({ kind: "workflows", page: "list" }); vi.mocked(context.agentClient.list).mockResolvedValue([]); context.render(); await settle();
     await click("ChainPlan → execute → review"); expect(context.client.createBuiltin).toHaveBeenCalledWith("chain"); expect(context.onNavigate).toHaveBeenCalledWith("/webui/v2/workflows/edit/review"); expect(context.client.start).not.toHaveBeenCalled();
   });
+  it("keeps dependencies secondary and blocks starting an unsaved edit", async () => {
+    const context = mount({ kind: "workflows", page: "edit", key: "review" }); context.render(); await settle();
+    expect(host.querySelector(".workflow-editor .workflow-dependency-disclosure")?.hasAttribute("open")).toBe(false);
+    expect(host.querySelector(".workflow-editor .workflow-launch")).not.toBeNull();
+    setValue(host.querySelector<HTMLInputElement>('input:not([type="number"])')!, "New name");
+    expect(host.querySelector<HTMLButtonElement>(".workflow-launch .workflow-primary")?.disabled).toBe(true);
+    expect(host.textContent).toContain("Save changes before starting a run.");
+  });
   it("saves exact binding contract as a new version, without historical id/version fields", async () => {
     const context = mount({ kind: "workflows", page: "edit", key: "review" }); context.render(); await settle();
     setValue(host.querySelector<HTMLInputElement>('input:not([type="number"])')!, "New review");
@@ -101,6 +109,20 @@ describe("Workflow workbench", () => {
   it("creates agent draft with role and inherited model, then offers publish separately", async () => {
     const context = mount({ kind: "workflows", page: "agents" }); context.render(); await settle(); setValue(host.querySelector<HTMLInputElement>("form input")!, "My researcher"); setValue(host.querySelector<HTMLTextAreaElement>("form textarea")!, "Analyze supplied text");
     await act(async () => { host.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); }); await settle(); expect(context.agentClient.save).toHaveBeenCalledWith({ name: "My researcher", role: "general", prompt: "Analyze supplied text", provider: "", model: "" }, undefined); expect(context.agentClient.publish).not.toHaveBeenCalled(); expect(host.textContent).toContain("Tools: none");
+  });
+});
+describe("Run detail / hierarchy", () => {
+  it("shows progress first while artifacts and raw events stay available on demand", async () => {
+    const client = workflowClientFixture();
+    vi.mocked(client.get).mockResolvedValue(runFixture({ status: "completed", nodes: [{ node_id: "step-1", status: "completed", output: "A concise answer", attempts: [] }], artifacts: [{ id: "artifact", node_id: "step-1", attempt_no: 1, kind: "text", content: "A concise answer", sha256: "sha256", created_at: "2026-10-29T00:00:00Z" }] }));
+    vi.mocked(client.events).mockResolvedValue({ events: [eventFixture(1, { type: "run_completed", status: "completed" })], has_more: false, last_sequence: 1 });
+    act(() => root.render(<I18nProvider><WorkflowRunDetail client={client} runID="run-1" /></I18nProvider>)); await settle();
+    expect(host.querySelector("[role=progressbar]")?.getAttribute("aria-valuenow")).toBe("1");
+    expect(host.textContent).toContain("1 of 1 steps completed");
+    expect(host.querySelector(".workflow-artifact")?.hasAttribute("open")).toBe(false);
+    expect(host.querySelector(".workflow-event-panel")?.hasAttribute("open")).toBe(false);
+    expect(host.textContent).toContain("Run completed");
+    expect(host.textContent).toContain("run_completed");
   });
 });
 describe("Run detail / readback", () => {

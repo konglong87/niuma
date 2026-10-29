@@ -92,7 +92,7 @@ test("Agent creation/publish, independent leave guard, interrupted recovery and 
   await page.getByRole("button", { name: "Workflows", exact: true }).click(); await expect(page.getByRole("dialog")).toBeVisible(); await page.getByRole("button", { name: "Keep editing", exact: true }).click();
   await page.getByRole("button", { name: "Save agent draft", exact: true }).click();
   const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Private researcher", exact: true }) });
-  await card.getByRole("button", { name: "Publish", exact: true }).click(); await expect(card).toContainText("published");
+  await card.getByRole("button", { name: "Publish", exact: true }).click(); await expect(card).toContainText("Published");
   await page.screenshot({ path: evidencePath("1440-en-light-agents") });
   const profile = calls.find((call) => call.path === "/tenant/agent-profiles" && call.method === "POST")!.body as { scope: string; config: { execution: { kind: string }; capabilities: { tools: { allow: string[] } } } };
   expect(profile.scope).toBe("user_private"); expect(profile.config.execution.kind).toBe("text"); expect(profile.config.capabilities.tools.allow).toEqual([]);
