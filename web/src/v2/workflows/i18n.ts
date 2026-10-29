@@ -4,6 +4,8 @@ const words = {
   chainName: ["Plan → research → review", "规划 → 调研 → 审查"], chainDescription: ["A simple chain: each agent builds on the previous result.", "串行协作：每位 Agent 基于上一步产物继续完成任务。"], joinName: ["Plan → parallel research → review", "规划 → 并行调研 → 审查"], joinDescription: ["Two independent perspectives run together, then a reviewer joins their results.", "两位 Agent 并行分析，再由审查者汇总两份产物。"],
   title: ["Team workflows", "Team 编排工作台"], subtitle: ["Build a team, connect steps, and follow real results.", "选好 Agent、连接步骤，跟踪每一次真实执行。"],
   workflows: ["Workflows", "工作流"], agents: ["Agents", "Agent 成员"], newWorkflow: ["New workflow", "新建工作流"], newAgent: ["New agent", "新建 Agent"],
+  agentDirectoryHint: ["Choose a member to edit, or create a new one.", "选择成员编辑，或创建新的 Agent。"], agentSaved: ["Draft saved. Publish it to use it in a workflow.", "草稿已保存，发布后即可加入工作流。"],
+  published: ["Published", "已发布"], draft: ["Draft", "草稿"], archived: ["Archived", "已归档"],
   templates: ["Start from a template", "从内置模板开始"], templateHint: ["Chain: plan → execute → review. Parallel join: research together → summarize.", "链式：规划 → 执行 → 审查。并行汇总：分头研究 → 汇总结果。"],
   empty: ["No workflows yet. Create one or use a template.", "还没有工作流，新建一个或使用模板开始。"], noAgents: ["No published database V2 text agents. Create a personal agent and publish it, or start from a workflow template.", "没有已发布的数据库 V2 文本 Agent，请先创建并发布个人 Agent，或从工作流模板开始。"],
   privateAgent: ["Private", "个人"], sharedAgent: ["Shared", "共享"], databaseAgent: ["Database", "数据库"],

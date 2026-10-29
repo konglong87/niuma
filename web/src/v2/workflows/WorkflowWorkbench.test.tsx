@@ -87,6 +87,17 @@ describe("Workflow workbench", () => {
     await act(async () => resolveSave(templateFixture()));
     expect(context.onNavigate).not.toHaveBeenCalled(); expect(context.onDirtyChange).not.toHaveBeenCalledWith(false);
   });
+  it("keeps agent editing visible beside the directory and confirms draft state", async () => {
+    const context = mount({ kind: "workflows", page: "agents" }); context.render(); await settle();
+    expect(host.querySelectorAll(".workflow-agent-row")).toHaveLength(1);
+    expect(host.querySelector(".workflow-agent-row .workflow-status")?.textContent).toBe("Published");
+    await click("Edit");
+    expect(host.querySelector(".workflow-agent-row")?.getAttribute("data-active")).toBe("true");
+    expect(host.querySelector<HTMLInputElement>(".workflow-agent-form input")?.value).toBe("Release reviewer");
+    await act(async () => { host.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); }); await settle();
+    expect(host.querySelector('[role="status"]')?.textContent).toContain("Draft saved");
+    expect(context.agentClient.save).toHaveBeenCalledWith(expect.objectContaining({ name: "Release reviewer" }), agentFixture().record);
+  });
   it("creates agent draft with role and inherited model, then offers publish separately", async () => {
     const context = mount({ kind: "workflows", page: "agents" }); context.render(); await settle(); setValue(host.querySelector<HTMLInputElement>("form input")!, "My researcher"); setValue(host.querySelector<HTMLTextAreaElement>("form textarea")!, "Analyze supplied text");
     await act(async () => { host.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); }); await settle(); expect(context.agentClient.save).toHaveBeenCalledWith({ name: "My researcher", role: "general", prompt: "Analyze supplied text", provider: "", model: "" }, undefined); expect(context.agentClient.publish).not.toHaveBeenCalled(); expect(host.textContent).toContain("Tools: none");
