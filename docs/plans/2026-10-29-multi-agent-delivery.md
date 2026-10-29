@@ -14,8 +14,8 @@ Reference `/Users/konglong/GolandProjects/go-e2e` is out of the write scope.
 | P1a.2 | Profile V2/role registry and persistent SQLite/MySQL run/task journal | Committed/pushed 72c9860 + 6ad4337 | SQLite reopen/CAS/idempotency/task ownership/race PASS; real MySQL deferred |
 | P1b | Bounded scheduler, retries/deadlines, cancel and interrupted recovery | Committed/pushed bc81e9d | Focused/race tests, usage reservations, orphan/epoch fencing PASS |
 | P1c | Safe text executor and authenticated workflow application/API | Committed/pushed 884dffa + b7d2cfb | Real protocol loopbacks, HTTP/SSE, production composition and full Go PASS |
-| P1d | Beginner-friendly V2 Team workspace, editors, real Run details | Committed/pushed a124e9b | Typecheck, 100 focused / 877 total tests, 5 real-backend E2E PASS |
-| P1e | Final regression/build/native desktop acceptance | Native QA resumed; picker correction verified; final rebuild next | Replace pre-correction screenshots; primary model + restart/recover + final native layout pending |
+| P1d | Beginner-friendly V2 Team workspace, editors, real Run details | Committed/pushed a124e9b, 7137bbe, f951509 | Typecheck, 881 UI tests, history navigation, real-backend E2E PASS |
+| P1e | Final regression/build/native desktop acceptance | Complete on source f951509; final evidence closure pending commit | Signed release-candidate build, native clicks/19 final PNGs, cancel/recovery, broad regression PASS |
 | P2 | Durable approval/checkpoint pause/resume | Explicitly deferred by approved plan | No fake buttons or unsupported success |
 | P3 | Desktop/image executors and channel Workflow V2 dispatch | Explicitly deferred by approved plan | Preserve current screen workers/Computer Use isolation |
 
@@ -249,3 +249,27 @@ acceptance. Requested native evidence is retained under
   old v1 history is visible and clickable, and checks persisted team_version.
 - Typecheck, focused Vitest and real-backend 5/5 E2E PASS (15.6s). This UI fix
   requires another clean-source Wails rebuild and new final native captures.
+
+### Final native closure (supersedes earlier historical blocked checkpoints)
+
+- User unlocked the Mac, and native validation completed against clean-source
+  Wails release candidate `f95150926a368844566f332b269d81be0b78bb59`.
+  See `docs/plans/2026-10-29-multi-agent-native-acceptance.md` for actions,
+  screenshot names, matrix, remaining risks and build identity.
+- 19 **actual Wails native** screenshots remain under
+  `desktop-v2/build/validation/20261029/multi-agent-orchestration/` with a
+  content-addressed local manifest. Each is a valid PNG; first six measure
+  1024×700, rest 1230×768. No browser fixture is labeled native. CUA JPEG bytes
+  were decoded/re-encoded to PNG via sips; screenshot content was visually read.
+- Final source tests: root Go and desktop Go PASS; eight critical backend packages
+  PASS under race; frontend 90 files/881 tests, typecheck and browser 5/5 PASS;
+  final embedded CLI binary real-backend E2E 5/5 PASS, 5+3 fixture/gate tests.
+- Native real UI additionally created/published a fresh Agent, created a Team,
+  ran a new Run, cancelled another active run (provider disconnected), and on
+  final build stopped/restarted Wails before explicitly recovering an interrupted
+  Run. Cross-version history remains visible and clickable.
+- Temporary browser screenshots, synthetic DB/settings/logs and fixture process
+  were removed after final native screenshots. No real secrets or go-e2e edits.
+- Nothing remains in approved P1 scope after this evidence/documentation slice
+  is committed/pushed. P2/P3, live MySQL and notarization retain explicit risks/
+  deferrals, not hidden TODOs in the delivered MVP.

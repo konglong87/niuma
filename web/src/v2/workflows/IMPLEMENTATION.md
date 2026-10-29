@@ -33,3 +33,12 @@ Progress: frontend implementation, automated verification and mock-backed browse
 3. Autonomous real-model acceptance remains deliberately excluded by user. Physical second display and formal distribution/signing remain outside this subtask.
 
 Commit/push: NOT performed, as explicitly requested. No branch or worktree created. Shared HEAD may move due to other agents; no unrelated dirty files were edited or staged by this subtask. Test logs in /tmp are removed after reporting; requested screenshot evidence remains under the repository build validation directory.
+
+## Final handoff update
+
+The shared native acceptance completed on the final signed Wails build. After
+visual inspection, mock and real-backend browser PNGs were removed as temporary
+intermediates; only genuine Wails native PNGs remain in the requested
+`desktop-v2/build/validation/20261029/multi-agent-orchestration/` directory.
+The version-history fix is documented in the native acceptance report; the
+editor now reads all Team versions but starts new Runs only on the latest.
