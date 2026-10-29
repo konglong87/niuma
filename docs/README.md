@@ -27,6 +27,7 @@
 | --- | --- |
 | 先跑起来 | [../README.md](../README.md) |
 | 看分模式、分场景的使用说明（TUI / CLI / agent-webui） | [usage/README.md](usage/README.md) |
+| 在桌面 V2 创建多 Agent Team 并运行 | [Team 编排入门](usage/desktop-team-workflows.md) |
 | 配置桌面宠物、背景和视觉外观 | [桌面个性化指南](usage/desktop-personalization.md) |
 | 使用和验收 Computer Use | [Computer Use 使用说明](usage/computer-use.md) |
 | 用最小工具和显式上下文运行 CLI/TUI | [usage/bare.md](usage/bare.md) |

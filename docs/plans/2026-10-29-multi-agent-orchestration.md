@@ -638,3 +638,33 @@ npm --prefix /Users/konglong/GolandProjects/niuma/web test -- \
 - 每切片验证后提交/推送 origin/main；真实桌面验收只针对最终新构建，暂缓项不以 mock/旧截图冒充通过。
 
 **确认前的停止点：本方案文档及调研交付，不继续写业务代码。**
+
+## 20. 实现落地记录（2026-10-29）
+
+本文前面的候选文件/适配方案是设计输入；交付采用以下实际边界，优先满足无环、
+最小权限和独立测试，而不是为保持候选命名强行搬迁 V1：
+
+- 纯领域/编译器/调度器位于 `internal/agentteam/workflow/` 子包，
+  Store/Executor 为小接口。SQL 可依赖这个纯子包，不能反向依赖父 agentteam
+  或 runtimecompose，因此不会形成现有 V1 adapter 的循环 import。
+- `workflowapp` 组合既有 Profile/Team 资源；SQL 投影复用主 Run 身份并提供
+  CAS/事务。HTTP/Wails 不拥有第二份状态机；历史与 SSE 均来自同一 journal。
+- `runtimecompose.TextExecutor` 直接创建隔离的 query.Session，不走带初始化
+  副作用的 CLI factory；关闭工具/hooks/发现/记忆/原始 transcript 和全局遥测，
+  而不是先继承所有权限再寄希望于提示词约束。上下文只含用户目标、当前步骤
+  与声明的直接依赖产物；完整 usage 与未知保守预留分离。
+- Agent role registry 是可扩展描述信息，不参与权限分支。Execution kind 与
+  capability 验证独立；首期只接受 text/no-tool，desktop/image 明确拒绝。
+- Service 使用现有全局模型配置与已有 client fallback；固定公开模型路由指纹，
+  不把密钥写进 Plan/hash。恢复拒绝模型路线漂移，允许凭据轮换。
+- 调度器在原服务生命周期内运行，不停止/接管 screen 管理的 channel Worker。
+  V1 Team 入口拒绝/跳过 V2；旧 Task 写接口无法越过 durable task binding。
+- UI 使用独立 workbench、卡片/依赖列表/时间线，不改已有四分区模型设置。
+  角色和能力既有定义继续复用，不新增第二套模型密钥设置。
+- P2 durable approval/暂停继续，P3 Computer/Image executor、分布式执行、任意
+  条件/循环/自动 Agent/记忆继续暂缓；没有用按钮或 mock 冒充这些能力。
+
+验证/提交/未闭环原生验收以
+`docs/plans/2026-10-29-multi-agent-delivery.md` 为准；新手实际操作说明见
+`docs/usage/desktop-team-workflows.md`。本机锁屏时不绕过安全机制，原生点击和
+截图必须等用户解锁后补齐，不能以浏览器截图替代。

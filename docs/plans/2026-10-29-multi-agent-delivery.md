@@ -10,12 +10,12 @@ Reference `/Users/konglong/GolandProjects/go-e2e` is out of the write scope.
 
 | Priority | Slice | Status / dependency | Acceptance |
 |---|---|---|---|
-| P1a.1 | Pure Team V2 execution contracts and static DAG compiler | Implemented, focused Go tests passing; commit/push before continuing | Canonical snapshot, bounds, cycle/dependency/authority checks |
-| P1a.2 | Profile V2/role registry and persistent SQLite/MySQL run/task journal | In progress; independent workers, disjoint files | V1 compatibility, DB reopen/CAS/idempotency, atomic task checkpoint |
-| P1b | Bounded scheduler, retries/deadlines, cancel and interrupted recovery | Next; requires contracts, fake Store first | Deterministic focused/race tests, no model calls |
-| P1c | Safe text executor and authenticated workflow application/API | In progress adapter; application waits for persistent Store | Real production protocol against local fake provider, deny all tools/hooks/raw recording |
-| P1d | Beginner-friendly V2 Team workspace, editors, real Run details | In progress behind new route; dependency: stable API | Component/typecheck, ordered reducer, offline browser E2E |
-| P1e | Final regression/build/native desktop acceptance | Pending previous slices | Final Wails build/PID, actual clicks and native screenshots, cancel/restart/offline |
+| P1a.1 | Pure Team V2 execution contracts and static DAG compiler | Committed/pushed d2f3140 + bc81e9d | Canonical snapshot, bounds, cycle/dependency/authority checks PASS |
+| P1a.2 | Profile V2/role registry and persistent SQLite/MySQL run/task journal | Committed/pushed 72c9860 + 6ad4337 | SQLite reopen/CAS/idempotency/task ownership/race PASS; real MySQL deferred |
+| P1b | Bounded scheduler, retries/deadlines, cancel and interrupted recovery | Committed/pushed bc81e9d | Focused/race tests, usage reservations, orphan/epoch fencing PASS |
+| P1c | Safe text executor and authenticated workflow application/API | Committed/pushed 884dffa + b7d2cfb | Real protocol loopbacks, HTTP/SSE, production composition and full Go PASS |
+| P1d | Beginner-friendly V2 Team workspace, editors, real Run details | Committed/pushed a124e9b | Typecheck, 100 focused / 877 total tests, 5 real-backend E2E PASS |
+| P1e | Final regression/build/native desktop acceptance | Build/signature PASS; native UI BLOCKED by locked Mac | Unlock required; final app actual clicks/screenshots not yet performed |
 | P2 | Durable approval/checkpoint pause/resume | Explicitly deferred by approved plan | No fake buttons or unsupported success |
 | P3 | Desktop/image executors and channel Workflow V2 dispatch | Explicitly deferred by approved plan | Preserve current screen workers/Computer Use isolation |
 
@@ -170,3 +170,33 @@ acceptance. Requested native evidence is retained under
 - Next highest-priority item: final clean-source Wails build, actual native
   clicks and screenshots. Real paid-model and physical Computer Use remain out
   of this release's acceptance scope.
+
+### Final committed-source regression and build checkpoint
+
+- Source for build: a124e9b07b8d0dd9600687ac63197630d18356f2, clean worktree.
+- Full root Go suite: PASS (120 tested packages, optional live services disabled).
+  Full desktop-v2 Go suite: PASS. Scheduler/storage/adapter/app/observability and
+  full server/CLI/tenant race suites: PASS. Swagger route coverage: PASS.
+- Full frontend Vitest: 90 files / 877 tests PASS; typecheck PASS.
+- Python offline provider: 5 tests PASS; integration gate: 3 tests PASS.
+- Repeated integration E2E against the service binary embedded in final .app:
+  5/5 PASS (15.5s), 17 local requests, peak parallel=2; 6 persisted Runs with
+  completed=4, failed=1, cancelled=1. No real keys/model charges/public provider.
+- Release-candidate Wails build and `codesign --verify --deep --strict` PASS.
+  App: `desktop-v2/build/bin/niuma.app`; manifest source_dirty=false,
+  web_source_dirty=false, release_candidate=true. Build uses local ad-hoc signing,
+  not Apple notarization/distribution. Existing Swift CGWindowListCreateImage
+  deprecation and Wails time.Time binding warnings do not fail the build.
+- Native desktop gate is NOT passed: computer-use twice reported “The Mac is
+  locked and automatic unlock could not unlock it”. User was asked to unlock.
+  Final build was started only with isolated dummy model settings. No native
+  workflow clicks or screenshots have been produced. Browser screenshots remain
+  explicitly browser-only and cannot satisfy this gate.
+- Remaining P1 priority: after unlock, run actual native create/publish Agent,
+  custom Team save/start, parallel/join, retry/failure, active cancellation and
+  restart/recover. Save final-app screenshots in
+  `desktop-v2/build/validation/20261029/multi-agent-orchestration/`, inspect them,
+  clean temporary isolated state and commit/push evidence closure.
+- Source implementation is committed/pushed; the overall user goal remains
+  incomplete until the native gate is genuinely performed. No autonomous paid
+  model acceptance, physical second-display or formal distribution claimed.
