@@ -96,3 +96,19 @@ acceptance. Requested native evidence is retained under
   Go suite PASS. Broad race regression is running before subsequent commits.
 - Remaining: storage/safe text/application/UI commit gates; real-backend E2E;
   final rebuilt native acceptance. No native/model success claimed here.
+
+### Shared persistent journal slice
+
+- Reused agent_teams/agent_team_runs; added workflow checkpoint, immutable Task
+  binding and node/attempt/artifact projections, with atomic event sequence/CAS.
+  SQLite migrates locally; MySQL requires explicit 000029 migration. Read-only
+  schema readiness prevents accidental writes against old/half-migrated stores.
+- Queue capacity and scoped idempotency enforced transactionally; terminal Runs,
+  completed Nodes and artifacts cannot be rewritten. Existing generic Task
+  mutation/finish/cancel/events/session stop/reaper paths refuse owned Tasks.
+- Publish timestamp binding works with SQLite and MySQL. Guarded MySQL rollback
+  refuses to erase live V2 history. Do not downgrade while writers run.
+- Main reran full storage plus workflow/runtimecompose/workflowapp/observability
+  race tests: PASS. Full root Go suite and desktop Go tests: PASS. Worker also
+  passed 37 focused storage test groups under race. Real MySQL is unavailable;
+  its migration/live acceptance remains an explicit deployment risk.

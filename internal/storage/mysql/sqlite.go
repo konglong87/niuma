@@ -57,7 +57,8 @@ func migrateSQLiteDesktopSchema(db *gorm.DB) error {
 		&gormPendingInput{}, &gormPendingInputSetting{},
 		&gormAgentProfile{}, &gormAgentProfileAssignment{}, &gormAgentProfileChannelBinding{},
 		&gormAgentTeam{}, &gormAgentTeamMember{}, &gormAgentTeamBinding{},
-		&gormAgentTeamRun{}, &gormAgentTeamMailbox{},
+		&gormWorkflowRun{}, &gormAgentTeamMailbox{}, &gormAgentTeamRunEvent{},
+		&gormWorkflowNode{}, &gormWorkflowAttempt{}, &gormWorkflowArtifact{}, &gormWorkflowTaskBinding{},
 		&gormPromptTemplate{},
 		&gormAgentProvisioning{},
 		&gormChannelAccount{}, &gormChannelIdentity{}, &gormChannelConversation{},
@@ -90,6 +91,12 @@ func migrateSQLiteDesktopSchema(db *gorm.DB) error {
 		}
 	}
 	for _, statement := range []string{
+		`CREATE UNIQUE INDEX IF NOT EXISTS uk_agent_teams_version ON agent_teams (tenant_id, team_key, team_version)`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS uk_agent_team_members_key ON agent_team_members (team_id, member_key)`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS uk_workflow_scoped_key ON agent_team_runs (tenant_id, owner_user_id, idempotency_key_hash)`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS uk_workflow_run_event_sequence ON agent_team_run_events (tenant_id, team_run_id, sequence_no)`,
+		`CREATE INDEX IF NOT EXISTS idx_workflow_active ON agent_team_runs (workflow_version, status)`,
+		`CREATE INDEX IF NOT EXISTS idx_workflow_scope_active ON agent_team_runs (tenant_id, owner_user_id, workflow_version, status)`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS uk_tenants_tenant_key ON tenants (tenant_key)`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS uk_tenant_users_user_key ON tenant_users (tenant_id, user_key)`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS uk_tenant_skills_key_version ON tenant_skills (tenant_id, skill_key, version)`,

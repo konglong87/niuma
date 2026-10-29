@@ -540,17 +540,20 @@ func (r *GormRepository) CancelAgentTaskForSessionControl(ctx context.Context, i
 			}
 			return err
 		}
+		if err := r.checkWorkflowTaskOwnership(tx, input.TaskID, input.TenantID, input.UserID); err != nil {
+			return err
+		}
 		if task.Status != agenttasks.StatusRunning && task.Status != agenttasks.StatusReady {
 			return nil
 		}
-		updated := tx.Table("tenant_agent_tasks").Where("tenant_id = ? AND user_id = ? AND id = ? AND status IN ?", input.TenantID, input.UserID, input.TaskID, []string{agenttasks.StatusReady, agenttasks.StatusRunning}).Updates(map[string]any{
+		updated := r.workflowTaskWriteQuery(tx.Table("tenant_agent_tasks")).Where("tenant_id = ? AND user_id = ? AND id = ? AND status IN ?", input.TenantID, input.UserID, input.TaskID, []string{agenttasks.StatusReady, agenttasks.StatusRunning}).Updates(map[string]any{
 			"status": agenttasks.StatusCancelled, "result_json": nullableStringPtr(input.ResultJSON), "finished_at": time.Now().UTC(),
 		})
 		if updated.Error != nil {
 			return updated.Error
 		}
 		if updated.RowsAffected == 0 {
-			return nil
+			return r.checkWorkflowTaskOwnership(tx, input.TaskID, input.TenantID, input.UserID)
 		}
 		row := gormAgentTaskEvent{TenantID: input.TenantID, UserID: input.UserID, TaskID: input.TaskID, EventType: agenttasks.EventSessionControlStop, PayloadJSON: nullableStringPtr(input.EventPayloadJSON), TraceID: nullableStringPtr(input.TraceID)}
 		if err := tx.Create(&row).Error; err != nil {

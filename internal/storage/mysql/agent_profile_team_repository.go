@@ -267,7 +267,7 @@ func (r *GormRepository) PublishAgentProfile(ctx context.Context, tenantID, prof
 	}
 	result := r.with(ctx).Model(&gormAgentProfile{}).Where("tenant_id = ? AND id = ? AND status IN ('draft', 'validating')", tenantID, profileID).Updates(map[string]any{
 		"status": "published", "validation_json": nullableStringPtr(validationJSON), "effective_hash": strings.TrimSpace(effectiveHash),
-		"updated_by_user_id": updatedByUserID, "published_at": gorm.Expr("CURRENT_TIMESTAMP(3)"),
+		"updated_by_user_id": updatedByUserID, "published_at": time.Now().UTC(),
 	})
 	if result.Error != nil {
 		return result.Error
@@ -421,7 +421,7 @@ func (r *GormRepository) PublishAgentTeam(ctx context.Context, tenantID, teamID,
 	if tenantID == 0 || teamID == 0 || updatedByUserID == 0 || strings.TrimSpace(effectiveHash) == "" {
 		return ErrInvalidInput
 	}
-	result := r.with(ctx).Model(&gormAgentTeam{}).Where("tenant_id = ? AND id = ? AND status IN ('draft', 'validating')", tenantID, teamID).Updates(map[string]any{"status": "published", "validation_json": nullableStringPtr(validationJSON), "effective_hash": strings.TrimSpace(effectiveHash), "updated_by_user_id": updatedByUserID, "published_at": gorm.Expr("CURRENT_TIMESTAMP(3)")})
+	result := r.with(ctx).Model(&gormAgentTeam{}).Where("tenant_id = ? AND id = ? AND status IN ('draft', 'validating')", tenantID, teamID).Updates(map[string]any{"status": "published", "validation_json": nullableStringPtr(validationJSON), "effective_hash": strings.TrimSpace(effectiveHash), "updated_by_user_id": updatedByUserID, "published_at": time.Now().UTC()})
 	if result.Error != nil {
 		return result.Error
 	}

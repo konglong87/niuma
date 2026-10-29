@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/konglong87/niuma/internal/agenttasks"
@@ -22,10 +23,11 @@ import (
 )
 
 type GormRepository struct {
-	db         *gorm.DB
-	lockDB     *sql.DB
-	ownsLockDB bool
-	logger     *slog.Logger
+	db                 *gorm.DB
+	lockDB             *sql.DB
+	ownsLockDB         bool
+	logger             *slog.Logger
+	workflowTaskGuards atomic.Bool
 }
 
 func isSQLite(db *gorm.DB) bool {
@@ -2108,7 +2110,7 @@ func (r *GormRepository) FinishAgentTask(ctx context.Context, taskID uint64, sta
 	if status == "" {
 		status = agenttasks.StatusCompleted
 	}
-	result := r.with(ctx).Table("tenant_agent_tasks").
+	result := r.workflowTaskWriteQuery(r.with(ctx).Table("tenant_agent_tasks")).
 		Where("id = ?", taskID).
 		Updates(map[string]any{
 			"status":      status,
@@ -2119,6 +2121,9 @@ func (r *GormRepository) FinishAgentTask(ctx context.Context, taskID uint64, sta
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
+		if err := r.checkAnyWorkflowTaskOwnership(r.with(ctx), taskID); err != nil {
+			return err
+		}
 		return ErrNotFound
 	}
 	return nil
@@ -2126,7 +2131,7 @@ func (r *GormRepository) FinishAgentTask(ctx context.Context, taskID uint64, sta
 
 func (r *GormRepository) CancelAgentTask(ctx context.Context, tenantID, userID, taskID uint64, resultJSON string) error {
 	r.log(ctx, "agent_task.cancel", "mysql.GormRepository.CancelAgentTask", "cancel agent task")
-	result := r.with(ctx).Table("tenant_agent_tasks").
+	result := r.workflowTaskWriteQuery(r.with(ctx).Table("tenant_agent_tasks")).
 		Where("tenant_id = ? AND user_id = ? AND id = ?", tenantID, userID, taskID).
 		Updates(map[string]any{
 			"status":      agenttasks.StatusCancelled,
@@ -2137,6 +2142,9 @@ func (r *GormRepository) CancelAgentTask(ctx context.Context, tenantID, userID, 
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
+		if err := r.checkWorkflowTaskOwnership(r.with(ctx), taskID, tenantID, userID); err != nil {
+			return err
+		}
 		return ErrNotFound
 	}
 	return nil
@@ -2147,7 +2155,7 @@ func (r *GormRepository) CancelAgentTask(ctx context.Context, tenantID, userID, 
 // method reports false instead of overwriting its result.
 func (r *GormRepository) CancelAgentTaskIfRunning(ctx context.Context, tenantID, userID, taskID uint64, resultJSON string) (bool, error) {
 	r.log(ctx, "agent_task.cancel_if_running", "mysql.GormRepository.CancelAgentTaskIfRunning", "cancel running tenant agent task")
-	result := r.with(ctx).Table("tenant_agent_tasks").
+	result := r.workflowTaskWriteQuery(r.with(ctx).Table("tenant_agent_tasks")).
 		Where("tenant_id = ? AND user_id = ? AND id = ? AND status = ?", tenantID, userID, taskID, agenttasks.StatusRunning).
 		Updates(map[string]any{
 			"status":      agenttasks.StatusCancelled,
@@ -2156,6 +2164,11 @@ func (r *GormRepository) CancelAgentTaskIfRunning(ctx context.Context, tenantID,
 		})
 	if result.Error != nil {
 		return false, result.Error
+	}
+	if result.RowsAffected == 0 {
+		if err := r.checkWorkflowTaskOwnership(r.with(ctx), taskID, tenantID, userID); err != nil {
+			return false, err
+		}
 	}
 	return result.RowsAffected > 0, nil
 }
@@ -2216,15 +2229,21 @@ func (r *GormRepository) UpdateAgentTask(ctx context.Context, taskID uint64, inp
 		updates["metadata_json"] = nullableStringPtr(input.MetadataJSON)
 	}
 	if len(updates) == 0 {
-		return nil
+		if !r.workflowTaskGuards.Load() {
+			return nil
+		}
+		return r.checkWorkflowTaskOwnership(r.with(ctx), taskID, input.TenantID, input.UserID)
 	}
-	result := r.with(ctx).Table("tenant_agent_tasks").
+	result := r.workflowTaskWriteQuery(r.with(ctx).Table("tenant_agent_tasks")).
 		Where("tenant_id = ? AND user_id = ? AND id = ?", input.TenantID, input.UserID, taskID).
 		Updates(updates)
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
+		if err := r.checkWorkflowTaskOwnership(r.with(ctx), taskID, input.TenantID, input.UserID); err != nil {
+			return err
+		}
 		return ErrNotFound
 	}
 	return nil
@@ -2275,7 +2294,7 @@ ORDER BY parent_session_id ASC`, agenttasks.AgentNameWeb, tenantID, userID, sess
 // user_id，调用方据此按行归属写回。
 func (r *GormRepository) ListStaleRunningAgentTasks(ctx context.Context, startedBefore time.Time, limit int) ([]AgentTask, error) {
 	r.log(ctx, "agent_task.list_stale", "mysql.GormRepository.ListStaleRunningAgentTasks", "list stale running agent tasks")
-	rows, err := r.with(ctx).Table("tenant_agent_tasks").
+	rows, err := r.workflowTaskWriteQuery(r.with(ctx).Table("tenant_agent_tasks")).
 		Select("id, tenant_id, user_id, COALESCE(parent_session_id, 0), COALESCE(subagent_session_key, ''), COALESCE(agent_name, ''), COALESCE(description, ''), status, COALESCE(model, ''), COALESCE(result_json, ''), COALESCE(metadata_json, ''), COALESCE(trace_id, ''), started_at, finished_at").
 		Where("status = ? AND started_at < ?", agenttasks.StatusRunning, startedBefore.UTC()).
 		Order("started_at ASC").
@@ -2293,7 +2312,7 @@ func (r *GormRepository) ListStaleRunningAgentTasks(ctx context.Context, started
 // 这里返回 ErrNotFound 而不会覆盖它的结果。
 func (r *GormRepository) FailStaleAgentTask(ctx context.Context, tenantID, userID, taskID uint64, resultJSON string) error {
 	r.log(ctx, "agent_task.fail_stale", "mysql.GormRepository.FailStaleAgentTask", "fail stale running agent task")
-	result := r.with(ctx).Table("tenant_agent_tasks").
+	result := r.workflowTaskWriteQuery(r.with(ctx).Table("tenant_agent_tasks")).
 		Where("tenant_id = ? AND user_id = ? AND id = ? AND status = ?", tenantID, userID, taskID, agenttasks.StatusRunning).
 		Updates(map[string]any{
 			"status":      agenttasks.StatusFailed,
@@ -2321,6 +2340,10 @@ func (r *GormRepository) AppendAgentTaskEvent(ctx context.Context, input agentta
 		EventType:   input.EventType,
 		PayloadJSON: nullableStringPtr(input.PayloadJSON),
 		TraceID:     nullableStringPtr(input.TraceID),
+	}
+	if r.workflowTaskGuards.Load() {
+		err := r.appendWorkflowGuardedTaskEvent(ctx, &row)
+		return gormInsertedID(row.ID, err)
 	}
 	err := r.with(ctx).Create(&row).Error
 	if err == nil && isSQLite(r.db) {
