@@ -1,7 +1,7 @@
 # Niuma 多 Agent 编排：代码调研与第一版架构方案
 
 - 日期：2026-10-29（Asia/Shanghai）。
-- 状态：**方案草案，等待用户确认；本轮不实现业务代码。**
+- 状态：**用户已于 2026-10-29 确认实施；架构调研正文作为基线保留，当前执行台账见同目录 `2026-10-29-multi-agent-delivery.md`。**
 - 调研基线：`main` / `0a4f966`；开始时工作区干净；`git pull --ff-only` 返回 Already up to date。
 - 目标：在不破坏单 Agent、现有模型四分区、Computer Use 和桌面宠物的前提下，把已有 Agent Profile / Team 扩展为可恢复、可观测、有明确权限边界的本地多 Agent 工作流。
 - 仓库：`/Users/konglong/GolandProjects/niuma`。不创建分支或 worktree，不修改原始参考项目 `/Users/konglong/GolandProjects/go-e2e`。
