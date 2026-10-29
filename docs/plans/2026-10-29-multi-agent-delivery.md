@@ -200,3 +200,15 @@ acceptance. Requested native evidence is retained under
 - Source implementation is committed/pushed; the overall user goal remains
   incomplete until the native gate is genuinely performed. No autonomous paid
   model acceptance, physical second-display or formal distribution claimed.
+
+### Locked-machine handoff cleanup
+
+- Stopped only this attempt's two isolated Wails instances/local service children
+  and the offline fixture; removed its newly created cache directory (dummy
+  settings/DB/logs) and task temporary test logs. Pre-existing screen/channel/
+  Computer runtime processes were not signaled or changed.
+- Removed 21 redundant mock browser PNGs and current Playwright last-run output.
+  Retained 8 clearly named `workflow-browser-integrated-*.png` images as supporting
+  browser evidence while native acceptance remains pending; none are labeled native.
+- Source is delivered in small commits to origin/main. Native acceptance still
+  requires a manually unlocked Mac; no workaround or claimed screenshot success.
