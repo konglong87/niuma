@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { IdentityConfig } from "../../lib/types";
 import { createWorkflowAgentClient, emptyAgentDraft, isWorkflowBindableAgent } from "./agentClient";
 import { agentFixture } from "./testFixtures";
+
 const identity: IdentityConfig = { apiBase: "/api", tenantKey: "team", userId: "user", deviceId: "device", apiToken: "secret", mobileJwt: "", model: "default" };
 afterEach(() => vi.unstubAllGlobals());
 describe("Workflow Agent profile adapter", () => {
@@ -21,5 +22,23 @@ describe("Workflow Agent profile adapter", () => {
     const fetch = vi.fn(async () => new Response(JSON.stringify(agentFixture().record))); vi.stubGlobal("fetch", fetch);
     await createWorkflowAgentClient(identity).save({ ...emptyAgentDraft(), name: "Personal" }, { ...agentFixture().record, ...source, profile_key: "builtin" });
     const [url, options] = fetch.mock.calls[0] as unknown as [string, RequestInit]; expect(url).toBe("/api/tenant/agent-profiles"); expect(options.method).toBe("POST"); expect(JSON.parse(String(options.body)).profile_key).not.toBe("builtin");
+  });
+});
+
+describe("Workflow primary model route", () => {
+  it("offers primary when the existing named-provider catalog is empty", async () => {
+    const fetch = vi.fn(async () => new Response(JSON.stringify({ data: [] })));
+    vi.stubGlobal("fetch", fetch);
+    expect(await createWorkflowAgentClient(identity).providers()).toEqual([{ name: "primary", model: "" }]);
+    const [url] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("/api/v1/providers");
+  });
+  it("keeps configured named routes and never invents a stale primary model", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: [{ name: "review", model: "pinned" }] }))));
+    expect(await createWorkflowAgentClient(identity).providers()).toEqual([{ name: "primary", model: "" }, { name: "review", model: "pinned" }]);
+  });
+  it("does not duplicate an explicitly supplied primary entry", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: [{ name: "primary", model: "current" }] }))));
+    expect(await createWorkflowAgentClient(identity).providers()).toEqual([{ name: "primary", model: "current" }]);
   });
 });

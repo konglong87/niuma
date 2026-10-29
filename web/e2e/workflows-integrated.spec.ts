@@ -1,5 +1,5 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import { resolve } from "node:path";
+import { type APIRequestContext, expect, type Page, test } from "@playwright/test";
 
 // No page.route / route.fulfill: every Profile/Workflow/Run request reaches real Go + SQLite.
 const enabled = process.env.NIUMA_WORKFLOW_INTEGRATION_E2E === "1";
@@ -129,17 +129,21 @@ test.beforeEach(async ({ page }) => {
 });
 test.afterEach(async ({ page }) => { expect(pageErrors.get(page) ?? [], "Unexpected UI exception (report wire-contract bugs, do not hide them)").toEqual([]); });
 
-test("create and publish a real private Agent, save custom sequential dependencies, refresh SQLite readback", async ({ page, request }) => {
+test("create a primary-model Agent without named providers, save sequential dependencies, refresh SQLite readback", async ({ page, request }) => {
   await setMode(request, "fast");
   await page.goto("/webui/v2/workflows/agents");
   await page.getByRole("textbox", { name: "Name", exact: true }).fill("Integrated offline researcher");
   await page.getByRole("textbox", { name: "System prompt", exact: true }).fill("Summarize only the synthetic supplied material; use no tools.");
+  expect((await get<{ data: { name: string }[] }>(request, "/v1/providers")).data).toEqual([]);
+  await page.locator('select[aria-label="Model"]').selectOption("custom");
+  await page.getByRole("combobox", { name: "Provider", exact: true }).selectOption("primary");
+  await page.locator('input[list="workflow-agent-models"]').fill("slow");
   const created = page.waitForResponse((value) => new URL(value.url()).pathname.endsWith("/tenant/agent-profiles") && value.request().method() === "POST");
   await page.getByRole("button", { name: "Save agent draft", exact: true }).click();
   const profileResponse = await created; expect(profileResponse.ok()).toBe(true);
   const profile = await profileResponse.json() as { id: number; scope: string; profile_key: string; profile_version: number; config_json: string };
   agentID = profile.id; expect(agentID).toBeGreaterThan(0); expect(profile.scope).toBe("user_private");
-  const config = JSON.parse(profile.config_json); expect(config.execution.kind).toBe("text"); expect(config.capabilities.tools.allow ?? []).toEqual([]);
+  const config = JSON.parse(profile.config_json); expect(config.execution.kind).toBe("text"); expect(config.execution.provider).toBe("primary"); expect(config.execution.model).toBe("slow"); expect(config.capabilities.tools.allow ?? []).toEqual([]);
   const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Integrated offline researcher", exact: true }) });
   await card.getByRole("button", { name: "Publish", exact: true }).click(); await expect(card).toContainText("published");
   await page.screenshot({ path: evidence("agent-published") });
@@ -149,7 +153,7 @@ test("create and publish a real private Agent, save custom sequential dependenci
   for (const [index, step] of (await page.locator(".workflow-step-list li").all()).entries()) { await step.getByRole("combobox").selectOption(String(agentID)); await step.getByRole("textbox").fill(`Offline sequential step ${index + 1}`); }
   await page.getByRole("combobox", { name: "Steps", exact: true }).selectOption("sequential");
   const template = await save(page); expect(template.definition.nodes.map((node) => node.depends_on)).toEqual([[], ["step-1"]]);
-  const run = await start(page, request, template); expect(run.artifacts).toHaveLength(2); expect(run.usage.input_tokens).toBeGreaterThan(0);
+  const run = await start(page, request, template); expect(run.nodes.flatMap((node) => node.attempts).every((attempt) => (attempt as Attempt & { model?: string }).model === "slow")).toBe(true); expect(run.artifacts).toHaveLength(2); expect(run.usage.input_tokens).toBeGreaterThan(0);
   await page.reload(); await expect(page.locator(".workflow-run > header .workflow-status")).toHaveText("Completed"); await expect(page.locator(".workflow-timeline")).toContainText("run_completed");
   expect((await runReadback(request, run.id)).artifacts).toEqual(run.artifacts);
   await page.getByRole("heading", { name: "Artifacts", exact: true }).scrollIntoViewIfNeeded(); await page.screenshot({ path: evidence("sequential-sqlite-readback") });

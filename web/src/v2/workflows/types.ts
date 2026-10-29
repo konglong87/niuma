@@ -1,6 +1,6 @@
 // JSON contract: internal/agentteam/workflow/model.go. Independent of legacy Team/task events.
 export const WORKFLOW = {
-  schemaVersion: 2, maxNodes: 16, defaultParallel: 2, maxParallel: 4,
+  schemaVersion: 2, primaryProvider: "primary", maxNodes: 16, defaultParallel: 2, maxParallel: 4,
   runSeconds: 600, maxRunSeconds: 1800, nodeSeconds: 120, maxNodeSeconds: 300,
   attempts: 2, maxAttempts: 3, backoffMS: 1000, maxBackoffMS: 10000, tokens: 32000, maxTokens: 128000,
   inputBytes: 32768, reconnectMS: 1500, readbackMS: 3000,

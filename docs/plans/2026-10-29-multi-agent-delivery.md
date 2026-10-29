@@ -15,7 +15,7 @@ Reference `/Users/konglong/GolandProjects/go-e2e` is out of the write scope.
 | P1b | Bounded scheduler, retries/deadlines, cancel and interrupted recovery | Committed/pushed bc81e9d | Focused/race tests, usage reservations, orphan/epoch fencing PASS |
 | P1c | Safe text executor and authenticated workflow application/API | Committed/pushed 884dffa + b7d2cfb | Real protocol loopbacks, HTTP/SSE, production composition and full Go PASS |
 | P1d | Beginner-friendly V2 Team workspace, editors, real Run details | Committed/pushed a124e9b | Typecheck, 100 focused / 877 total tests, 5 real-backend E2E PASS |
-| P1e | Final regression/build/native desktop acceptance | Build/signature PASS; native UI BLOCKED by locked Mac | Unlock required; final app actual clicks/screenshots not yet performed |
+| P1e | Final regression/build/native desktop acceptance | Native QA resumed; picker correction verified; final rebuild next | Replace pre-correction screenshots; primary model + restart/recover + final native layout pending |
 | P2 | Durable approval/checkpoint pause/resume | Explicitly deferred by approved plan | No fake buttons or unsupported success |
 | P3 | Desktop/image executors and channel Workflow V2 dispatch | Explicitly deferred by approved plan | Preserve current screen workers/Computer Use isolation |
 
@@ -212,3 +212,27 @@ acceptance. Requested native evidence is retained under
   browser evidence while native acceptance remains pending; none are labeled native.
 - Source is delivered in small commits to origin/main. Native acceptance still
   requires a manually unlocked Mac; no workaround or claimed screenshot success.
+
+### Native acceptance resumed; primary-route picker correction
+
+- User resumed with Mac unlocked. Native Wails clicks created/published a personal
+  Agent, saved a custom two-step dependency workflow, completed sequential and
+  four-Agent parallel/join runs, displayed retry/failed attempts and unknown usage,
+  and cancelled an actually active SSE call (provider disconnected in 1.36s).
+  These pre-correction screenshots are NOT the final evidence set.
+- Native QA found the independent-model Provider picker empty for main-model-only
+  users: existing /v1/providers deliberately catalogs named providers only. Fixed
+  solely in the Workflow client by adding the reserved primary route when absent,
+  without guessing a default model from stale chat identity. Localized its label;
+  existing model settings and shared discovery endpoints remain untouched.
+- Added 3 provider-catalog regressions (empty/named/already-primary). Enhanced real
+  E2E to assert an empty named catalog, choose primary + slow, persist the model,
+  and confirm actual attempts use the selected model against a fast loopback
+  response. Focused Vitest: 103 PASS; typecheck PASS; Biome check 6 files PASS;
+  real-backend E2E: 5/5 PASS (15.7s, 17 requests, peak parallel 2).
+- One exploratory cancel run hit the existing client stream protection before
+  cancellation and was correctly failed; it is not counted as cancel acceptance.
+  The subsequent native active-cancel run/readback passed, including run_cancelled.
+- Next: commit/push correction, rebuild clean source, replace every native PNG
+  with final-build captures, verify primary-model editing plus restart/recovery,
+  minimum desktop layout and final evidence cleanup/closure.

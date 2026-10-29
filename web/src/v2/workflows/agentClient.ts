@@ -1,6 +1,7 @@
 import { archiveAgentProfile, listAgentProfiles, listModels, listProviders, publishAgentProfile, saveAgentProfile } from "../../lib/api";
-import { defaultWorkflowAgentProfileDocument, parseWorkflowAgentProfileJSON, validateWorkflowAgentProfileDraft, type WorkflowAgentProfileDocument, type WorkflowAgentRoleType } from "../../lib/workflowAgentProfiles";
 import type { AgentProfileRecord, IdentityConfig, ProviderOption } from "../../lib/types";
+import { defaultWorkflowAgentProfileDocument, parseWorkflowAgentProfileJSON, validateWorkflowAgentProfileDraft, type WorkflowAgentProfileDocument, type WorkflowAgentRoleType } from "../../lib/workflowAgentProfiles";
+import { WORKFLOW } from "./types";
 export type AgentDraft = { name: string; role: WorkflowAgentRoleType; prompt: string; provider: string; model: string };
 export type AgentOption = { record: AgentProfileRecord; document: WorkflowAgentProfileDocument };
 export const canManageWorkflowAgent = (record: AgentProfileRecord): boolean => record.id > 0 && record.scope !== "tenant_shared";
@@ -45,6 +46,14 @@ export function createWorkflowAgentClient(identity: IdentityConfig): WorkflowAge
     },
     async publish(record) { await publishAgentProfile(identity, record.profile_key, record.profile_version); },
     archive: (record) => archiveAgentProfile(identity, record.profile_key, record.profile_version),
-    providers: () => listProviders(identity), models: () => listModels(identity),
+    async providers() {
+      const named = await listProviders(identity);
+      // The existing catalog intentionally lists named providers only. Primary
+      // remains a valid route even when the user configured no named providers.
+      // Leave its model blank: identity.model may be stale or a chat override.
+      return named.some((provider) => provider.name === WORKFLOW.primaryProvider)
+        ? named : [{ name: WORKFLOW.primaryProvider, model: "" }, ...named];
+    },
+    models: () => listModels(identity),
   };
 }

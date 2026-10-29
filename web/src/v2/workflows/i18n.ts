@@ -1,4 +1,5 @@
 import { useI18n } from "../../lib/i18n";
+
 const words = {
   chainName: ["Plan → research → review", "规划 → 调研 → 审查"], chainDescription: ["A simple chain: each agent builds on the previous result.", "串行协作：每位 Agent 基于上一步产物继续完成任务。"], joinName: ["Plan → parallel research → review", "规划 → 并行调研 → 审查"], joinDescription: ["Two independent perspectives run together, then a reviewer joins their results.", "两位 Agent 并行分析，再由审查者汇总两份产物。"],
   title: ["Team workflows", "Team 编排工作台"], subtitle: ["Build a team, connect steps, and follow real results.", "选好 Agent、连接步骤，跟踪每一次真实执行。"],
@@ -8,7 +9,7 @@ const words = {
   privateAgent: ["Private", "个人"], sharedAgent: ["Shared", "共享"], databaseAgent: ["Database", "数据库"],
   saveVersion: ["Save new version", "保存新版本"], createPersonal: ["Create personal agent", "创建个人 Agent"], personalAgentHint: ["Shared / built-in / file profile: create a personal agent or start from a workflow template before binding.", "共享/内置/文件 Profile：请先创建个人 Agent，或从工作流模板开始，才能绑定步骤。"],
   name: ["Name", "名称"], description: ["Description", "说明"], role: ["Role", "角色"], prompt: ["System prompt", "系统提示词"],
-  inherited: ["Inherit main model", "继承主模型"], customModel: ["Choose provider / model", "选择 Provider / 模型"], provider: ["Provider", "Provider"], model: ["Model", "模型"],
+  inherited: ["Inherit main model", "继承主模型"], customModel: ["Choose provider / model", "选择 Provider / 模型"], provider: ["Provider", "Provider"], primaryProvider: ["Main configuration (primary)", "主配置（primary）"], model: ["Model", "模型"],
   toolsUnavailable: ["Existing capability grants: not eligible for this no-tool workflow. Save a personal no-tool agent instead.", "现有 Profile 含能力授权，不能用于当前无工具工作流。请另存为个人无工具 Agent。"],
   tools: ["Tools: none", "工具：无权限"], toolsHint: ["Text only. No shell, browser, filesystem, network tools or delegated agents. Roles do not grant permissions.", "仅文本执行，不开放 Shell、浏览器、文件系统、网络工具或子 Agent。角色不授予权限。"],
   save: ["Save workflow", "保存工作流"], saveAgent: ["Save agent draft", "保存 Agent 草稿"], publish: ["Publish", "发布"], archive: ["Archive", "归档"], edit: ["Edit", "编辑"], back: ["Back to workflows", "返回工作流"],

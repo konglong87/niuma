@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { AgentProfileRecord, ProviderOption } from "../../lib/types";
 import { WORKFLOW_AGENT_ROLE_TYPES, type WorkflowAgentRoleType } from "../../lib/workflowAgentProfiles";
-import { emptyAgentDraft, hasNoWorkflowTools, canManageWorkflowAgent, type AgentDraft, type AgentOption, type WorkflowAgentClient } from "./agentClient";
+import { type AgentDraft, type AgentOption, canManageWorkflowAgent, emptyAgentDraft, hasNoWorkflowTools, type WorkflowAgentClient } from "./agentClient";
 import { useWorkflowText } from "./i18n";
+import { WORKFLOW } from "./types";
 import { message } from "./useWorkflowRun";
 export function AgentManager({ client, onDirtyChange, onRequestNavigation }: { client: WorkflowAgentClient; onDirtyChange: (dirty: boolean) => void; onRequestNavigation: (action: () => void) => void }) {
   const text = useWorkflowText();
@@ -50,7 +51,7 @@ export function AgentManager({ client, onDirtyChange, onRequestNavigation }: { c
         <label>{text("role")}<select value={draft.role} onChange={(event) => update({ role: event.target.value as WorkflowAgentRoleType })}>{WORKFLOW_AGENT_ROLE_TYPES.map((role) => <option key={role} value={role}>{text(role)}</option>)}</select></label>
         <label>{text("prompt")}<textarea maxLength={16384} value={draft.prompt} onChange={(event) => update({ prompt: event.target.value })} rows={5} /></label>
         <label><select aria-label={text("model")} value={custom ? "custom" : "inherit"} onChange={(event) => { const next = event.target.value === "custom"; setCustom(next); if (!next) update({ provider: "", model: "" }); else onDirtyChange(true); }}><option value="inherit">{text("inherited")}</option><option value="custom">{text("customModel")}</option></select></label>
-        {custom ? <><label>{text("provider")}<select required value={draft.provider} onChange={(event) => { const provider = providers.find((item) => item.name === event.target.value); update({ provider: event.target.value, model: provider?.model ?? "" }); }}><option value="">—</option>{providers.map((provider) => <option key={provider.name} value={provider.name}>{provider.name}</option>)}</select></label><label>{text("model")}<input required list="workflow-agent-models" value={draft.model} onChange={(event) => update({ model: event.target.value })} /><datalist id="workflow-agent-models">{models.map((model) => <option key={model} value={model} />)}</datalist></label></> : null}
+        {custom ? <><label>{text("provider")}<select required value={draft.provider} onChange={(event) => { const provider = providers.find((item) => item.name === event.target.value); update({ provider: event.target.value, model: provider?.model ?? "" }); }}><option value="">—</option>{providers.map((provider) => <option key={provider.name} value={provider.name}>{provider.name === WORKFLOW.primaryProvider ? text("primaryProvider") : provider.name}</option>)}</select></label><label>{text("model")}<input required list="workflow-agent-models" value={draft.model} onChange={(event) => update({ model: event.target.value })} /><datalist id="workflow-agent-models">{models.map((model) => <option key={model} value={model} />)}</datalist></label></> : null}
         <p><strong>{text("tools")}</strong></p><p className="workflow-muted">{text("toolsHint")}</p>
         <button className="workflow-primary" type="submit">{busy ? text("busy") : text("saveAgent")}</button>
       </fieldset>{error ? <p role="alert">{error}</p> : null}
