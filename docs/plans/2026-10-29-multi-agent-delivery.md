@@ -112,3 +112,18 @@ acceptance. Requested native evidence is retained under
   race tests: PASS. Full root Go suite and desktop Go tests: PASS. Worker also
   passed 37 focused storage test groups under race. Real MySQL is unavailable;
   its migration/live acceptance remains an explicit deployment risk.
+
+### Isolated text executor slice
+
+- New adapter reuses production query/client protocols and fallback, but supplies
+  no tools, hooks, workspace discovery, memory, delegation, raw recording, global
+  telemetry or Computer Use authority. Prompt dump enabled => fail closed.
+- Public route fingerprints pin model/endpoint/fallback configuration; credential
+  rotation is allowed. Capability/model conflicts fail before queued execution.
+- Secrets are registered for sanitization; scoped logging suppression prevents
+  SDK retry diagnostics from exposing credentials while normal request logging
+  stays unchanged. Thinking/signatures never become artifacts or UI events.
+- Three protocol loopbacks, fallback, missing/partial/invalid usage, raw logging,
+  secret echoes, tool refusal and cancellation tests passed. Main race regression
+  PASS; worker race+coverage PASS (runtimecompose 92.9%, observability 79.9%) and
+  vet PASS. No paid provider or external service invoked.

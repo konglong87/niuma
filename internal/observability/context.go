@@ -228,6 +228,9 @@ func ConfigureCLILogger() (func(), error) {
 }
 
 func log(ctx context.Context, logger *slog.Logger, level zapcore.Level, action, function, message string, attrs ...any) {
+	if loggingDisabled(ctx) {
+		return
+	}
 	if logger != nil {
 		logSlog(ctx, logger, level, action, function, message, attrs...)
 		return
