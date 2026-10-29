@@ -50,8 +50,9 @@ export function AgentTeamsPanel({ identity, onStatus, onDataChanged, workspace =
     setLoading(true);
     try {
       const [teamItems, profileItems, accountItems] = await Promise.all([listAgentTeams(identity), listAgentProfiles(identity), listChannelAccounts(identity).catch(() => [])]);
-      const options = latestTeamVersions(teamItems);
-      setTeams(teamItems); setProfiles(profileItems.filter((profile) => profile.status === "published")); setAccounts(accountItems);
+      const legacyTeams = teamItems.filter((team) => (team.schema_version ?? 1) <= 1);
+      const options = latestTeamVersions(legacyTeams);
+      setTeams(legacyTeams); setProfiles(profileItems.filter((profile) => profile.status === "published")); setAccounts(accountItems);
       const next = options.find((team) => team.team_key === nextKey) ?? options[0] ?? null;
       if (next) await hydrate(next); else { setSelected(null); setSelectedKey(""); }
     } catch (error) { onStatus(message(error)); }

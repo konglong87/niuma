@@ -18,6 +18,8 @@ type SessionSidebarProps = {
   onSelect: (ref: SessionRef) => void;
   onContextDragStart: (ref: SessionRef) => void;
   onOpenSettings: () => void;
+  onOpenWorkflows?: () => void;
+  workflowsActive?: boolean;
   onOpenSearch: () => void;
   onHideSidebar: () => void;
   onCreateSession: () => void;
@@ -38,8 +40,8 @@ const sidebarDefaultWidth = 288;
 const sidebarKeyboardStep = 8;
 const workspaceCollapseStorageKey = "niuma-webui.v2.workspace-collapse.v1";
 
-export function SessionSidebar({ sessions, filters, selectedRef, onFiltersChange, onSelect, onContextDragStart, onOpenSettings, onOpenSearch, onHideSidebar, onCreateSession, createDisabled = false, onCreateSessionInWorkspace, onMobileClose, onStop, onArchive, onRenameSession, identity }: SessionSidebarProps): JSX.Element {
-  const { t } = useI18n();
+export function SessionSidebar({ sessions, filters, selectedRef, onFiltersChange, onSelect, onContextDragStart, onOpenSettings, onOpenWorkflows, workflowsActive, onOpenSearch, onHideSidebar, onCreateSession, createDisabled = false, onCreateSessionInWorkspace, onMobileClose, onStop, onArchive, onRenameSession, identity }: SessionSidebarProps): JSX.Element {
+  const { t, language } = useI18n();
   const [copyStatus, setCopyStatus] = useState("");
   const [sidebarWidth, setSidebarWidth] = useState(loadSidebarWidth);
   const resizeStartRef = useRef<{ pointerX: number; width: number } | null>(null);
@@ -136,6 +138,7 @@ export function SessionSidebar({ sessions, filters, selectedRef, onFiltersChange
           </div>
         </div>
         <button className="webui2-new-session" disabled={createDisabled} onClick={() => onCreateSession()} type="button"><Plus aria-hidden="true" size={17} />{t("webui2.newSession")}</button>
+        {onOpenWorkflows ? <button aria-current={workflowsActive ? "page" : undefined} className="webui2-new-session" onClick={onOpenWorkflows} type="button">{language === "zh" ? "Team 编排工作台" : "Team workflows"}</button> : null}
         {/* Temporarily hide status filtering while retaining the existing controls. */}
         <details className="webui2-status-filter-disclosure" hidden>
           <summary aria-label={t("webui2.filterStatus")} onKeyDown={toggleStatusDisclosureWithKeyboard}>

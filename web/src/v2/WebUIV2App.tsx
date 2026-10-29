@@ -1,3 +1,7 @@
+import { WorkflowWorkbench } from "./workflows/WorkflowWorkbench";
+import { useWorkflowLeaveGuard } from "./workflows/useWorkflowLeaveGuard";
+import type { WorkflowClient } from "./workflows/client";
+import type { WorkflowAgentClient } from "./workflows/agentClient";
 import { AlertTriangle, LoaderCircle, MessageSquare, PanelLeftOpen, Plus, RefreshCw, Shield } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from "react";
 import { useSessionConversations } from "./api/useSessionConversations";
@@ -29,7 +33,7 @@ import { loadWebUIV2Theme, saveWebUIV2Theme, type WebUIV2Theme } from "./compone
 import { SettingsCenter } from "./settings/SettingsCenter";
 import { GLOBAL_SETTINGS_SAVED_EVENT } from "./settings/globalSettingsDraft";
 import { loadInspectorPreference, saveInspectorPreference } from "./settings/preferences";
-import { parseWebUIV2Route, settingsReturnSession, webUIV2SettingsPath, webUIV2SessionPath, type SettingsSection, type SessionRef, type WebUIV2Route } from "./routes";
+import { parseWebUIV2Route, settingsReturnSession, webUIV2SettingsPath, webUIV2SessionPath, webUIV2WorkflowPath, type SettingsSection, type SessionRef, type WebUIV2Route } from "./routes";
 import type { OperationResult, SessionListFilters, SessionMessage, SessionStatus, SessionSummary } from "./types";
 import { DesktopPet } from "./components/DesktopPet";
 import { getDesktopServiceBridge } from "./desktopServiceBridge";
@@ -56,12 +60,12 @@ function routeState(pathname: string): RouteState {
   return { route, selectedRef: route.kind === "session" ? route.ref : route.kind === "settings" ? settingsReturnSession(window.location.search) : null };
 }
 
-export function WebUIV2App({ identity, client: providedClient }: { identity: IdentityConfig; client?: SessionControlClient }): JSX.Element {
+export function WebUIV2App({ identity, client: providedClient, workflowClient, workflowAgentClient }: { identity: IdentityConfig; client?: SessionControlClient; workflowClient?: WorkflowClient; workflowAgentClient?: WorkflowAgentClient }): JSX.Element {
   const [httpClient] = useState(createHTTPSessionControlClient);
-  return <SessionControlClientProvider client={providedClient ?? httpClient}><WebUIV2RouteShell key={JSON.stringify([identity.apiBase, identity.tenantKey, identity.userId])} identity={identity} /></SessionControlClientProvider>;
+  return <SessionControlClientProvider client={providedClient ?? httpClient}><WebUIV2RouteShell key={JSON.stringify([identity.apiBase, identity.tenantKey, identity.userId])} identity={identity} workflowClient={workflowClient} workflowAgentClient={workflowAgentClient} /></SessionControlClientProvider>;
 }
 
-function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Element {
+function WebUIV2RouteShell({ identity, workflowClient, workflowAgentClient }: { identity: IdentityConfig; workflowClient?: WorkflowClient; workflowAgentClient?: WorkflowAgentClient }): JSX.Element {
   const { t } = useI18n();
   const { language } = useI18n();
   const queryClient = useQueryClient();
@@ -70,6 +74,8 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
   const [state, setState] = useState<RouteState>(() => routeState(window.location.pathname));
   const [filters, setFilters] = useState<SessionListFilters>({ query: "", statuses: [] });
   const settingsOpen = state.route.kind === "settings";
+  const workflowsOpen = state.route.kind === "workflows";
+  const workflowLeave = useWorkflowLeaveGuard(workflowsOpen);
   const settingsDirty = useRef(false);
   const settingsBusy = useRef(false);
   const pendingNavigation = useRef<(() => void) | null>(null);
@@ -152,7 +158,7 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
 
   const requestSettingsNavigation = useCallback((action: () => void): void => {
     if (!settingsOpen) {
-      action();
+      workflowLeave.request(action);
       return;
     }
     if (settingsBusy.current) {
@@ -165,16 +171,28 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
       return;
     }
     action();
-  }, [settingsOpen]);
+  }, [settingsOpen, workflowLeave.request]);
 
   const selectSession = useCallback((ref: SessionRef): void => {
     requestSettingsNavigation(() => navigateToSession(ref));
   }, [navigateToSession, requestSettingsNavigation]);
 
   function openSettings(section: SettingsSection = "general"): void {
+    workflowLeave.request(() => {
     window.history.pushState({}, "", webUIV2SettingsPath(section, state.selectedRef));
     setState((current) => ({ ...current, route: { kind: "settings", section } }));
     setSidebarOpen(false);
+    });
+  }
+
+  function navigateWorkflow(path: string): void {
+    if (path === window.location.pathname) return;
+    requestSettingsNavigation(() => {
+      workflowLeave.setDirty(false);
+      window.history.pushState({}, "", path);
+      setState((current) => ({ ...current, route: parseWebUIV2Route(window.location.pathname) }));
+      setSidebarOpen(false); setSearchOpen(false);
+    });
   }
 
   const closeSettings = useCallback((): void => {
@@ -272,6 +290,17 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
   useEffect(() => {
     function restoreRoute() {
       const next = routeState(window.location.pathname);
+      if (state.route.kind === "workflows") {
+        const targetURL = window.location.pathname + window.location.search;
+        window.history.pushState({}, "", webUIV2WorkflowPath(state.route));
+        workflowLeave.request(() => {
+          workflowLeave.setDirty(false);
+          window.history.replaceState({}, "", targetURL);
+          setState({ ...next, selectedRef: next.selectedRef ?? (next.route.kind === "workflows" ? state.selectedRef : null) });
+          setErrorCode("");
+        });
+        return;
+      }
       if (state.route.kind === "settings" && next.route.kind !== "settings" && (settingsDirty.current || settingsBusy.current)) {
         window.history.pushState({}, "", webUIV2SettingsPath(state.route.section, state.selectedRef));
         requestSettingsNavigation(() => {
@@ -288,10 +317,10 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
 
     window.addEventListener("popstate", restoreRoute);
     return () => window.removeEventListener("popstate", restoreRoute);
-  }, [requestSettingsNavigation, state]);
+  }, [requestSettingsNavigation, state, workflowLeave.request, workflowLeave.setDirty]);
 
   useEffect(() => {
-    if (!refSearch || settingsOpen || state.selectedRef === refSearch) return;
+    if (!refSearch || settingsOpen || workflowsOpen || state.selectedRef === refSearch) return;
     let current = true;
     void client.get(identity, refSearch).then(() => {
       if (current) selectSession(refSearch);
@@ -299,7 +328,7 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
       if (current) setErrorCode(sessionControlErrorCode(error));
     });
     return () => { current = false; };
-  }, [client, identity, refSearch, selectSession, settingsOpen, state.selectedRef]);
+  }, [client, identity, refSearch, selectSession, settingsOpen, workflowsOpen, state.selectedRef]);
 
   function recoverToIndex(): void {
     window.history.replaceState({}, "", "/webui/v2");
@@ -348,7 +377,7 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
 
   const searchSessions = allSessions.data ?? sessions;
 
-  return <main aria-label={t("webui2.workspace")} className="webui2-page" data-appearance-enabled={visual.appearance.enabled ? "true" : "false"} data-inspector-open={inspectorOpen} data-session-ref={state.selectedRef ?? undefined} data-sidebar-hidden={sidebarHidden} data-sidebar-open={sidebarOpen} data-theme={theme} style={visualSettingsStyle(visual)}>
+  return <main aria-label={t("webui2.workspace")} className="webui2-page" data-appearance-enabled={visual.appearance.enabled ? "true" : "false"} data-inspector-open={!workflowsOpen && inspectorOpen} data-session-ref={state.selectedRef ?? undefined} data-sidebar-hidden={sidebarHidden} data-sidebar-open={sidebarOpen} data-theme={theme} style={visualSettingsStyle(visual)}>
     {isDesktop && !desktopReady ? <section className="webui2-desktop-readiness" data-state={desktop.state} aria-busy={desktop.state !== "failed"} role="status">
       <div className="webui2-desktop-status-copy">
         {desktop.state === "failed" ? <AlertTriangle aria-hidden="true" size={18} /> : <LoaderCircle className="webui2-desktop-status-spinner" aria-hidden="true" size={18} />}
@@ -374,6 +403,8 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
       createDisabled={!desktopReady}
       onCreateSessionInWorkspace={(cwd) => { void createSessionInWorkspace(cwd); }}
       onOpenSettings={() => openSettings()}
+      onOpenWorkflows={() => navigateWorkflow(webUIV2WorkflowPath())}
+      workflowsActive={workflowsOpen}
       onArchive={handleArchive}
       onRenameSession={client.rename ? handleRename : undefined}
       onStop={handleStop}
@@ -385,8 +416,9 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
     {sidebarOpen ? <button aria-label={t("webui2.closeSessions")} className="webui2-mobile-sidebar-backdrop" onClick={() => setSidebarOpen(false)} tabIndex={-1} type="button" /> : null}
     <button aria-controls="webui2-session-sidebar" aria-expanded={sidebarOpen} aria-label={t("webui2.openSessions")} className="webui2-mobile-sidebar-open" onClick={() => setSidebarOpen(true)} title={t("webui2.openSessions")} type="button"><PanelLeftOpen aria-hidden="true" size={18} /></button>
     <div className="webui2-content">
-      {isDesktop ? <ComputerWorkspace client={computerClient} selectedConversationRef={state.selectedRef} nativeOverlay={false} /> : null}
-      <section className="webui2-workspace">
+      {isDesktop && !workflowsOpen ? <ComputerWorkspace client={computerClient} selectedConversationRef={state.selectedRef} nativeOverlay={false} /> : null}
+      {workflowsOpen && desktopReady && state.route.kind === "workflows" ? <WorkflowWorkbench identity={identity} route={state.route} client={workflowClient} agentClient={workflowAgentClient} onNavigate={navigateWorkflow} onDirtyChange={workflowLeave.setDirty} onRequestNavigation={workflowLeave.request} /> : null}
+      {!workflowsOpen ? <section className="webui2-workspace">
         {state.route.kind === "invalid" ? <div className="webui2-route-error" role="alert"><p>{t("webui2.invalidRoute")}</p><button onClick={recoverToIndex} type="button">{t("webui2.backToSessions")}</button></div> : null}
         {state.route.kind === "index" && !sessionList.isLoading && !sessionList.isError ? !showTaskFirstHome
           ? <SimpleHomePage onCreateSession={openNewSession} createDisabled={!desktopReady} />
@@ -398,18 +430,19 @@ function WebUIV2RouteShell({ identity }: { identity: IdentityConfig }): JSX.Elem
             onSelectWorkspace={desktopServiceBridge?.SelectWorkspace}
             ready={desktopReady}
           /> : null}
-        {state.selectedRef ? <SelectedSessionWorkspace key={state.selectedRef} drafts={drafts.current} availableSources={allSessions.data ?? sessions} identity={identity} onSelectSession={selectSession} onCreateSession={openNewSession} onOpenInspector={() => setInspectorOpen(true)} selectedRef={state.selectedRef} streamState={stream.state} ready={desktopReady} /> : null}
+        {!workflowsOpen && state.selectedRef ? <SelectedSessionWorkspace key={state.selectedRef} drafts={drafts.current} availableSources={allSessions.data ?? sessions} identity={identity} onSelectSession={selectSession} onCreateSession={openNewSession} onOpenInspector={() => setInspectorOpen(true)} selectedRef={state.selectedRef} streamState={stream.state} ready={desktopReady} /> : null}
         {sessionList.isLoading ? <p className="webui2-workspace-empty">{t("webui2.loading")}</p> : null}
         {sessionList.isError ? <p className="webui2-workspace-empty" role="alert">{t(`webui2.error.${sessionControlErrorCode(sessionList.error)}`)}</p> : null}
         {errorCode ? <p role="alert">{t(`webui2.error.${errorCode}`)}</p> : null}
         {stream.error ? <p role="alert">{t(`webui2.error.${stream.error}`)}</p> : null}
-      </section>
-      {state.selectedRef && desktopReady ? <SelectedSessionInspector identity={identity} onClose={() => setInspectorOpen(false)} onTabChange={setInspectorTab} open={inspectorOpen} selectedRef={state.selectedRef} tab={inspectorTab} /> : null}
+      </section> : null}
+      {!workflowsOpen && state.selectedRef && desktopReady ? <SelectedSessionInspector identity={identity} onClose={() => setInspectorOpen(false)} onTabChange={setInspectorTab} open={inspectorOpen} selectedRef={state.selectedRef} tab={inspectorTab} /> : null}
     </div>
     <NewSessionDialog identity={identity} onSelectWorkspace={desktopServiceBridge?.SelectWorkspace} onClose={() => setNewSessionOpen(false)} onCreated={handleCreated} open={newSessionOpen} />
     <SessionSearchDialog open={searchOpen} sessions={searchSessions} onClose={() => setSearchOpen(false)} onCreateSession={openNewSession} onSelect={selectSession} />
     <CommandPalette open={commandsOpen} onClose={() => setCommandsOpen(false)} commands={commands} placeholder={language === "zh" ? "搜索会话或操作" : "Search sessions or actions"} emptyLabel={t("webui2.emptySessions")} ariaLabel={language === "zh" ? "命令面板" : "Command palette"} />
     </div>
+    {workflowLeave.dialog}
     {state.route.kind === "settings" && desktopReady ? <SettingsCenter identity={identity} section={state.route.section} onSectionChange={openSettings} onBack={closeSettings} onRequestNavigation={requestSettingsNavigation} onDirtyChange={(dirty) => { settingsDirty.current = dirty; }} onBusyChange={(busy) => { settingsBusy.current = busy; }} theme={theme} onThemeChange={changeTheme} inspectorOpen={inspectorOpen} onInspectorChange={changeInspector} selectedRef={state.selectedRef} onOpenSession={selectSession} onVisualPreview={setVisualPreview} /> : null}
     {leaveDialog ? <UnsavedChangesDialog kind={leaveDialog} language={language} onCancel={cancelPendingNavigation} onDiscard={discardPendingNavigation} /> : null}
     {state.route.kind !== "settings" ? <DesktopPet settings={savedVisual.visual.pet} status={selectedSession?.status} onOpenSettings={() => openSettings("pet")} /> : null}

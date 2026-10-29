@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseWebUIV2Route, settingsReturnSession, SETTINGS_SECTIONS, webUIV2SessionPath, webUIV2SettingsPath } from "./routes";
+import { parseWebUIV2Route, settingsReturnSession, SETTINGS_SECTIONS, webUIV2WorkflowPath, webUIV2SessionPath, webUIV2SettingsPath } from "./routes";
 
 describe("WebUI v2 routes", () => {
   it("recognizes the v2 index with and without a trailing slash", () => {
@@ -37,5 +37,17 @@ describe("WebUI v2 routes", () => {
     expect(parseWebUIV2Route("/webui/v2/sessions/")).toEqual({ kind: "invalid" });
     expect(parseWebUIV2Route("/webui/v2/sessions/not-a-ref")).toEqual({ kind: "invalid" });
     expect(parseWebUIV2Route("/webui/agent")).toEqual({ kind: "invalid" });
+  });
+});
+
+describe("Workflow routes", () => {
+  it("round trips list, agent, new, edit and run deep links", () => {
+    for (const route of [
+      { kind: "workflows", page: "list" }, { kind: "workflows", page: "agents" }, { kind: "workflows", page: "new" },
+      { kind: "workflows", page: "edit", key: "my/workflow" }, { kind: "workflows", page: "run", runID: "run:one/a" },
+    ] as const) expect(parseWebUIV2Route(webUIV2WorkflowPath(route))).toEqual(route);
+  });
+  it("rejects malformed workflow routes rather than treating them as sessions or settings", () => {
+    for (const path of ["/webui/v2/workflows/unknown", "/webui/v2/workflows/runs/", "/webui/v2/workflows/edit/%ZZ", "/webui/v2/workflows/edit/%20", "/webui/v2/workflows/runs/a/b"]) expect(parseWebUIV2Route(path)).toEqual({ kind: "invalid" });
   });
 });

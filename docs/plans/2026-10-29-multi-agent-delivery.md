@@ -144,3 +144,29 @@ acceptance. Requested native evidence is retained under
   present in generated API schemas; existing handler sources are unchanged.
 - Remaining P1: UI commit, real-backend browser acceptance, final clean-source
   desktop build and native clicks/screenshots; then evidence/guide closure.
+
+### Beginner desktop V2 workspace slice
+
+- Added Team sidebar route, Agent manager, two one-click seeds, immutable Team
+  version editor with sequential/parallel/custom dependency cards, and persisted
+  run detail with attempts, timeline, artifacts, usage, cancel/recover. Chat and
+  Inspector are not duplicated; existing subscriptions/model settings remain.
+- Agent selectors bind unique Profile IDs/versions, not ambiguous names. Unsafe
+  tool-granted/nontext/catalog-only profiles cannot be silently selected. Save
+  and run validation expose clear errors; dirty editor navigation is guarded.
+- Unknown provider usage is labeled unknown; conservative reservations are shown
+  separately from actual tokens/cost. No unsupported pause/approval buttons.
+- Main typecheck and focused Vitest shell/routes/workflows: PASS (100 tests).
+  Worker focused Biome: PASS (28 files). Mock browser responsive/language/theme
+  suite: 5/5 PASS at 360/768/1024x700/1440.
+- Real-backend integration: 5/5 PASS, genuine isolated CLI server + SQLite +
+  frontend HTTP/SSE + loopback protocol fixture, no mocked workflow APIs.
+  Sequential/custom/parallel join/retry/terminal failure/active cancellation
+  covered. Provider: 17 local requests, peak concurrency 2; DB: 6 Runs, 12 Nodes,
+  13 Attempts, 10 artifacts (4 completed, 1 failed, 1 cancelled).
+- Offline fixture and integration runner deny non-loopback targets/dirty business
+  DBs, isolate provider config and remove temp state. Browser images are not
+  native acceptance; redundant intermediates will be removed after native QA.
+- Next highest-priority item: final clean-source Wails build, actual native
+  clicks and screenshots. Real paid-model and physical Computer Use remain out
+  of this release's acceptance scope.
