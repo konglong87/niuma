@@ -343,12 +343,14 @@ func (o *Orchestrator) emitEvent(ctx context.Context, state *runEventState, even
 		return
 	}
 	state.mu.Lock()
+	defer state.mu.Unlock()
 	state.sequence++
 	event.Sequence = state.sequence
 	if event.CreatedAt.IsZero() {
 		event.CreatedAt = o.now()
 	}
-	state.mu.Unlock()
+	// Sequence assignment and publication are one ordered operation. In parallel
+	// teams the next producer must not publish before this sequence is visible.
 	_ = o.events.Append(ctx, event)
 }
 

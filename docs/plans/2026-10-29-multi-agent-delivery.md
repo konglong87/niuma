@@ -61,3 +61,19 @@ acceptance. Requested native evidence is retained under
 - Main reran Profile Go tests and frontend Profile/helper tests: PASS (32 cases).
   Worker also passed Profile race tests and existing CLI/server Profile regressions.
 - No new desktop UI acceptance claimed yet; only definitions/helpers in this slice.
+
+### Integration hardening: legacy parallel event ordering
+
+- Resume audit: main/origin/main at 72c9860, pull fast-forward-only reported up to
+  date. All dirty files belong to the current approved implementation; no user
+  edits were overwritten. Parallel workers retain disjoint write scopes.
+- V1 parallel event sequence assignment and publication now share the same lock,
+  preventing a later sequence from being persisted/published before an earlier
+  event. This preserves existing screen/channel observability rather than
+  replacing it with Workflow V2.
+- Focused race verification: `go test -race ./internal/agentteam -run
+  'TestOrchestratorPersistsMemberAndMailboxEvents|TestParallelEventPublicationFollowsAssignedSequence'
+  -count=20` PASS using cached Go 1.26 with GOTOOLCHAIN=local.
+- Remaining priority: finish scheduler/storage/adapter safety checks; commit these
+  layers; verify real-backend UI E2E; final regression/build/native acceptance.
+  P2 approval/pause and P3 desktop/image execution remain deferred, not simulated.

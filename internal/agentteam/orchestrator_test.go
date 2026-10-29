@@ -275,3 +275,54 @@ func (*blockingRunner) Run(ctx context.Context, member Member, _ string) (Member
 	<-ctx.Done()
 	return MemberResult{MemberKey: member.Key, Status: StatusTimedOut, Error: ctx.Err().Error()}, ctx.Err()
 }
+
+type blockedRunEventRecorder struct {
+	entered chan uint64
+	release chan struct{}
+	mu      sync.Mutex
+	events  []RunEvent
+}
+
+func (r *blockedRunEventRecorder) Append(_ context.Context, event RunEvent) error {
+	r.entered <- event.Sequence
+	if event.Sequence == 1 {
+		<-r.release
+	}
+	r.mu.Lock()
+	r.events = append(r.events, event)
+	r.mu.Unlock()
+	return nil
+}
+func TestParallelEventPublicationFollowsAssignedSequence(t *testing.T) {
+	recorder := &blockedRunEventRecorder{entered: make(chan uint64, 2), release: make(chan struct{})}
+	orchestrator := NewOrchestratorWithRecorder(&fakeMemberRunner{}, NewMemoryMailbox(), nil, recorder)
+	state := &runEventState{}
+	var done sync.WaitGroup
+	done.Add(1)
+	go func() {
+		defer done.Done()
+		orchestrator.emitEvent(context.Background(), state, RunEvent{EventType: RunEventMemberStarted})
+	}()
+	if seq := <-recorder.entered; seq != 1 {
+		t.Fatal(seq)
+	}
+	done.Add(1)
+	go func() {
+		defer done.Done()
+		orchestrator.emitEvent(context.Background(), state, RunEvent{EventType: RunEventMemberCompleted})
+	}()
+	select {
+	case seq := <-recorder.entered:
+		close(recorder.release)
+		done.Wait()
+		t.Fatalf("sequence %d published before the prior event", seq)
+	case <-time.After(10 * time.Millisecond):
+	}
+	close(recorder.release)
+	done.Wait()
+	recorder.mu.Lock()
+	defer recorder.mu.Unlock()
+	if len(recorder.events) != 2 || recorder.events[0].Sequence != 1 || recorder.events[1].Sequence != 2 {
+		t.Fatal(recorder.events)
+	}
+}
