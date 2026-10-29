@@ -92,6 +92,11 @@
 .workflow-agent-directory { min-width: 0; }
 .workflow-agent-directory .workflow-actions { flex-wrap: nowrap; }
 .workflow-agent-directory .workflow-actions button { min-height: 36px; padding: 6px 10px; font-size: 12px; }
+@container workflow-area (max-width: 850px) {
+  .workflow-agent-directory > .workflow-section-heading { flex-wrap: wrap; gap: 8px; }
+  .workflow-agent-directory > .workflow-section-heading > div:first-child { flex: 1 0 100%; }
+  .workflow-agent-directory > .workflow-section-heading .workflow-actions button { white-space: nowrap; }
+}
 .workflow-agent-list { background: var(--webui2-surface); border: 1px solid var(--webui2-border); border-radius: 10px; overflow: hidden; }
 .workflow-agent-row { padding: 12px 14px; border-bottom: 1px solid var(--webui2-border-subtle); }
 .workflow-agent-row:last-child { border-bottom: 0; }

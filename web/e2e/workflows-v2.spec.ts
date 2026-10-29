@@ -100,3 +100,21 @@ test("Agent creation/publish, independent leave guard, interrupted recovery and 
   await expect(page.getByRole("button", { name: "Cancel run", exact: true })).toBeVisible(); await page.getByRole("button", { name: "Cancel run", exact: true }).click();
   await expect(page.locator(".workflow-run > header .workflow-status")).toHaveText("Cancelled"); await expect(page.locator(".workflow-timeline")).toContainText("run_cancelled");
 });
+test("1024px Chinese Agent actions stay aligned without wrapping", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 700 });
+  await page.addInitScript(() => localStorage.setItem("niuma-webui.language.v1", "zh"));
+  await installWorkflows(page);
+  await page.goto("/webui/v2/workflows/agents");
+  await expect(page.locator(".workflow-agent-row")).toHaveCount(2);
+  await noOverflow(page);
+  const layout = await page.locator(".workflow-agent-directory > .workflow-section-heading").evaluate((heading) => {
+    const labelBottom = heading.firstElementChild!.getBoundingClientRect().bottom;
+    const buttons = [...heading.querySelectorAll(".workflow-actions button")].map((button) => button.getBoundingClientRect());
+    return { labelBottom, buttons: buttons.map(({ top, right, height }) => ({ top, right, height })), directoryRight: heading.parentElement!.getBoundingClientRect().right };
+  });
+  expect(layout.buttons).toHaveLength(2);
+  expect(layout.buttons[0].top).toBeGreaterThanOrEqual(layout.labelBottom - 1);
+  expect(layout.buttons[0].top).toBe(layout.buttons[1].top);
+  expect(layout.buttons.every((button) => button.height <= 40 && button.right <= layout.directoryRight + 1)).toBe(true);
+  await page.screenshot({ path: evidencePath("1024-zh-light-agents-review") });
+});

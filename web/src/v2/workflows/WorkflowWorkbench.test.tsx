@@ -105,6 +105,9 @@ describe("Workflow workbench", () => {
     await act(async () => { host.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); }); await settle();
     expect(host.querySelector('[role="status"]')?.textContent).toContain("Draft saved");
     expect(context.agentClient.save).toHaveBeenCalledWith(expect.objectContaining({ name: "Release reviewer" }), agentFixture().record);
+    setValue(host.querySelectorAll<HTMLSelectElement>(".workflow-agent-form select")[1], "custom");
+    expect(host.querySelector(".workflow-success")).toBeNull();
+    expect(context.onDirtyChange).toHaveBeenLastCalledWith(true);
   });
   it("creates agent draft with role and inherited model, then offers publish separately", async () => {
     const context = mount({ kind: "workflows", page: "agents" }); context.render(); await settle(); setValue(host.querySelector<HTMLInputElement>("form input")!, "My researcher"); setValue(host.querySelector<HTMLTextAreaElement>("form textarea")!, "Analyze supplied text");
