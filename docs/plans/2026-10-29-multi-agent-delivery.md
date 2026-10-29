@@ -127,3 +127,20 @@ acceptance. Requested native evidence is retained under
   secret echoes, tool refusal and cancellation tests passed. Main race regression
   PASS; worker race+coverage PASS (runtimecompose 92.9%, observability 79.9%) and
   vet PASS. No paid provider or external service invoked.
+
+### Application/API and compatibility slice
+
+- Authenticated Team facade composes existing published Profile/Team versions,
+  atomic template creation, fixed run snapshots, idempotent start, event history/
+  SSE, cancellation and revision-checked recovery. Two beginner seeds included.
+- CLI desktop-local/server composition uses existing repository and settings;
+  read-only kill switch preserves history. Legacy V1 channel loaders and Team
+  editors cannot execute/mutate V2; nontext Profiles cannot enter text sessions.
+- HTTP contract/production composition tests use real SQLite and loopback model
+  protocols, not fake workflow endpoints. Full root Go suite PASS; focused API
+  and ownership rejection tests PASS; broader API race running.
+- Added Swagger workflow contracts and regenerated docs/types using repository
+  commands. Regeneration also synchronizes stale pre-brand package names already
+  present in generated API schemas; existing handler sources are unchanged.
+- Remaining P1: UI commit, real-backend browser acceptance, final clean-source
+  desktop build and native clicks/screenshots; then evidence/guide closure.

@@ -413,6 +413,9 @@ func (s *Service) GetAgentTeam(ctx context.Context, key string, version uint) (m
 	return mysqlstore.AgentTeam{}, mysqlstore.ErrNotFound
 }
 func (s *Service) SaveAgentTeam(ctx context.Context, input mysqlstore.AgentTeamInput) (mysqlstore.AgentTeam, error) {
+	if input.SchemaVersion > 1 {
+		return mysqlstore.AgentTeam{}, fmt.Errorf("%w: edit Workflow V2 through the Team workspace", ErrInvalidRequest)
+	}
 	resolved, err := s.ResolveContext(ctx)
 	if err != nil {
 		return mysqlstore.AgentTeam{}, err
@@ -506,6 +509,9 @@ func (s *Service) PublishAgentTeam(ctx context.Context, key string, version uint
 	if err != nil {
 		return err
 	}
+	if team.SchemaVersion > 1 {
+		return fmt.Errorf("%w: use the Team workflow workspace for V2 changes", ErrInvalidRequest)
+	}
 	hash := team.EffectiveHash
 	if hash == "" {
 		hash = team.RequestedHash
@@ -532,6 +538,9 @@ func (s *Service) RollbackAgentTeam(ctx context.Context, key string, version uin
 	if err != nil {
 		return mysqlstore.AgentTeam{}, err
 	}
+	if team.SchemaVersion > 1 {
+		return mysqlstore.AgentTeam{}, fmt.Errorf("%w: use the Team workflow workspace for V2 changes", ErrInvalidRequest)
+	}
 	return s.SaveAgentTeam(ctx, mysqlstore.AgentTeamInput{OwnerUserID: team.OwnerUserID, OwnerKey: team.OwnerKey, TeamKey: team.TeamKey, Scope: team.Scope, DisplayName: team.DisplayName, Description: team.Description, PolicyJSON: team.PolicyJSON, RequestedHash: team.RequestedHash, EffectiveHash: team.EffectiveHash, Status: "draft"})
 }
 func (s *Service) ReplaceAgentTeamMembers(ctx context.Context, key string, version uint, inputs []mysqlstore.AgentTeamMemberInput) ([]mysqlstore.AgentTeamMember, error) {
@@ -546,6 +555,9 @@ func (s *Service) ReplaceAgentTeamMembers(ctx context.Context, key string, versi
 	team, err := s.GetAgentTeam(ctx, key, version)
 	if err != nil {
 		return nil, err
+	}
+	if team.SchemaVersion > 1 {
+		return nil, fmt.Errorf("%w: use the Team workflow workspace for V2 changes", ErrInvalidRequest)
 	}
 	if err := repo.ArchiveAgentTeamMembers(ctx, resolved.TenantID, team.ID); err != nil {
 		return nil, err
@@ -588,6 +600,9 @@ func (s *Service) ReplaceAgentTeamBindings(ctx context.Context, key string, vers
 	team, err := s.GetAgentTeam(ctx, key, version)
 	if err != nil {
 		return nil, err
+	}
+	if team.SchemaVersion > 1 {
+		return nil, fmt.Errorf("%w: use the Team workflow workspace for V2 changes", ErrInvalidRequest)
 	}
 	if err := repo.ArchiveAgentTeamBindings(ctx, resolved.TenantID, team.ID); err != nil {
 		return nil, err
@@ -698,6 +713,17 @@ func (s *Service) CancelAgentTeamRun(ctx context.Context, runID string) error {
 	repo, err := s.profileRepo()
 	if err != nil {
 		return err
+	}
+	run, getErr := repo.GetAgentTeamRun(ctx, resolved.TenantID, runID)
+	if getErr != nil {
+		return getErr
+	}
+	team, getErr := repo.GetAgentTeam(ctx, resolved.TenantID, run.TeamID)
+	if getErr != nil {
+		return getErr
+	}
+	if team.SchemaVersion > 1 {
+		return fmt.Errorf("%w: cancel this Run in the Team workflow workspace", ErrInvalidRequest)
 	}
 	return repo.UpdateAgentTeamRun(ctx, mysqlstore.AgentTeamRunUpdate{TenantID: resolved.TenantID, RunID: runID, Status: "cancelled"})
 }

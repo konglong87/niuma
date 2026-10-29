@@ -5,8 +5,8 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "go-e2e local server APIs, including internal query APIs, OpenAI-compatible endpoints, tenant persistence APIs, and mobile chat SSE APIs.",
-        "title": "go-e2e API",
+        "description": "niuma local server APIs, including internal query APIs, OpenAI-compatible endpoints, tenant persistence APIs, and mobile chat SSE APIs.",
+        "title": "niuma API",
         "contact": {},
         "version": "0.1.0"
     },
@@ -785,7 +785,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Serves a local WebUI for inspecting prompt dump JSONL records, filtering by session_id, and opening full raw request details when the dump was captured with GOLANG_CC_DUMP_PROMPT_FULL=true.",
+                "description": "Serves a local WebUI for inspecting prompt dump JSONL records, filtering by session_id, and opening full raw request details when the dump was captured with NIUMA_DUMP_PROMPT_FULL=true.",
                 "produces": [
                     "text/html"
                 ],
@@ -810,7 +810,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Reads the local prompt dump JSONL file from GOLANG_CC_DUMP_PROMPT_JSON or /tmp/golang-cc-tui-prompt.jsonl. include_request=true returns full raw model requests and may expose sensitive prompt context.",
+                "description": "Reads the local prompt dump JSONL file from NIUMA_DUMP_PROMPT_JSON or /tmp/niuma-tui-prompt.jsonl. include_request=true returns full raw model requests and may expose sensitive prompt context.",
                 "produces": [
                     "application/json"
                 ],
@@ -1486,7 +1486,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "File settings use only the global settings.json (GOLANG_CC_CONFIG_DIR relocation supported), without workspace or legacy discovery. File sources exclude process environment, CLI, profile and run overrides. Startup or status callback values do not represent active run configuration.",
+                "description": "File settings use only the global settings.json (NIUMA_CONFIG_DIR relocation supported), without workspace or legacy discovery. File sources exclude process environment, CLI, profile and run overrides. Startup or status callback values do not represent active run configuration.",
                 "produces": [
                     "application/json"
                 ],
@@ -5111,6 +5111,83 @@
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/agent-types": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List extensible Agent role and execution kind metadata",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTypes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
                         }
                     }
                 }
@@ -10776,6 +10853,1062 @@
                 }
             }
         },
+        "/tenant/workflow-runs/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Read an authoritative persisted run snapshot",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/cancel": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Request run cancellation and bounded executor cleanup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/events": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Read ordered durable execution events",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Last applied event sequence",
+                        "name": "after_sequence",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowEvents"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/events/stream": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Stream ordered execution events with persisted replay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Last applied event sequence",
+                        "name": "after_sequence",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Event"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/recover": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Explicitly recover an interrupted run using its checkpoint revision",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Expected interrupted snapshot revision",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRecovery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List private Team workflow versions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplates"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Save a new immutable Team workflow version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Workflow with published Profile bindings",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/templates": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List beginner Team workflow starting points",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowBuiltins"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/templates/{key}/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Create a personal Team and Agents from a starting point",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Built-in template key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/{key}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Get a Team workflow version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Fixed version; omit for latest",
+                        "name": "version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/{key}/runs": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List persisted runs for a Team",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Fixed Team version",
+                        "name": "version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRuns"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Queue an idempotent bounded Team run",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Unique submission key; reuse with identical body to replay",
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Fixed Team version and task objective",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
         "/tools": {
             "get": {
                 "security": [
@@ -11222,7 +12355,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Serves the Vite build from GOLANG_CC_WEBUI_DIR, or an auto-discovered web/dist next to the working directory or executable. Unknown paths fall back to index.html for client-side routing. When no build is present, responds 503 with a page explaining how to build the frontend.",
+                "description": "Serves the Vite build from NIUMA_WEBUI_DIR, or an auto-discovered web/dist next to the working directory or executable. Unknown paths fall back to index.html for client-side routing. When no build is present, responds 503 with a page explaining how to build the frontend.",
                 "produces": [
                     "text/html"
                 ],
@@ -11275,7 +12408,7 @@
         }
     },
     "definitions": {
-        "github_com_konglong87_go-e2e_internal_agentprofile.BlockedOverride": {
+        "github_com_konglong87_niuma_internal_agentprofile.BlockedOverride": {
             "type": "object",
             "properties": {
                 "field": {
@@ -11286,7 +12419,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.CapabilityPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.CapabilityPolicy": {
             "type": "object",
             "properties": {
                 "allow_agents": {
@@ -11308,11 +12441,11 @@
                     }
                 },
                 "tools": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ToolPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ToolPolicy"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.ContextPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.ContextPolicy": {
             "type": "object",
             "properties": {
                 "git": {
@@ -11335,7 +12468,34 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.ExecutionPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionKind": {
+            "type": "string",
+            "enum": [
+                "text",
+                "computer",
+                "image"
+            ],
+            "x-enum-varnames": [
+                "ExecutionKindText",
+                "ExecutionKindComputer",
+                "ExecutionKindImage"
+            ]
+        },
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKind"
+                },
+                "workflow_supported": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionPolicy": {
             "type": "object",
             "properties": {
                 "auto_compact": {
@@ -11343,6 +12503,9 @@
                 },
                 "effort": {
                     "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKind"
                 },
                 "max_parallel_read_only_tools": {
                     "type": "integer"
@@ -11364,7 +12527,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.IdentityPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.IdentityPolicy": {
             "type": "object",
             "properties": {
                 "description": {
@@ -11372,10 +12535,13 @@
                 },
                 "display_name": {
                     "type": "string"
+                },
+                "role_type": {
+                    "type": "string"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.PermissionMode": {
+        "github_com_konglong87_niuma_internal_agentprofile.PermissionMode": {
             "type": "string",
             "enum": [
                 "ask",
@@ -11390,11 +12556,11 @@
                 "PermissionModeBypass"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.Profile": {
+        "github_com_konglong87_niuma_internal_agentprofile.Profile": {
             "type": "object",
             "properties": {
                 "config": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ProfileDocument"
                 },
                 "description": {
                     "type": "string"
@@ -11424,43 +12590,43 @@
                     "type": "string"
                 },
                 "scope": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.Scope"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.Scope"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.Status"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.Status"
                 },
                 "tenant_id": {
                     "type": "integer"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument": {
+        "github_com_konglong87_niuma_internal_agentprofile.ProfileDocument": {
             "type": "object",
             "properties": {
                 "capabilities": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.CapabilityPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.CapabilityPolicy"
                 },
                 "context": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ContextPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ContextPolicy"
                 },
                 "execution": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ExecutionPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionPolicy"
                 },
                 "identity": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.IdentityPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.IdentityPolicy"
                 },
                 "prompt": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.PromptPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.PromptPolicy"
                 },
                 "safety": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.SafetyPolicy"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.SafetyPolicy"
                 },
                 "schema_version": {
                     "type": "integer"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.PromptMode": {
+        "github_com_konglong87_niuma_internal_agentprofile.PromptMode": {
             "type": "string",
             "enum": [
                 "code",
@@ -11471,14 +12637,14 @@
                 "PromptModeChat"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.PromptPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.PromptPolicy": {
             "type": "object",
             "properties": {
                 "language": {
                     "type": "string"
                 },
                 "mode": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.PromptMode"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.PromptMode"
                 },
                 "output_style": {
                     "type": "string"
@@ -11491,21 +12657,35 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.SafetyPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentprofile.SafetyPolicy": {
             "type": "object",
             "properties": {
                 "allow_unsandboxed_commands": {
                     "type": "boolean"
                 },
                 "permission_mode": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.PermissionMode"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.PermissionMode"
                 },
                 "sandbox": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.SandboxMode"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.SandboxMode"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.SandboxMode": {
+        "github_com_konglong87_niuma_internal_agentprofile.SandboxMode": {
             "type": "string",
             "enum": [
                 "required",
@@ -11518,7 +12698,7 @@
                 "SandboxDisabled"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.Scope": {
+        "github_com_konglong87_niuma_internal_agentprofile.Scope": {
             "type": "string",
             "enum": [
                 "builtin",
@@ -11531,7 +12711,7 @@
                 "ScopeUserPrivate"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.Status": {
+        "github_com_konglong87_niuma_internal_agentprofile.Status": {
             "type": "string",
             "enum": [
                 "draft",
@@ -11546,7 +12726,7 @@
                 "StatusArchived"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_agentprofile.ToolPolicy": {
+        "github_com_konglong87_niuma_internal_agentprofile.ToolPolicy": {
             "type": "object",
             "properties": {
                 "allow": {
@@ -11563,7 +12743,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_agenttasks.Attachment": {
+        "github_com_konglong87_niuma_internal_agenttasks.Attachment": {
             "type": "object",
             "properties": {
                 "attachment_id": {
@@ -11589,7 +12769,565 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_buildinfo.Info": {
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Agent": {
+            "type": "object",
+            "properties": {
+                "effort": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "max_output_tokens": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "profile_hash": {
+                    "type": "string"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "profile_key": {
+                    "type": "string"
+                },
+                "profile_version": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "role_type": {
+                    "type": "string"
+                },
+                "route_hash": {
+                    "type": "string"
+                },
+                "system_prompt": {
+                    "type": "string"
+                },
+                "tools": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Artifact": {
+            "type": "object",
+            "properties": {
+                "attempt_no": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "sha256": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Attempt": {
+            "type": "object",
+            "properties": {
+                "budget_reserved": {
+                    "description": "BudgetReserved is the immutable admission reservation, not provider usage.",
+                    "type": "integer"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                },
+                "task_id": {
+                    "type": "integer"
+                },
+                "usage": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Usage"
+                },
+                "usage_known": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Definition": {
+            "type": "object",
+            "properties": {
+                "limits": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Limits"
+                },
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Node"
+                    }
+                },
+                "schema_version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Event": {
+            "type": "object",
+            "properties": {
+                "attempt_no": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "sequence": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.EventType"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.EventType": {
+            "type": "string",
+            "enum": [
+                "run_queued",
+                "run_started",
+                "task_created",
+                "task_waiting_dependency",
+                "agent_started",
+                "agent_output_delta",
+                "agent_phase",
+                "agent_completed",
+                "agent_failed",
+                "task_retry_scheduled",
+                "run_cancel_requested",
+                "run_cancelled",
+                "task_cancelled",
+                "run_completed",
+                "run_failed",
+                "run_timed_out",
+                "run_interrupted",
+                "run_recovered"
+            ],
+            "x-enum-varnames": [
+                "EventQueued",
+                "EventStarted",
+                "EventTaskCreated",
+                "EventWaiting",
+                "EventAgentStarted",
+                "EventDelta",
+                "EventPhase",
+                "EventAgentCompleted",
+                "EventAgentFailed",
+                "EventRetry",
+                "EventCancelRequested",
+                "EventCancelled",
+                "EventTaskCancelled",
+                "EventCompleted",
+                "EventFailed",
+                "EventTimedOut",
+                "EventInterrupted",
+                "EventRecovered"
+            ]
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Failure": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "retryable": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Limits": {
+            "type": "object",
+            "properties": {
+                "max_parallel": {
+                    "type": "integer"
+                },
+                "max_total_tokens": {
+                    "type": "integer"
+                },
+                "run_timeout_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Node": {
+            "type": "object",
+            "properties": {
+                "agent_ref": {
+                    "type": "string"
+                },
+                "depends_on": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "instruction": {
+                    "type": "string"
+                },
+                "retry": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy"
+                },
+                "timeout_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun": {
+            "type": "object",
+            "properties": {
+                "artifact_id": {
+                    "type": "string"
+                },
+                "attempts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Attempt"
+                    }
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "next_retry_at": {
+                    "type": "string"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Plan": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Agent"
+                    }
+                },
+                "definition": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition"
+                },
+                "hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy": {
+            "type": "object",
+            "properties": {
+                "backoff_ms": {
+                    "type": "integer"
+                },
+                "max_attempts": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Run": {
+            "type": "object",
+            "properties": {
+                "artifacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Artifact"
+                    }
+                },
+                "cancel_requested_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "input": {
+                    "type": "string"
+                },
+                "last_sequence": {
+                    "type": "integer"
+                },
+                "lease_owner": {
+                    "type": "string"
+                },
+                "lease_until": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun"
+                    }
+                },
+                "plan": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Plan"
+                },
+                "revision": {
+                    "type": "integer"
+                },
+                "scope": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Scope"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                },
+                "team_id": {
+                    "type": "integer"
+                },
+                "team_key": {
+                    "type": "string"
+                },
+                "team_version": {
+                    "type": "integer"
+                },
+                "uncertain_tokens": {
+                    "description": "UncertainTokens includes in-flight and unconfirmed attempt reservations.\nIt is not actual usage or a monetary amount.",
+                    "type": "integer"
+                },
+                "usage": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Usage"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Scope": {
+            "type": "object",
+            "properties": {
+                "tenant_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Status": {
+            "type": "string",
+            "enum": [
+                "queued",
+                "pending",
+                "ready",
+                "running",
+                "retry_wait",
+                "completed",
+                "failed",
+                "timed_out",
+                "cancel_requested",
+                "cancelled",
+                "interrupted",
+                "blocked"
+            ],
+            "x-enum-varnames": [
+                "Queued",
+                "Pending",
+                "Ready",
+                "Running",
+                "RetryWait",
+                "Completed",
+                "Failed",
+                "TimedOut",
+                "CancelRequested",
+                "Cancelled",
+                "Interrupted",
+                "Blocked"
+            ]
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Usage": {
+            "type": "object",
+            "properties": {
+                "cache_read_tokens": {
+                    "type": "integer"
+                },
+                "cache_write_tokens": {
+                    "type": "integer"
+                },
+                "input_tokens": {
+                    "type": "integer"
+                },
+                "output_tokens": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding": {
+            "type": "object",
+            "properties": {
+                "profile_id": {
+                    "type": "integer"
+                },
+                "profile_key": {
+                    "type": "string"
+                },
+                "profile_version": {
+                    "type": "integer"
+                },
+                "ref": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding"
+                    }
+                },
+                "definition": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest": {
+            "type": "object",
+            "properties": {
+                "input": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Template": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding"
+                    }
+                },
+                "definition": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_buildinfo.Info": {
             "type": "object",
             "properties": {
                 "build_time": {
@@ -11618,7 +13356,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_config.HookCommand": {
+        "github_com_konglong87_niuma_internal_config.HookCommand": {
             "type": "object",
             "properties": {
                 "command": {
@@ -11638,7 +13376,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_config.ImageModelCapability": {
+        "github_com_konglong87_niuma_internal_config.ImageModelCapability": {
             "type": "object",
             "properties": {
                 "aspectRatios": {
@@ -11694,7 +13432,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_config.SettingsIssue": {
+        "github_com_konglong87_niuma_internal_config.SettingsIssue": {
             "type": "object",
             "properties": {
                 "code": {
@@ -11708,7 +13446,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_files.Metadata": {
+        "github_com_konglong87_niuma_internal_files.Metadata": {
             "type": "object",
             "properties": {
                 "gid": {
@@ -11738,7 +13476,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.CriterionStatus": {
+        "github_com_konglong87_niuma_internal_goal.CriterionStatus": {
             "type": "string",
             "enum": [
                 "pending",
@@ -11753,7 +13491,7 @@
                 "CriterionStatusWaived"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.Decision": {
+        "github_com_konglong87_niuma_internal_goal.Decision": {
             "type": "object",
             "properties": {
                 "blocker_key": {
@@ -11769,11 +13507,11 @@
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.DecisionStatus"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.DecisionStatus"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.DecisionStatus": {
+        "github_com_konglong87_niuma_internal_goal.DecisionStatus": {
             "type": "string",
             "enum": [
                 "continue",
@@ -11788,7 +13526,7 @@
                 "DecisionFailed"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.DependencyStatus": {
+        "github_com_konglong87_niuma_internal_goal.DependencyStatus": {
             "type": "string",
             "enum": [
                 "unknown",
@@ -11803,7 +13541,7 @@
                 "DependencyStatusBlocked"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.Event": {
+        "github_com_konglong87_niuma_internal_goal.Event": {
             "type": "object",
             "properties": {
                 "blocker_key": {
@@ -11846,17 +13584,17 @@
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Status"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Status"
                 },
                 "turn": {
                     "type": "integer"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.EventType"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.EventType"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.EventType": {
+        "github_com_konglong87_niuma_internal_goal.EventType": {
             "type": "string",
             "enum": [
                 "goal_started",
@@ -11877,7 +13615,7 @@
                 "EventStatusChanged"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.EvidenceType": {
+        "github_com_konglong87_niuma_internal_goal.EvidenceType": {
             "type": "string",
             "enum": [
                 "command",
@@ -11900,7 +13638,7 @@
                 "EvidenceTypeManual"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.Goal": {
+        "github_com_konglong87_niuma_internal_goal.Goal": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -11949,7 +13687,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Status"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Status"
                 },
                 "token_budget": {
                     "type": "integer"
@@ -11965,7 +13703,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.GoalCriterion": {
+        "github_com_konglong87_niuma_internal_goal.GoalCriterion": {
             "type": "object",
             "properties": {
                 "description": {
@@ -11984,11 +13722,11 @@
                     "type": "boolean"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.CriterionStatus"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.CriterionStatus"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.GoalDependency": {
+        "github_com_konglong87_niuma_internal_goal.GoalDependency": {
             "type": "object",
             "properties": {
                 "description": {
@@ -12007,14 +13745,14 @@
                     "type": "boolean"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.DependencyStatus"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.DependencyStatus"
                 },
                 "type": {
                     "type": "string"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.GoalEvidence": {
+        "github_com_konglong87_niuma_internal_goal.GoalEvidence": {
             "type": "object",
             "properties": {
                 "command": {
@@ -12045,11 +13783,11 @@
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.EvidenceType"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.EvidenceType"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.GoalRisk": {
+        "github_com_konglong87_niuma_internal_goal.GoalRisk": {
             "type": "object",
             "properties": {
                 "description": {
@@ -12062,17 +13800,17 @@
                     "type": "string"
                 },
                 "severity": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.RiskSeverity"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.RiskSeverity"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.RiskStatus"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.RiskStatus"
                 },
                 "type": {
                     "type": "string"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.GoalStep": {
+        "github_com_konglong87_niuma_internal_goal.GoalStep": {
             "type": "object",
             "properties": {
                 "depends_on": {
@@ -12094,14 +13832,14 @@
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.StepStatus"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.StepStatus"
                 },
                 "title": {
                     "type": "string"
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_goal.RiskSeverity": {
+        "github_com_konglong87_niuma_internal_goal.RiskSeverity": {
             "type": "string",
             "enum": [
                 "low",
@@ -12116,7 +13854,7 @@
                 "RiskSeverityCritical"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.RiskStatus": {
+        "github_com_konglong87_niuma_internal_goal.RiskStatus": {
             "type": "string",
             "enum": [
                 "open",
@@ -12131,7 +13869,7 @@
                 "RiskStatusEscalated"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.Status": {
+        "github_com_konglong87_niuma_internal_goal.Status": {
             "type": "string",
             "enum": [
                 "active",
@@ -12148,7 +13886,7 @@
                 "StatusFailed"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_goal.StepStatus": {
+        "github_com_konglong87_niuma_internal_goal.StepStatus": {
             "type": "string",
             "enum": [
                 "pending",
@@ -12165,7 +13903,7 @@
                 "StepStatusSkipped"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_imagegen.Artifact": {
+        "github_com_konglong87_niuma_internal_imagegen.Artifact": {
             "type": "object",
             "properties": {
                 "asset_id": {
@@ -12221,7 +13959,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_imagegen.GenerationRecord": {
+        "github_com_konglong87_niuma_internal_imagegen.GenerationRecord": {
             "type": "object",
             "properties": {
                 "asset_id": {
@@ -12331,13 +14069,13 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_pendinginput.PendingInput": {
+        "github_com_konglong87_niuma_internal_pendinginput.PendingInput": {
             "type": "object",
             "properties": {
                 "attachments": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agenttasks.Attachment"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agenttasks.Attachment"
                     }
                 },
                 "attempt": {
@@ -12380,7 +14118,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_pendinginput.Status"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_pendinginput.Status"
                 },
                 "tenant_id": {
                     "type": "integer"
@@ -12393,7 +14131,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_pendinginput.Status": {
+        "github_com_konglong87_niuma_internal_pendinginput.Status": {
             "type": "string",
             "enum": [
                 "queued",
@@ -12410,7 +14148,7 @@
                 "StatusCancelled"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticMessageBlock": {
+        "github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticMessageBlock": {
             "type": "object",
             "properties": {
                 "block_index": {
@@ -12439,7 +14177,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticSystemBlock": {
+        "github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticSystemBlock": {
             "type": "object",
             "properties": {
                 "has_cache_control": {
@@ -12468,7 +14206,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.CacheRecordDiagnostics": {
+        "github_com_konglong87_niuma_internal_promptdump.CacheRecordDiagnostics": {
             "type": "object",
             "properties": {
                 "cache_control_block_count": {
@@ -12480,13 +14218,13 @@
                 "largest_message_blocks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticMessageBlock"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticMessageBlock"
                     }
                 },
                 "largest_uncached_system_blocks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticSystemBlock"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticSystemBlock"
                     }
                 },
                 "message_cache_marker_count": {
@@ -12499,7 +14237,7 @@
                     "type": "string"
                 },
                 "request_signature_delta_from_previous": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheSignatureDelta"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheSignatureDelta"
                 },
                 "request_signature_hash": {
                     "type": "string"
@@ -12524,7 +14262,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.CacheSessionDiagnostics": {
+        "github_com_konglong87_niuma_internal_promptdump.CacheSessionDiagnostics": {
             "type": "object",
             "properties": {
                 "cache_control_hash_stable": {
@@ -12536,7 +14274,7 @@
                 "largest_uncached_system_blocks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticSystemBlock"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticSystemBlock"
                     }
                 },
                 "message_prefix_hash_stable": {
@@ -12583,7 +14321,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.CacheSignatureDelta": {
+        "github_com_konglong87_niuma_internal_promptdump.CacheSignatureDelta": {
             "type": "object",
             "properties": {
                 "breaks_cache": {
@@ -12624,7 +14362,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.ContentBlockSummary": {
+        "github_com_konglong87_niuma_internal_promptdump.ContentBlockSummary": {
             "type": "object",
             "properties": {
                 "actual_truncated": {
@@ -12686,7 +14424,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.MessageSummary": {
+        "github_com_konglong87_niuma_internal_promptdump.MessageSummary": {
             "type": "object",
             "properties": {
                 "block_count": {
@@ -12695,7 +14433,7 @@
                 "blocks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.ContentBlockSummary"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.ContentBlockSummary"
                     }
                 },
                 "bytes": {
@@ -12706,7 +14444,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.RequestRedaction": {
+        "github_com_konglong87_niuma_internal_promptdump.RequestRedaction": {
             "type": "object",
             "properties": {
                 "mode": {
@@ -12720,7 +14458,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.SystemBlockSummary": {
+        "github_com_konglong87_niuma_internal_promptdump.SystemBlockSummary": {
             "type": "object",
             "properties": {
                 "cache_scope": {
@@ -12752,7 +14490,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_promptdump.ToolSummary": {
+        "github_com_konglong87_niuma_internal_promptdump.ToolSummary": {
             "type": "object",
             "properties": {
                 "description_bytes": {
@@ -12775,7 +14513,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_query.ComputerObservationReference": {
+        "github_com_konglong87_niuma_internal_query.ComputerObservationReference": {
             "type": "object",
             "properties": {
                 "asset_id": {
@@ -12798,16 +14536,16 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_query.ToolTrace": {
+        "github_com_konglong87_niuma_internal_query.ToolTrace": {
             "type": "object",
             "properties": {
                 "computer_observation": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_query.ComputerObservationReference"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_query.ComputerObservationReference"
                 },
                 "file_changes": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_tools.FileChange"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_tools.FileChange"
                     }
                 },
                 "id": {
@@ -12827,7 +14565,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_query.Usage": {
+        "github_com_konglong87_niuma_internal_query.Usage": {
             "type": "object",
             "properties": {
                 "cache_creation_ephemeral_1h_input_tokens": {
@@ -12859,7 +14597,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_scheduler.Event": {
+        "github_com_konglong87_niuma_internal_scheduler.Event": {
             "type": "object",
             "properties": {
                 "background_id": {
@@ -12897,7 +14635,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_scheduler.RunRecord": {
+        "github_com_konglong87_niuma_internal_scheduler.RunRecord": {
             "type": "object",
             "properties": {
                 "background_id": {
@@ -12932,7 +14670,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_sessioncontrol.HandoffCandidateRemoval": {
+        "github_com_konglong87_niuma_internal_sessioncontrol.HandoffCandidateRemoval": {
             "type": "object",
             "properties": {
                 "category": {
@@ -12943,7 +14681,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_sessioncontrol.SessionChannel": {
+        "github_com_konglong87_niuma_internal_sessioncontrol.SessionChannel": {
             "type": "object",
             "properties": {
                 "account_key": {
@@ -12954,7 +14692,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus": {
+        "github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus": {
             "type": "string",
             "enum": [
                 "idle",
@@ -12981,7 +14719,7 @@
                 "StatusArchived"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_sessioncontrol.Source": {
+        "github_com_konglong87_niuma_internal_sessioncontrol.Source": {
             "type": "string",
             "enum": [
                 "tenant",
@@ -12992,7 +14730,7 @@
                 "SourceLocal"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_skills.Skill": {
+        "github_com_konglong87_niuma_internal_skills.Skill": {
             "type": "object",
             "properties": {
                 "agent": {
@@ -13033,7 +14771,7 @@
                     "additionalProperties": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_config.HookCommand"
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_config.HookCommand"
                         }
                     }
                 },
@@ -13074,7 +14812,7 @@
                     "type": "string"
                 },
                 "source": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_skills.Source"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_skills.Source"
                 },
                 "user_invocable": {
                     "type": "boolean"
@@ -13087,7 +14825,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_skills.Source": {
+        "github_com_konglong87_niuma_internal_skills.Source": {
             "type": "string",
             "enum": [
                 "user",
@@ -13108,7 +14846,7 @@
                 "SourceTenant"
             ]
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfile": {
+        "github_com_konglong87_niuma_internal_storage_mysql.AgentProfile": {
             "type": "object",
             "properties": {
                 "config_json": {
@@ -13179,7 +14917,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileConversationSummary": {
+        "github_com_konglong87_niuma_internal_storage_mysql.AgentProfileConversationSummary": {
             "type": "object",
             "properties": {
                 "account_id": {
@@ -13238,7 +14976,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileTeamLink": {
+        "github_com_konglong87_niuma_internal_storage_mysql.AgentProfileTeamLink": {
             "type": "object",
             "properties": {
                 "account_id": {
@@ -13276,7 +15014,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask": {
+        "github_com_konglong87_niuma_internal_storage_mysql.AgentTask": {
             "type": "object",
             "properties": {
                 "agent_name": {
@@ -13326,7 +15064,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent": {
+        "github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent": {
             "type": "object",
             "properties": {
                 "channel": {
@@ -13358,7 +15096,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog": {
+        "github_com_konglong87_niuma_internal_storage_mysql.AuditLog": {
             "type": "object",
             "properties": {
                 "action": {
@@ -13390,7 +15128,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.Document": {
+        "github_com_konglong87_niuma_internal_storage_mysql.Document": {
             "type": "object",
             "properties": {
                 "active": {
@@ -13416,7 +15154,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.EffectiveSkill": {
+        "github_com_konglong87_niuma_internal_storage_mysql.EffectiveSkill": {
             "type": "object",
             "properties": {
                 "config_json": {
@@ -13463,7 +15201,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeChunk": {
+        "github_com_konglong87_niuma_internal_storage_mysql.KnowledgeChunk": {
             "type": "object",
             "properties": {
                 "chunk_index": {
@@ -13498,7 +15236,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeDocument": {
+        "github_com_konglong87_niuma_internal_storage_mysql.KnowledgeDocument": {
             "type": "object",
             "properties": {
                 "content": {
@@ -13530,7 +15268,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.Memory": {
+        "github_com_konglong87_niuma_internal_storage_mysql.Memory": {
             "type": "object",
             "properties": {
                 "category": {
@@ -13559,7 +15297,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.Message": {
+        "github_com_konglong87_niuma_internal_storage_mysql.Message": {
             "type": "object",
             "properties": {
                 "content": {
@@ -13606,7 +15344,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.QuotaEvent": {
+        "github_com_konglong87_niuma_internal_storage_mysql.QuotaEvent": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -13653,7 +15391,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.Session": {
+        "github_com_konglong87_niuma_internal_storage_mysql.Session": {
             "type": "object",
             "properties": {
                 "cwd": {
@@ -13682,7 +15420,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.Skill": {
+        "github_com_konglong87_niuma_internal_storage_mysql.Skill": {
             "type": "object",
             "properties": {
                 "config_json": {
@@ -13726,7 +15464,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.SkillOverride": {
+        "github_com_konglong87_niuma_internal_storage_mysql.SkillOverride": {
             "type": "object",
             "properties": {
                 "config_json": {
@@ -13755,7 +15493,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent": {
+        "github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent": {
             "type": "object",
             "properties": {
                 "cache_creation_ephemeral_1h_input_tokens": {
@@ -13860,7 +15598,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.Tenant": {
+        "github_com_konglong87_niuma_internal_storage_mysql.Tenant": {
             "type": "object",
             "properties": {
                 "id": {
@@ -13880,7 +15618,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.UsageDaily": {
+        "github_com_konglong87_niuma_internal_storage_mysql.UsageDaily": {
             "type": "object",
             "properties": {
                 "cache_creation_input_tokens": {
@@ -13927,7 +15665,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.UsageLedger": {
+        "github_com_konglong87_niuma_internal_storage_mysql.UsageLedger": {
             "type": "object",
             "properties": {
                 "cache_creation_ephemeral_1h_input_tokens": {
@@ -14019,7 +15757,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_storage_mysql.User": {
+        "github_com_konglong87_niuma_internal_storage_mysql.User": {
             "type": "object",
             "properties": {
                 "display_name": {
@@ -14054,20 +15792,20 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_tenantpkg.Manifest": {
+        "github_com_konglong87_niuma_internal_tenantpkg.Manifest": {
             "type": "object",
             "properties": {
                 "files": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_tenantpkg.ManifestFile"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_tenantpkg.ManifestFile"
                     }
                 },
                 "package_sha256": {
                     "type": "string"
                 },
                 "render": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_tenantpkg.RenderInfo"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_tenantpkg.RenderInfo"
                 },
                 "schema_version": {
                     "type": "string"
@@ -14077,7 +15815,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_tenantpkg.ManifestFile": {
+        "github_com_konglong87_niuma_internal_tenantpkg.ManifestFile": {
             "type": "object",
             "properties": {
                 "path": {
@@ -14097,7 +15835,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_tenantpkg.RenderInfo": {
+        "github_com_konglong87_niuma_internal_tenantpkg.RenderInfo": {
             "type": "object",
             "properties": {
                 "entrypoint": {
@@ -14129,7 +15867,7 @@
                 }
             }
         },
-        "github_com_konglong87_go-e2e_internal_tools.FileChange": {
+        "github_com_konglong87_niuma_internal_tools.FileChange": {
             "type": "object",
             "properties": {
                 "after": {
@@ -14180,7 +15918,7 @@
                     "description": "BeforeMetadata carries capability-aware filesystem metadata (mtime, owner,\nxattr) restored best-effort after content. A nil pointer means no metadata\nwas captured; individual capabilities carry their own \"known\" flags.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_files.Metadata"
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_files.Metadata"
                         }
                     ]
                 },
@@ -14783,7 +16521,7 @@
                     "type": "string"
                 },
                 "build_info": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_buildinfo.Info"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_buildinfo.Info"
                 },
                 "duration_ms": {
                     "type": "integer"
@@ -15044,7 +16782,7 @@
                 "issues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_config.SettingsIssue"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_config.SettingsIssue"
                     }
                 },
                 "valid": {
@@ -15196,14 +16934,14 @@
                 "conversations": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileConversationSummary"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentProfileConversationSummary"
                     }
                 },
                 "message_count": {
                     "type": "integer"
                 },
                 "profile": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfile"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentProfile"
                 },
                 "run_count": {
                     "type": "integer"
@@ -15211,7 +16949,7 @@
                 "teams": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileTeamLink"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentProfileTeamLink"
                     }
                 }
             }
@@ -15648,7 +17386,7 @@
             "properties": {
                 "cwd": {
                     "type": "string",
-                    "example": "/Users/example/GolandProjects/golang-cc"
+                    "example": "/Users/example/GolandProjects/niuma"
                 }
             }
         },
@@ -15809,17 +17547,17 @@
                 "blocked_overrides": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.BlockedOverride"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.BlockedOverride"
                     }
                 },
                 "config": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ProfileDocument"
                 },
                 "effective_hash": {
                     "type": "string"
                 },
                 "profile": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.Profile"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.Profile"
                 },
                 "profile_key": {
                     "type": "string"
@@ -15828,7 +17566,7 @@
                     "type": "integer"
                 },
                 "requested": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ProfileDocument"
                 },
                 "requested_hash": {
                     "type": "string"
@@ -15852,7 +17590,7 @@
                 "acceptance_criteria": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalCriterion"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.GoalCriterion"
                     }
                 },
                 "created_at": {
@@ -15864,7 +17602,7 @@
                 "dependencies": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalDependency"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.GoalDependency"
                     }
                 },
                 "goal_id": {
@@ -15873,13 +17611,13 @@
                 "risks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalRisk"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.GoalRisk"
                     }
                 },
                 "steps": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalStep"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.GoalStep"
                     }
                 },
                 "summary": {
@@ -15942,7 +17680,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Status"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Status"
                 },
                 "token_budget": {
                     "type": "integer"
@@ -15981,7 +17719,7 @@
             "type": "object",
             "properties": {
                 "asset": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_imagegen.Artifact"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_imagegen.Artifact"
                 }
             }
         },
@@ -16000,7 +17738,7 @@
             "type": "object",
             "properties": {
                 "capability": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_config.ImageModelCapability"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_config.ImageModelCapability"
                 },
                 "image_protocol": {
                     "type": "string"
@@ -16060,7 +17798,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_imagegen.GenerationRecord"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_imagegen.GenerationRecord"
                     }
                 }
             }
@@ -16071,7 +17809,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeChunk"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.KnowledgeChunk"
                     }
                 }
             }
@@ -16093,7 +17831,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent"
                     }
                 }
             }
@@ -16104,7 +17842,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                     }
                 }
             }
@@ -16115,7 +17853,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AuditLog"
                     }
                 },
                 "has_more": {
@@ -16132,7 +17870,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Document"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Document"
                     }
                 }
             }
@@ -16143,7 +17881,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.EffectiveSkill"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.EffectiveSkill"
                     }
                 }
             }
@@ -16154,7 +17892,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Event"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Event"
                     }
                 }
             }
@@ -16165,7 +17903,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalEvidence"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.GoalEvidence"
                     }
                 }
             }
@@ -16176,7 +17914,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Goal"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Goal"
                     }
                 }
             }
@@ -16187,7 +17925,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeDocument"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.KnowledgeDocument"
                     }
                 }
             }
@@ -16198,7 +17936,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_skills.Skill"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_skills.Skill"
                     }
                 },
                 "workspace": {
@@ -16212,7 +17950,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Memory"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Memory"
                     }
                 }
             }
@@ -16223,7 +17961,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message"
                     }
                 }
             }
@@ -16234,7 +17972,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session"
                     }
                 }
             }
@@ -16245,7 +17983,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.SkillOverride"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.SkillOverride"
                     }
                 }
             }
@@ -16256,7 +17994,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Skill"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Skill"
                     }
                 }
             }
@@ -16267,7 +18005,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent"
                     }
                 },
                 "has_more": {
@@ -16284,7 +18022,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.QuotaEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.QuotaEvent"
                     }
                 },
                 "has_more": {
@@ -16301,7 +18039,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.UsageDaily"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.UsageDaily"
                     }
                 },
                 "has_more": {
@@ -16318,7 +18056,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.UsageLedger"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.UsageLedger"
                     }
                 },
                 "has_more": {
@@ -16335,7 +18073,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Tenant"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Tenant"
                     }
                 },
                 "has_more": {
@@ -16352,7 +18090,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.User"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.User"
                     }
                 },
                 "has_more": {
@@ -16549,7 +18287,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message"
                     }
                 },
                 "has_more": {
@@ -16770,7 +18508,7 @@
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_pendinginput.PendingInput"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_pendinginput.PendingInput"
                 },
                 "session_id": {
                     "type": "integer"
@@ -16815,7 +18553,7 @@
                     "type": "integer"
                 },
                 "cache_diagnostics": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheRecordDiagnostics"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheRecordDiagnostics"
                 },
                 "context_manifest": {
                     "type": "array",
@@ -16835,7 +18573,7 @@
                 "messages_summary": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.MessageSummary"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.MessageSummary"
                     }
                 },
                 "model": {
@@ -16851,7 +18589,7 @@
                     }
                 },
                 "request_redaction": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.RequestRedaction"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.RequestRedaction"
                 },
                 "scope": {
                     "type": "string"
@@ -16865,7 +18603,7 @@
                 "system_blocks_summary": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.SystemBlockSummary"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.SystemBlockSummary"
                     }
                 },
                 "system_bytes": {
@@ -16883,7 +18621,7 @@
                 "tools_summary": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.ToolSummary"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.ToolSummary"
                     }
                 },
                 "turn": {
@@ -16933,7 +18671,7 @@
                     "type": "integer"
                 },
                 "cache_diagnostics": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheSessionDiagnostics"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheSessionDiagnostics"
                 },
                 "first_timestamp": {
                     "type": "string"
@@ -17092,7 +18830,7 @@
                 "tool_calls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_query.ToolTrace"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_query.ToolTrace"
                     }
                 },
                 "transcript_path": {
@@ -17102,7 +18840,7 @@
                     "type": "integer"
                 },
                 "usage": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_query.Usage"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_query.Usage"
                 }
             }
         },
@@ -17126,13 +18864,13 @@
             "type": "object",
             "properties": {
                 "decision": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Decision"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Decision"
                 },
                 "event": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Event"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Event"
                 },
                 "goal": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Goal"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Goal"
                 }
             }
         },
@@ -17142,7 +18880,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_scheduler.Event"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_scheduler.Event"
                     }
                 },
                 "next_offset": {
@@ -17181,7 +18919,7 @@
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_scheduler.RunRecord"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_scheduler.RunRecord"
                     }
                 }
             }
@@ -17404,7 +19142,7 @@
                 "candidate_removals": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.HandoffCandidateRemoval"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.HandoffCandidateRemoval"
                     }
                 },
                 "cursor_prefix": {
@@ -17636,7 +19374,7 @@
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.Source"
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.Source"
                         }
                     ],
                     "example": "tenant"
@@ -17656,7 +19394,7 @@
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus"
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus"
                         }
                     ],
                     "example": "running"
@@ -17703,7 +19441,7 @@
                 },
                 "schema_version": {
                     "type": "string",
-                    "example": "golang-cc.session-control-state.v1"
+                    "example": "niuma.session-control-state.v1"
                 },
                 "session_ref": {
                     "type": "string",
@@ -17712,7 +19450,7 @@
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus"
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus"
                         }
                     ],
                     "example": "running"
@@ -17902,7 +19640,7 @@
             "type": "object",
             "properties": {
                 "tenant": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Tenant"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Tenant"
                 },
                 "tenant_id": {
                     "type": "integer"
@@ -18277,34 +20015,34 @@
                 "agent_task_events": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent"
                     }
                 },
                 "agent_tasks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                     }
                 },
                 "audit_logs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AuditLog"
                     }
                 },
                 "messages": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message"
                     }
                 },
                 "session": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session"
                 },
                 "telemetry_events": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent"
                     }
                 },
                 "timeline": {
@@ -18380,7 +20118,7 @@
                     "type": "integer"
                 },
                 "manifest": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_tenantpkg.Manifest"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_tenantpkg.Manifest"
                 },
                 "manifest_ref": {
                     "type": "string"
@@ -18450,19 +20188,19 @@
             "type": "object",
             "properties": {
                 "agent_task": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                 },
                 "agent_task_event": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent"
                 },
                 "audit_log": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AuditLog"
                 },
                 "message": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message"
                 },
                 "telemetry_event": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent"
                 },
                 "time": {
                     "type": "string"
@@ -18690,7 +20428,7 @@
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_goal.Status"
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_goal.Status"
                         }
                     ],
                     "example": "blocked"
@@ -18716,10 +20454,10 @@
                     "type": "string"
                 },
                 "latest_task": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                 },
                 "session": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session"
                 },
                 "session_id": {
                     "type": "integer"
@@ -18733,7 +20471,7 @@
                 "tasks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                     }
                 },
                 "title": {
@@ -18756,23 +20494,23 @@
                 "events": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent"
                     }
                 },
                 "id": {
                     "type": "string"
                 },
                 "latest_task": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                 },
                 "messages": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message"
                     }
                 },
                 "session": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session"
                 },
                 "session_id": {
                     "type": "integer"
@@ -18786,7 +20524,7 @@
                 "tasks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask"
                     }
                 },
                 "title": {
@@ -18844,6 +20582,100 @@
                 },
                 "total_tokens": {
                     "type": "integer"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowBuiltins": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin"
+                    }
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowEvents": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Event"
+                    }
+                },
+                "has_more": {
+                    "type": "boolean"
+                },
+                "last_sequence": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowRecovery": {
+            "type": "object",
+            "properties": {
+                "revision": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowRun": {
+            "type": "object",
+            "properties": {
+                "replayed": {
+                    "type": "boolean"
+                },
+                "run": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Run"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowRuns": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Run"
+                    }
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowTemplate": {
+            "type": "object",
+            "properties": {
+                "template": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Template"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowTemplates": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Template"
+                    }
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowTypes": {
+            "type": "object",
+            "properties": {
+                "execution_kinds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor"
+                    }
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor"
+                    }
                 }
             }
         },
@@ -18941,7 +20773,7 @@
                     "type": "integer"
                 },
                 "channel": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionChannel"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionChannel"
                 },
                 "cwd": {
                     "type": "string"
@@ -18980,10 +20812,10 @@
                     "type": "string"
                 },
                 "source": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.Source"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.Source"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus"
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus"
                 },
                 "title": {
                     "type": "string"
@@ -19002,7 +20834,7 @@
                 "events": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent"
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent"
                     }
                 },
                 "has_more": {

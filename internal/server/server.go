@@ -22,6 +22,8 @@ import (
 
 	_ "github.com/konglong87/niuma/docs"
 	"github.com/konglong87/niuma/internal/agenttasks"
+	"github.com/konglong87/niuma/internal/agentteam/workflow"
+	"github.com/konglong87/niuma/internal/agentteam/workflowapp"
 	"github.com/konglong87/niuma/internal/anthropic"
 	"github.com/konglong87/niuma/internal/compact"
 	"github.com/konglong87/niuma/internal/config"
@@ -45,6 +47,10 @@ import (
 )
 
 type Options struct {
+	WorkflowReadOnly  bool
+	WorkflowService   *workflowapp.Service
+	WorkflowTaskOwner func(context.Context, uint64) (string, bool, error)
+
 	Host             string
 	Port             int
 	AuthToken        string
@@ -517,6 +523,7 @@ func newRouter(opts Options, queryFn QueryFunc) *gin.Engine {
 	router.Any("/tenant/prompt-templates", gin.WrapF(promptTemplatesHandler(opts)))
 	router.Any("/tenant/prompt-templates/:id", gin.WrapF(promptTemplatesHandler(opts)))
 	registerAgentProfileRoutes(router, opts)
+	registerWorkflowRoutes(router, opts)
 	registerSettingsEnvironmentRoutes(router, opts)
 	router.Any("/tenant/agent-teams", gin.WrapF(tenantAgentTeamsHandler(opts)))
 	router.Any("/tenant/agent-teams/:key", gin.WrapF(tenantAgentTeamsHandler(opts)))
@@ -1482,6 +1489,8 @@ func recordTenantAudit(ctx context.Context, svc TenantService, action, resourceT
 
 func writeTenantServiceError(w http.ResponseWriter, err error) {
 	switch {
+	case errors.Is(err, workflow.ErrOwnedTask):
+		writeTenantError(w, http.StatusConflict, "This task belongs to a workflow. Control it from the Team run page.")
 	case errors.Is(err, tenantservice.ErrMissingTenantKey), errors.Is(err, tenantservice.ErrMissingUserID), errors.Is(err, tenantservice.ErrInvalidRequest):
 		writeTenantError(w, http.StatusBadRequest, err.Error())
 	case errors.Is(err, tenantservice.ErrForbidden):

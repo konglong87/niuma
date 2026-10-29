@@ -1,13 +1,13 @@
 basePath: /
 definitions:
-  github_com_konglong87_go-e2e_internal_agentprofile.BlockedOverride:
+  github_com_konglong87_niuma_internal_agentprofile.BlockedOverride:
     properties:
       field:
         type: string
       reason:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.CapabilityPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.CapabilityPolicy:
     properties:
       allow_agents:
         type: boolean
@@ -22,9 +22,9 @@ definitions:
           type: string
         type: array
       tools:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ToolPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ToolPolicy'
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.ContextPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.ContextPolicy:
     properties:
       git:
         type: boolean
@@ -39,12 +39,33 @@ definitions:
       workspace:
         type: boolean
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.ExecutionPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.ExecutionKind:
+    enum:
+    - text
+    - computer
+    - image
+    type: string
+    x-enum-varnames:
+    - ExecutionKindText
+    - ExecutionKindComputer
+    - ExecutionKindImage
+  github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor:
+    properties:
+      display_name:
+        type: string
+      kind:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKind'
+      workflow_supported:
+        type: boolean
+    type: object
+  github_com_konglong87_niuma_internal_agentprofile.ExecutionPolicy:
     properties:
       auto_compact:
         type: boolean
       effort:
         type: string
+      kind:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKind'
       max_parallel_read_only_tools:
         type: integer
       max_tokens:
@@ -58,14 +79,16 @@ definitions:
       runtime_profile:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.IdentityPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.IdentityPolicy:
     properties:
       description:
         type: string
       display_name:
         type: string
+      role_type:
+        type: string
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.PermissionMode:
+  github_com_konglong87_niuma_internal_agentprofile.PermissionMode:
     enum:
     - ask
     - deny
@@ -77,10 +100,10 @@ definitions:
     - PermissionModeDeny
     - PermissionModeAllow
     - PermissionModeBypass
-  github_com_konglong87_go-e2e_internal_agentprofile.Profile:
+  github_com_konglong87_niuma_internal_agentprofile.Profile:
     properties:
       config:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ProfileDocument'
       description:
         type: string
       display_name:
@@ -100,30 +123,30 @@ definitions:
       requested_hash:
         type: string
       scope:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.Scope'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.Scope'
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.Status'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.Status'
       tenant_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument:
+  github_com_konglong87_niuma_internal_agentprofile.ProfileDocument:
     properties:
       capabilities:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.CapabilityPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.CapabilityPolicy'
       context:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ContextPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ContextPolicy'
       execution:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ExecutionPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionPolicy'
       identity:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.IdentityPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.IdentityPolicy'
       prompt:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.PromptPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.PromptPolicy'
       safety:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.SafetyPolicy'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.SafetyPolicy'
       schema_version:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.PromptMode:
+  github_com_konglong87_niuma_internal_agentprofile.PromptMode:
     enum:
     - code
     - chat
@@ -131,12 +154,12 @@ definitions:
     x-enum-varnames:
     - PromptModeCode
     - PromptModeChat
-  github_com_konglong87_go-e2e_internal_agentprofile.PromptPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.PromptPolicy:
     properties:
       language:
         type: string
       mode:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.PromptMode'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.PromptMode'
       output_style:
         type: string
       persona:
@@ -144,16 +167,25 @@ definitions:
       system_addendum:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.SafetyPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor:
+    properties:
+      description:
+        type: string
+      display_name:
+        type: string
+      key:
+        type: string
+    type: object
+  github_com_konglong87_niuma_internal_agentprofile.SafetyPolicy:
     properties:
       allow_unsandboxed_commands:
         type: boolean
       permission_mode:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.PermissionMode'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.PermissionMode'
       sandbox:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.SandboxMode'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.SandboxMode'
     type: object
-  github_com_konglong87_go-e2e_internal_agentprofile.SandboxMode:
+  github_com_konglong87_niuma_internal_agentprofile.SandboxMode:
     enum:
     - required
     - optional
@@ -163,7 +195,7 @@ definitions:
     - SandboxRequired
     - SandboxOptional
     - SandboxDisabled
-  github_com_konglong87_go-e2e_internal_agentprofile.Scope:
+  github_com_konglong87_niuma_internal_agentprofile.Scope:
     enum:
     - builtin
     - tenant_shared
@@ -173,7 +205,7 @@ definitions:
     - ScopeBuiltin
     - ScopeTenantShared
     - ScopeUserPrivate
-  github_com_konglong87_go-e2e_internal_agentprofile.Status:
+  github_com_konglong87_niuma_internal_agentprofile.Status:
     enum:
     - draft
     - validating
@@ -185,7 +217,7 @@ definitions:
     - StatusValidating
     - StatusPublished
     - StatusArchived
-  github_com_konglong87_go-e2e_internal_agentprofile.ToolPolicy:
+  github_com_konglong87_niuma_internal_agentprofile.ToolPolicy:
     properties:
       allow:
         items:
@@ -196,7 +228,7 @@ definitions:
           type: string
         type: array
     type: object
-  github_com_konglong87_go-e2e_internal_agenttasks.Attachment:
+  github_com_konglong87_niuma_internal_agenttasks.Attachment:
     properties:
       attachment_id:
         type: string
@@ -213,7 +245,395 @@ definitions:
       url:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_buildinfo.Info:
+  github_com_konglong87_niuma_internal_agentteam_workflow.Agent:
+    properties:
+      effort:
+        type: string
+      kind:
+        type: string
+      max_output_tokens:
+        type: integer
+      model:
+        type: string
+      name:
+        type: string
+      profile_hash:
+        type: string
+      profile_id:
+        type: integer
+      profile_key:
+        type: string
+      profile_version:
+        type: integer
+      provider:
+        type: string
+      ref:
+        type: string
+      role_type:
+        type: string
+      route_hash:
+        type: string
+      system_prompt:
+        type: string
+      tools:
+        items:
+          type: string
+        type: array
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Artifact:
+    properties:
+      attempt_no:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      kind:
+        type: string
+      node_id:
+        type: string
+      sha256:
+        type: string
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Attempt:
+    properties:
+      budget_reserved:
+        description: BudgetReserved is the immutable admission reservation, not provider
+          usage.
+        type: integer
+      epoch:
+        type: integer
+      failure:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure'
+      finished_at:
+        type: string
+      model:
+        type: string
+      number:
+        type: integer
+      provider:
+        type: string
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status'
+      task_id:
+        type: integer
+      usage:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Usage'
+      usage_known:
+        type: boolean
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Definition:
+    properties:
+      limits:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Limits'
+      nodes:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Node'
+        type: array
+      schema_version:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Event:
+    properties:
+      attempt_no:
+        type: integer
+      created_at:
+        type: string
+      failure:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure'
+      node_id:
+        type: string
+      sequence:
+        type: integer
+      status:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status'
+      text:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.EventType'
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.EventType:
+    enum:
+    - run_queued
+    - run_started
+    - task_created
+    - task_waiting_dependency
+    - agent_started
+    - agent_output_delta
+    - agent_phase
+    - agent_completed
+    - agent_failed
+    - task_retry_scheduled
+    - run_cancel_requested
+    - run_cancelled
+    - task_cancelled
+    - run_completed
+    - run_failed
+    - run_timed_out
+    - run_interrupted
+    - run_recovered
+    type: string
+    x-enum-varnames:
+    - EventQueued
+    - EventStarted
+    - EventTaskCreated
+    - EventWaiting
+    - EventAgentStarted
+    - EventDelta
+    - EventPhase
+    - EventAgentCompleted
+    - EventAgentFailed
+    - EventRetry
+    - EventCancelRequested
+    - EventCancelled
+    - EventTaskCancelled
+    - EventCompleted
+    - EventFailed
+    - EventTimedOut
+    - EventInterrupted
+    - EventRecovered
+  github_com_konglong87_niuma_internal_agentteam_workflow.Failure:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      retryable:
+        type: boolean
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Limits:
+    properties:
+      max_parallel:
+        type: integer
+      max_total_tokens:
+        type: integer
+      run_timeout_seconds:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Node:
+    properties:
+      agent_ref:
+        type: string
+      depends_on:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      instruction:
+        type: string
+      retry:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy'
+      timeout_seconds:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun:
+    properties:
+      artifact_id:
+        type: string
+      attempts:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Attempt'
+        type: array
+      failure:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure'
+      next_retry_at:
+        type: string
+      node_id:
+        type: string
+      output:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status'
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Plan:
+    properties:
+      agents:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Agent'
+        type: array
+      definition:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition'
+      hash:
+        type: string
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy:
+    properties:
+      backoff_ms:
+        type: integer
+      max_attempts:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Run:
+    properties:
+      artifacts:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Artifact'
+        type: array
+      cancel_requested_at:
+        type: string
+      created_at:
+        type: string
+      deadline:
+        type: string
+      epoch:
+        type: integer
+      failure:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure'
+      finished_at:
+        type: string
+      id:
+        type: string
+      input:
+        type: string
+      last_sequence:
+        type: integer
+      lease_owner:
+        type: string
+      lease_until:
+        type: string
+      name:
+        type: string
+      nodes:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun'
+        type: array
+      plan:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Plan'
+      revision:
+        type: integer
+      scope:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Scope'
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status'
+      team_id:
+        type: integer
+      team_key:
+        type: string
+      team_version:
+        type: integer
+      uncertain_tokens:
+        description: |-
+          UncertainTokens includes in-flight and unconfirmed attempt reservations.
+          It is not actual usage or a monetary amount.
+        type: integer
+      usage:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Usage'
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Scope:
+    properties:
+      tenant_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflow.Status:
+    enum:
+    - queued
+    - pending
+    - ready
+    - running
+    - retry_wait
+    - completed
+    - failed
+    - timed_out
+    - cancel_requested
+    - cancelled
+    - interrupted
+    - blocked
+    type: string
+    x-enum-varnames:
+    - Queued
+    - Pending
+    - Ready
+    - Running
+    - RetryWait
+    - Completed
+    - Failed
+    - TimedOut
+    - CancelRequested
+    - Cancelled
+    - Interrupted
+    - Blocked
+  github_com_konglong87_niuma_internal_agentteam_workflow.Usage:
+    properties:
+      cache_read_tokens:
+        type: integer
+      cache_write_tokens:
+        type: integer
+      input_tokens:
+        type: integer
+      output_tokens:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding:
+    properties:
+      profile_id:
+        type: integer
+      profile_key:
+        type: string
+      profile_version:
+        type: integer
+      ref:
+        type: string
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin:
+    properties:
+      description:
+        type: string
+      key:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest:
+    properties:
+      agents:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding'
+        type: array
+      definition:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition'
+      description:
+        type: string
+      key:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest:
+    properties:
+      input:
+        type: string
+      version:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_agentteam_workflowapp.Template:
+    properties:
+      agents:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding'
+        type: array
+      definition:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition'
+      description:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      version:
+        type: integer
+    type: object
+  github_com_konglong87_niuma_internal_buildinfo.Info:
     properties:
       build_time:
         type: string
@@ -232,7 +652,7 @@ definitions:
       version:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_config.HookCommand:
+  github_com_konglong87_niuma_internal_config.HookCommand:
     properties:
       command:
         type: string
@@ -245,7 +665,7 @@ definitions:
           type: string
         type: array
     type: object
-  github_com_konglong87_go-e2e_internal_config.ImageModelCapability:
+  github_com_konglong87_niuma_internal_config.ImageModelCapability:
     properties:
       aspectRatios:
         items:
@@ -282,7 +702,7 @@ definitions:
       supportsWatermark:
         type: boolean
     type: object
-  github_com_konglong87_go-e2e_internal_config.SettingsIssue:
+  github_com_konglong87_niuma_internal_config.SettingsIssue:
     properties:
       code:
         type: string
@@ -291,7 +711,7 @@ definitions:
       message:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_files.Metadata:
+  github_com_konglong87_niuma_internal_files.Metadata:
     properties:
       gid:
         type: integer
@@ -311,7 +731,7 @@ definitions:
       xattrs_known:
         type: boolean
     type: object
-  github_com_konglong87_go-e2e_internal_goal.CriterionStatus:
+  github_com_konglong87_niuma_internal_goal.CriterionStatus:
     enum:
     - pending
     - passed
@@ -323,7 +743,7 @@ definitions:
     - CriterionStatusPassed
     - CriterionStatusFailed
     - CriterionStatusWaived
-  github_com_konglong87_go-e2e_internal_goal.Decision:
+  github_com_konglong87_niuma_internal_goal.Decision:
     properties:
       blocker_key:
         type: string
@@ -334,9 +754,9 @@ definitions:
       reason:
         type: string
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.DecisionStatus'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.DecisionStatus'
     type: object
-  github_com_konglong87_go-e2e_internal_goal.DecisionStatus:
+  github_com_konglong87_niuma_internal_goal.DecisionStatus:
     enum:
     - continue
     - complete
@@ -348,7 +768,7 @@ definitions:
     - DecisionComplete
     - DecisionBlocked
     - DecisionFailed
-  github_com_konglong87_go-e2e_internal_goal.DependencyStatus:
+  github_com_konglong87_niuma_internal_goal.DependencyStatus:
     enum:
     - unknown
     - available
@@ -360,7 +780,7 @@ definitions:
     - DependencyStatusAvailable
     - DependencyStatusMissing
     - DependencyStatusBlocked
-  github_com_konglong87_go-e2e_internal_goal.Event:
+  github_com_konglong87_niuma_internal_goal.Event:
     properties:
       blocker_key:
         type: string
@@ -389,13 +809,13 @@ definitions:
       session_id:
         type: string
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Status'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Status'
       turn:
         type: integer
       type:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.EventType'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.EventType'
     type: object
-  github_com_konglong87_go-e2e_internal_goal.EventType:
+  github_com_konglong87_niuma_internal_goal.EventType:
     enum:
     - goal_started
     - goal_stopped
@@ -413,7 +833,7 @@ definitions:
     - EventTurnFinished
     - EventTurnFailed
     - EventStatusChanged
-  github_com_konglong87_go-e2e_internal_goal.EvidenceType:
+  github_com_konglong87_niuma_internal_goal.EvidenceType:
     enum:
     - command
     - test
@@ -433,7 +853,7 @@ definitions:
     - EvidenceTypeDoc
     - EvidenceTypeArtifact
     - EvidenceTypeManual
-  github_com_konglong87_go-e2e_internal_goal.Goal:
+  github_com_konglong87_niuma_internal_goal.Goal:
     properties:
       created_at:
         type: string
@@ -466,7 +886,7 @@ definitions:
       session_id:
         type: string
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Status'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Status'
       token_budget:
         type: integer
       turn_budget:
@@ -476,7 +896,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_goal.GoalCriterion:
+  github_com_konglong87_niuma_internal_goal.GoalCriterion:
     properties:
       description:
         type: string
@@ -489,9 +909,9 @@ definitions:
       required:
         type: boolean
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.CriterionStatus'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.CriterionStatus'
     type: object
-  github_com_konglong87_go-e2e_internal_goal.GoalDependency:
+  github_com_konglong87_niuma_internal_goal.GoalDependency:
     properties:
       description:
         type: string
@@ -504,11 +924,11 @@ definitions:
       required:
         type: boolean
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.DependencyStatus'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.DependencyStatus'
       type:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_goal.GoalEvidence:
+  github_com_konglong87_niuma_internal_goal.GoalEvidence:
     properties:
       command:
         type: string
@@ -529,9 +949,9 @@ definitions:
       summary:
         type: string
       type:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.EvidenceType'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.EvidenceType'
     type: object
-  github_com_konglong87_go-e2e_internal_goal.GoalRisk:
+  github_com_konglong87_niuma_internal_goal.GoalRisk:
     properties:
       description:
         type: string
@@ -540,13 +960,13 @@ definitions:
       mitigation:
         type: string
       severity:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.RiskSeverity'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.RiskSeverity'
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.RiskStatus'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.RiskStatus'
       type:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_goal.GoalStep:
+  github_com_konglong87_niuma_internal_goal.GoalStep:
     properties:
       depends_on:
         items:
@@ -561,11 +981,11 @@ definitions:
       rationale:
         type: string
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.StepStatus'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.StepStatus'
       title:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_goal.RiskSeverity:
+  github_com_konglong87_niuma_internal_goal.RiskSeverity:
     enum:
     - low
     - medium
@@ -577,7 +997,7 @@ definitions:
     - RiskSeverityMedium
     - RiskSeverityHigh
     - RiskSeverityCritical
-  github_com_konglong87_go-e2e_internal_goal.RiskStatus:
+  github_com_konglong87_niuma_internal_goal.RiskStatus:
     enum:
     - open
     - mitigated
@@ -589,7 +1009,7 @@ definitions:
     - RiskStatusMitigated
     - RiskStatusAccepted
     - RiskStatusEscalated
-  github_com_konglong87_go-e2e_internal_goal.Status:
+  github_com_konglong87_niuma_internal_goal.Status:
     enum:
     - active
     - complete
@@ -603,7 +1023,7 @@ definitions:
     - StatusBlocked
     - StatusStopped
     - StatusFailed
-  github_com_konglong87_go-e2e_internal_goal.StepStatus:
+  github_com_konglong87_niuma_internal_goal.StepStatus:
     enum:
     - pending
     - active
@@ -617,7 +1037,7 @@ definitions:
     - StepStatusDone
     - StepStatusBlocked
     - StepStatusSkipped
-  github_com_konglong87_go-e2e_internal_imagegen.Artifact:
+  github_com_konglong87_niuma_internal_imagegen.Artifact:
     properties:
       asset_id:
         type: string
@@ -654,7 +1074,7 @@ definitions:
       width:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_imagegen.GenerationRecord:
+  github_com_konglong87_niuma_internal_imagegen.GenerationRecord:
     properties:
       asset_id:
         type: string
@@ -727,11 +1147,11 @@ definitions:
       user_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_pendinginput.PendingInput:
+  github_com_konglong87_niuma_internal_pendinginput.PendingInput:
     properties:
       attachments:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agenttasks.Attachment'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agenttasks.Attachment'
         type: array
       attempt:
         type: integer
@@ -760,7 +1180,7 @@ definitions:
       session_id:
         type: string
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_pendinginput.Status'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_pendinginput.Status'
       tenant_id:
         type: integer
       updated_at:
@@ -768,7 +1188,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_pendinginput.Status:
+  github_com_konglong87_niuma_internal_pendinginput.Status:
     enum:
     - queued
     - running
@@ -782,7 +1202,7 @@ definitions:
     - StatusSent
     - StatusFailed
     - StatusCancelled
-  github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticMessageBlock:
+  github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticMessageBlock:
     properties:
       block_index:
         type: integer
@@ -801,7 +1221,7 @@ definitions:
       type:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticSystemBlock:
+  github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticSystemBlock:
     properties:
       has_cache_control:
         type: boolean
@@ -820,7 +1240,7 @@ definitions:
       text_hash:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.CacheRecordDiagnostics:
+  github_com_konglong87_niuma_internal_promptdump.CacheRecordDiagnostics:
     properties:
       cache_control_block_count:
         type: integer
@@ -828,11 +1248,11 @@ definitions:
         type: integer
       largest_message_blocks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticMessageBlock'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticMessageBlock'
         type: array
       largest_uncached_system_blocks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticSystemBlock'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticSystemBlock'
         type: array
       message_cache_marker_count:
         type: integer
@@ -841,7 +1261,7 @@ definitions:
       prefix_through_skills_hash:
         type: string
       request_signature_delta_from_previous:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheSignatureDelta'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheSignatureDelta'
       request_signature_hash:
         type: string
       session_id:
@@ -857,7 +1277,7 @@ definitions:
       uncached_system_bytes:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.CacheSessionDiagnostics:
+  github_com_konglong87_niuma_internal_promptdump.CacheSessionDiagnostics:
     properties:
       cache_control_hash_stable:
         type: boolean
@@ -865,7 +1285,7 @@ definitions:
         type: integer
       largest_uncached_system_blocks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheDiagnosticSystemBlock'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheDiagnosticSystemBlock'
         type: array
       message_prefix_hash_stable:
         type: boolean
@@ -896,7 +1316,7 @@ definitions:
       uncached_system_bytes_max:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.CacheSignatureDelta:
+  github_com_konglong87_niuma_internal_promptdump.CacheSignatureDelta:
     properties:
       breaks_cache:
         type: boolean
@@ -923,7 +1343,7 @@ definitions:
       tools_changed:
         type: boolean
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.ContentBlockSummary:
+  github_com_konglong87_niuma_internal_promptdump.ContentBlockSummary:
     properties:
       actual_truncated:
         type: boolean
@@ -964,20 +1384,20 @@ definitions:
       type:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.MessageSummary:
+  github_com_konglong87_niuma_internal_promptdump.MessageSummary:
     properties:
       block_count:
         type: integer
       blocks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.ContentBlockSummary'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.ContentBlockSummary'
         type: array
       bytes:
         type: integer
       role:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.RequestRedaction:
+  github_com_konglong87_niuma_internal_promptdump.RequestRedaction:
     properties:
       mode:
         type: string
@@ -986,7 +1406,7 @@ definitions:
       text_omitted:
         type: boolean
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.SystemBlockSummary:
+  github_com_konglong87_niuma_internal_promptdump.SystemBlockSummary:
     properties:
       cache_scope:
         type: string
@@ -1007,7 +1427,7 @@ definitions:
       text_hash:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_promptdump.ToolSummary:
+  github_com_konglong87_niuma_internal_promptdump.ToolSummary:
     properties:
       description_bytes:
         type: integer
@@ -1022,7 +1442,7 @@ definitions:
       name:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_query.ComputerObservationReference:
+  github_com_konglong87_niuma_internal_query.ComputerObservationReference:
     properties:
       asset_id:
         type: string
@@ -1037,13 +1457,13 @@ definitions:
       size_bytes:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_query.ToolTrace:
+  github_com_konglong87_niuma_internal_query.ToolTrace:
     properties:
       computer_observation:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_query.ComputerObservationReference'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_query.ComputerObservationReference'
       file_changes:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_tools.FileChange'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_tools.FileChange'
         type: array
       id:
         type: string
@@ -1056,7 +1476,7 @@ definitions:
       output:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_query.Usage:
+  github_com_konglong87_niuma_internal_query.Usage:
     properties:
       cache_creation_ephemeral_1h_input_tokens:
         type: integer
@@ -1077,7 +1497,7 @@ definitions:
       speed:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_scheduler.Event:
+  github_com_konglong87_niuma_internal_scheduler.Event:
     properties:
       background_id:
         type: string
@@ -1102,7 +1522,7 @@ definitions:
       type:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_scheduler.RunRecord:
+  github_com_konglong87_niuma_internal_scheduler.RunRecord:
     properties:
       background_id:
         type: string
@@ -1125,21 +1545,21 @@ definitions:
       status:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_sessioncontrol.HandoffCandidateRemoval:
+  github_com_konglong87_niuma_internal_sessioncontrol.HandoffCandidateRemoval:
     properties:
       category:
         type: string
       estimated_tokens:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_sessioncontrol.SessionChannel:
+  github_com_konglong87_niuma_internal_sessioncontrol.SessionChannel:
     properties:
       account_key:
         type: string
       provider:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus:
+  github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus:
     enum:
     - idle
     - queued
@@ -1163,7 +1583,7 @@ definitions:
     - StatusFailed
     - StatusStopped
     - StatusArchived
-  github_com_konglong87_go-e2e_internal_sessioncontrol.Source:
+  github_com_konglong87_niuma_internal_sessioncontrol.Source:
     enum:
     - tenant
     - local
@@ -1171,7 +1591,7 @@ definitions:
     x-enum-varnames:
     - SourceTenant
     - SourceLocal
-  github_com_konglong87_go-e2e_internal_skills.Skill:
+  github_com_konglong87_niuma_internal_skills.Skill:
     properties:
       agent:
         type: string
@@ -1198,7 +1618,7 @@ definitions:
       hooks:
         additionalProperties:
           items:
-            $ref: '#/definitions/github_com_konglong87_go-e2e_internal_config.HookCommand'
+            $ref: '#/definitions/github_com_konglong87_niuma_internal_config.HookCommand'
           type: array
         type: object
       legacy:
@@ -1226,7 +1646,7 @@ definitions:
       runtime_ref:
         type: string
       source:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_skills.Source'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_skills.Source'
       user_invocable:
         type: boolean
       version:
@@ -1234,7 +1654,7 @@ definitions:
       when_to_use:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_skills.Source:
+  github_com_konglong87_niuma_internal_skills.Source:
     enum:
     - user
     - project
@@ -1252,7 +1672,7 @@ definitions:
     - SourceMarketplace
     - SourceMCP
     - SourceTenant
-  github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfile:
+  github_com_konglong87_niuma_internal_storage_mysql.AgentProfile:
     properties:
       config_json:
         type: string
@@ -1299,7 +1719,7 @@ definitions:
       validation_json:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileConversationSummary:
+  github_com_konglong87_niuma_internal_storage_mysql.AgentProfileConversationSummary:
     properties:
       account_id:
         type: integer
@@ -1338,7 +1758,7 @@ definitions:
       title:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileTeamLink:
+  github_com_konglong87_niuma_internal_storage_mysql.AgentProfileTeamLink:
     properties:
       account_id:
         type: integer
@@ -1363,7 +1783,7 @@ definitions:
       trigger_policy:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask:
+  github_com_konglong87_niuma_internal_storage_mysql.AgentTask:
     properties:
       agent_name:
         type: string
@@ -1396,7 +1816,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent:
+  github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent:
     properties:
       channel:
         type: string
@@ -1417,7 +1837,7 @@ definitions:
       trace_id:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog:
+  github_com_konglong87_niuma_internal_storage_mysql.AuditLog:
     properties:
       action:
         type: string
@@ -1438,7 +1858,7 @@ definitions:
       trace_id:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.Document:
+  github_com_konglong87_niuma_internal_storage_mysql.Document:
     properties:
       active:
         type: boolean
@@ -1455,7 +1875,7 @@ definitions:
       version:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.EffectiveSkill:
+  github_com_konglong87_niuma_internal_storage_mysql.EffectiveSkill:
     properties:
       config_json:
         type: string
@@ -1486,7 +1906,7 @@ definitions:
       version:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeChunk:
+  github_com_konglong87_niuma_internal_storage_mysql.KnowledgeChunk:
     properties:
       chunk_index:
         type: integer
@@ -1509,7 +1929,7 @@ definitions:
       title:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeDocument:
+  github_com_konglong87_niuma_internal_storage_mysql.KnowledgeDocument:
     properties:
       content:
         type: string
@@ -1530,7 +1950,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.Memory:
+  github_com_konglong87_niuma_internal_storage_mysql.Memory:
     properties:
       category:
         type: string
@@ -1549,7 +1969,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.Message:
+  github_com_konglong87_niuma_internal_storage_mysql.Message:
     properties:
       content:
         type: string
@@ -1580,7 +2000,7 @@ definitions:
       turn_index:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.QuotaEvent:
+  github_com_konglong87_niuma_internal_storage_mysql.QuotaEvent:
     properties:
       created_at:
         type: string
@@ -1611,7 +2031,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.Session:
+  github_com_konglong87_niuma_internal_storage_mysql.Session:
     properties:
       cwd:
         type: string
@@ -1630,7 +2050,7 @@ definitions:
       title:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.Skill:
+  github_com_konglong87_niuma_internal_storage_mysql.Skill:
     properties:
       config_json:
         type: string
@@ -1659,7 +2079,7 @@ definitions:
       version:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.SkillOverride:
+  github_com_konglong87_niuma_internal_storage_mysql.SkillOverride:
     properties:
       config_json:
         type: string
@@ -1678,7 +2098,7 @@ definitions:
       version:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent:
+  github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent:
     properties:
       cache_creation_ephemeral_1h_input_tokens:
         type: integer
@@ -1748,7 +2168,7 @@ definitions:
       user_key:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.Tenant:
+  github_com_konglong87_niuma_internal_storage_mysql.Tenant:
     properties:
       id:
         type: integer
@@ -1761,7 +2181,7 @@ definitions:
       tenant_key:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.UsageDaily:
+  github_com_konglong87_niuma_internal_storage_mysql.UsageDaily:
     properties:
       cache_creation_input_tokens:
         type: integer
@@ -1792,7 +2212,7 @@ definitions:
       usage_date:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.UsageLedger:
+  github_com_konglong87_niuma_internal_storage_mysql.UsageLedger:
     properties:
       cache_creation_ephemeral_1h_input_tokens:
         type: integer
@@ -1853,7 +2273,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_storage_mysql.User:
+  github_com_konglong87_niuma_internal_storage_mysql.User:
     properties:
       display_name:
         type: string
@@ -1876,22 +2296,22 @@ definitions:
       user_key:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_tenantpkg.Manifest:
+  github_com_konglong87_niuma_internal_tenantpkg.Manifest:
     properties:
       files:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_tenantpkg.ManifestFile'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_tenantpkg.ManifestFile'
         type: array
       package_sha256:
         type: string
       render:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_tenantpkg.RenderInfo'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_tenantpkg.RenderInfo'
       schema_version:
         type: string
       skill_key:
         type: string
     type: object
-  github_com_konglong87_go-e2e_internal_tenantpkg.ManifestFile:
+  github_com_konglong87_niuma_internal_tenantpkg.ManifestFile:
     properties:
       path:
         type: string
@@ -1904,7 +2324,7 @@ definitions:
       size:
         type: integer
     type: object
-  github_com_konglong87_go-e2e_internal_tenantpkg.RenderInfo:
+  github_com_konglong87_niuma_internal_tenantpkg.RenderInfo:
     properties:
       entrypoint:
         type: string
@@ -1925,7 +2345,7 @@ definitions:
           type: string
         type: array
     type: object
-  github_com_konglong87_go-e2e_internal_tools.FileChange:
+  github_com_konglong87_niuma_internal_tools.FileChange:
     properties:
       after:
         type: string
@@ -1963,7 +2383,7 @@ definitions:
         type: string
       before_metadata:
         allOf:
-        - $ref: '#/definitions/github_com_konglong87_go-e2e_internal_files.Metadata'
+        - $ref: '#/definitions/github_com_konglong87_niuma_internal_files.Metadata'
         description: |-
           BeforeMetadata carries capability-aware filesystem metadata (mtime, owner,
           xattr) restored best-effort after content. A nil pointer means no metadata
@@ -2380,7 +2800,7 @@ definitions:
       agent_version:
         type: string
       build_info:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_buildinfo.Info'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_buildinfo.Info'
       duration_ms:
         type: integer
       run_id:
@@ -2553,7 +2973,7 @@ definitions:
     properties:
       issues:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_config.SettingsIssue'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_config.SettingsIssue'
         type: array
       valid:
         type: boolean
@@ -2653,17 +3073,17 @@ definitions:
     properties:
       conversations:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileConversationSummary'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentProfileConversationSummary'
         type: array
       message_count:
         type: integer
       profile:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfile'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentProfile'
       run_count:
         type: integer
       teams:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentProfileTeamLink'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentProfileTeamLink'
         type: array
     type: object
   internal_server.SwaggerAgentSlashCommand:
@@ -2955,7 +3375,7 @@ definitions:
   internal_server.SwaggerAgentWorkspaceValidateRequest:
     properties:
       cwd:
-        example: /Users/example/GolandProjects/golang-cc
+        example: /Users/example/GolandProjects/niuma
         type: string
     type: object
   internal_server.SwaggerAgentWorkspaceValidateResponse:
@@ -3060,20 +3480,20 @@ definitions:
     properties:
       blocked_overrides:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.BlockedOverride'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.BlockedOverride'
         type: array
       config:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ProfileDocument'
       effective_hash:
         type: string
       profile:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.Profile'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.Profile'
       profile_key:
         type: string
       profile_version:
         type: integer
       requested:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_agentprofile.ProfileDocument'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ProfileDocument'
       requested_hash:
         type: string
       source:
@@ -3088,7 +3508,7 @@ definitions:
     properties:
       acceptance_criteria:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalCriterion'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.GoalCriterion'
         type: array
       created_at:
         type: string
@@ -3096,17 +3516,17 @@ definitions:
         type: string
       dependencies:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalDependency'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.GoalDependency'
         type: array
       goal_id:
         type: string
       risks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalRisk'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.GoalRisk'
         type: array
       steps:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalStep'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.GoalStep'
         type: array
       summary:
         type: string
@@ -3148,7 +3568,7 @@ definitions:
       session_id:
         type: string
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Status'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Status'
       token_budget:
         type: integer
       turn_budget:
@@ -3173,7 +3593,7 @@ definitions:
   internal_server.SwaggerImageArtifactResponse:
     properties:
       asset:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_imagegen.Artifact'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_imagegen.Artifact'
     type: object
   internal_server.SwaggerImageCapabilitiesResponse:
     properties:
@@ -3185,7 +3605,7 @@ definitions:
   internal_server.SwaggerImageCapabilityEntry:
     properties:
       capability:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_config.ImageModelCapability'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_config.ImageModelCapability'
       image_protocol:
         type: string
       label:
@@ -3224,14 +3644,14 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_imagegen.GenerationRecord'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_imagegen.GenerationRecord'
         type: array
     type: object
   internal_server.SwaggerKnowledgeSearchResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeChunk'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.KnowledgeChunk'
         type: array
     type: object
   internal_server.SwaggerListAgentSlashCommandsResponse:
@@ -3245,21 +3665,21 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent'
         type: array
     type: object
   internal_server.SwaggerListAgentTasksResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
         type: array
     type: object
   internal_server.SwaggerListAuditLogsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AuditLog'
         type: array
       has_more:
         type: boolean
@@ -3270,49 +3690,49 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Document'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Document'
         type: array
     type: object
   internal_server.SwaggerListEffectiveSkillsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.EffectiveSkill'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.EffectiveSkill'
         type: array
     type: object
   internal_server.SwaggerListGoalEventsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Event'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Event'
         type: array
     type: object
   internal_server.SwaggerListGoalEvidenceResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.GoalEvidence'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.GoalEvidence'
         type: array
     type: object
   internal_server.SwaggerListGoalsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Goal'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Goal'
         type: array
     type: object
   internal_server.SwaggerListKnowledgeDocumentsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.KnowledgeDocument'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.KnowledgeDocument'
         type: array
     type: object
   internal_server.SwaggerListLocalSkillsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_skills.Skill'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_skills.Skill'
         type: array
       workspace:
         type: string
@@ -3321,42 +3741,42 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Memory'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Memory'
         type: array
     type: object
   internal_server.SwaggerListMessagesResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message'
         type: array
     type: object
   internal_server.SwaggerListSessionsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session'
         type: array
     type: object
   internal_server.SwaggerListSkillOverridesResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.SkillOverride'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.SkillOverride'
         type: array
     type: object
   internal_server.SwaggerListSkillsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Skill'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Skill'
         type: array
     type: object
   internal_server.SwaggerListTelemetryEventsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent'
         type: array
       has_more:
         type: boolean
@@ -3367,7 +3787,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.QuotaEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.QuotaEvent'
         type: array
       has_more:
         type: boolean
@@ -3378,7 +3798,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.UsageDaily'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.UsageDaily'
         type: array
       has_more:
         type: boolean
@@ -3389,7 +3809,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.UsageLedger'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.UsageLedger'
         type: array
       has_more:
         type: boolean
@@ -3400,7 +3820,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Tenant'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Tenant'
         type: array
       has_more:
         type: boolean
@@ -3411,7 +3831,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.User'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.User'
         type: array
       has_more:
         type: boolean
@@ -3539,7 +3959,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message'
         type: array
       has_more:
         type: boolean
@@ -3683,7 +4103,7 @@ definitions:
   internal_server.SwaggerPendingInputResponse:
     properties:
       data:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_pendinginput.PendingInput'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_pendinginput.PendingInput'
       session_id:
         type: integer
       source_pending_input_id:
@@ -3712,7 +4132,7 @@ definitions:
       cache_control_bytes:
         type: integer
       cache_diagnostics:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheRecordDiagnostics'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheRecordDiagnostics'
       context_manifest:
         items:
           type: integer
@@ -3725,7 +4145,7 @@ definitions:
         type: integer
       messages_summary:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.MessageSummary'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.MessageSummary'
         type: array
       model:
         type: string
@@ -3736,7 +4156,7 @@ definitions:
           type: integer
         type: array
       request_redaction:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.RequestRedaction'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.RequestRedaction'
       scope:
         type: string
       session_id:
@@ -3745,7 +4165,7 @@ definitions:
         type: integer
       system_blocks_summary:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.SystemBlockSummary'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.SystemBlockSummary'
         type: array
       system_bytes:
         type: integer
@@ -3757,7 +4177,7 @@ definitions:
         type: integer
       tools_summary:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.ToolSummary'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.ToolSummary'
         type: array
       turn:
         type: integer
@@ -3790,7 +4210,7 @@ definitions:
       cache_control_blocks:
         type: integer
       cache_diagnostics:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_promptdump.CacheSessionDiagnostics'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_promptdump.CacheSessionDiagnostics'
       first_timestamp:
         type: string
       last_timestamp:
@@ -3894,14 +4314,14 @@ definitions:
         type: string
       tool_calls:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_query.ToolTrace'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_query.ToolTrace'
         type: array
       transcript_path:
         type: string
       turns:
         type: integer
       usage:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_query.Usage'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_query.Usage'
     type: object
   internal_server.SwaggerReadinessResponse:
     properties:
@@ -3917,17 +4337,17 @@ definitions:
   internal_server.SwaggerRunGoalResponse:
     properties:
       decision:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Decision'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Decision'
       event:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Event'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Event'
       goal:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Goal'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Goal'
     type: object
   internal_server.SwaggerRuntimeBackgroundEventsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_scheduler.Event'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_scheduler.Event'
         type: array
       next_offset:
         type: integer
@@ -3952,7 +4372,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_scheduler.RunRecord'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_scheduler.RunRecord'
         type: array
     type: object
   internal_server.SwaggerRuntimeBackgroundStopResponse:
@@ -4105,7 +4525,7 @@ definitions:
     properties:
       candidate_removals:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.HandoffCandidateRemoval'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.HandoffCandidateRemoval'
         type: array
       cursor_prefix:
         type: string
@@ -4261,14 +4681,14 @@ definitions:
         type: string
       source:
         allOf:
-        - $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.Source'
+        - $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.Source'
         enum:
         - tenant
         - local
         example: tenant
       status:
         allOf:
-        - $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus'
+        - $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus'
         enum:
         - idle
         - queued
@@ -4308,14 +4728,14 @@ definitions:
       run_id:
         type: integer
       schema_version:
-        example: golang-cc.session-control-state.v1
+        example: niuma.session-control-state.v1
         type: string
       session_ref:
         example: tenant:support-case-42
         type: string
       status:
         allOf:
-        - $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus'
+        - $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus'
         example: running
       updated_at:
         type: string
@@ -4438,7 +4858,7 @@ definitions:
   internal_server.SwaggerTenantContext:
     properties:
       tenant:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Tenant'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Tenant'
       tenant_id:
         type: integer
       user_id:
@@ -4683,25 +5103,25 @@ definitions:
     properties:
       agent_task_events:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent'
         type: array
       agent_tasks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
         type: array
       audit_logs:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AuditLog'
         type: array
       messages:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message'
         type: array
       session:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session'
       telemetry_events:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent'
         type: array
       timeline:
         items:
@@ -4751,7 +5171,7 @@ definitions:
       id:
         type: integer
       manifest:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_tenantpkg.Manifest'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_tenantpkg.Manifest'
       manifest_ref:
         type: string
       name:
@@ -4797,15 +5217,15 @@ definitions:
   internal_server.SwaggerTenantTimelineItem:
     properties:
       agent_task:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
       agent_task_event:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent'
       audit_log:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AuditLog'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AuditLog'
       message:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message'
       telemetry_event:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.TelemetryEvent'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.TelemetryEvent'
       time:
         type: string
       trace_id:
@@ -4955,7 +5375,7 @@ definitions:
         type: string
       status:
         allOf:
-        - $ref: '#/definitions/github_com_konglong87_go-e2e_internal_goal.Status'
+        - $ref: '#/definitions/github_com_konglong87_niuma_internal_goal.Status'
         example: blocked
       token_budget:
         type: integer
@@ -4971,9 +5391,9 @@ definitions:
       id:
         type: string
       latest_task:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
       session:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session'
       session_id:
         type: integer
       session_key:
@@ -4982,7 +5402,7 @@ definitions:
         type: string
       tasks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
         type: array
       title:
         type: string
@@ -4997,18 +5417,18 @@ definitions:
         type: string
       events:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent'
         type: array
       id:
         type: string
       latest_task:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
       messages:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Message'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Message'
         type: array
       session:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.Session'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.Session'
       session_id:
         type: integer
       session_key:
@@ -5017,7 +5437,7 @@ definitions:
         type: string
       tasks:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTask'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTask'
         type: array
       title:
         type: string
@@ -5056,6 +5476,66 @@ definitions:
         type: integer
       total_tokens:
         type: integer
+    type: object
+  internal_server.SwaggerWorkflowBuiltins:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin'
+        type: array
+    type: object
+  internal_server.SwaggerWorkflowEvents:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Event'
+        type: array
+      has_more:
+        type: boolean
+      last_sequence:
+        type: integer
+    type: object
+  internal_server.SwaggerWorkflowRecovery:
+    properties:
+      revision:
+        type: integer
+    type: object
+  internal_server.SwaggerWorkflowRun:
+    properties:
+      replayed:
+        type: boolean
+      run:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Run'
+    type: object
+  internal_server.SwaggerWorkflowRuns:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Run'
+        type: array
+    type: object
+  internal_server.SwaggerWorkflowTemplate:
+    properties:
+      template:
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Template'
+    type: object
+  internal_server.SwaggerWorkflowTemplates:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Template'
+        type: array
+    type: object
+  internal_server.SwaggerWorkflowTypes:
+    properties:
+      execution_kinds:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor'
+        type: array
+      roles:
+        items:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor'
+        type: array
     type: object
   internal_server.conversationSubscription:
     properties:
@@ -5119,7 +5599,7 @@ definitions:
       active_run_id:
         type: integer
       channel:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionChannel'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionChannel'
       cwd:
         type: string
       effort:
@@ -5145,9 +5625,9 @@ definitions:
       short_id:
         type: string
       source:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.Source'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.Source'
       status:
-        $ref: '#/definitions/github_com_konglong87_go-e2e_internal_sessioncontrol.SessionStatus'
+        $ref: '#/definitions/github_com_konglong87_niuma_internal_sessioncontrol.SessionStatus'
       title:
         type: string
       updated_at:
@@ -5159,7 +5639,7 @@ definitions:
         type: string
       events:
         items:
-          $ref: '#/definitions/github_com_konglong87_go-e2e_internal_storage_mysql.AgentTaskEvent'
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_storage_mysql.AgentTaskEvent'
         type: array
       has_more:
         type: boolean
@@ -5462,9 +5942,9 @@ definitions:
     type: object
 info:
   contact: {}
-  description: go-e2e local server APIs, including internal query APIs, OpenAI-compatible
+  description: niuma local server APIs, including internal query APIs, OpenAI-compatible
     endpoints, tenant persistence APIs, and mobile chat SSE APIs.
-  title: go-e2e API
+  title: niuma API
   version: 0.1.0
 paths:
   /agent/slash-commands:
@@ -5952,7 +6432,7 @@ paths:
     get:
       description: Serves a local WebUI for inspecting prompt dump JSONL records,
         filtering by session_id, and opening full raw request details when the dump
-        was captured with GOLANG_CC_DUMP_PROMPT_FULL=true.
+        was captured with NIUMA_DUMP_PROMPT_FULL=true.
       produces:
       - text/html
       responses:
@@ -5967,9 +6447,9 @@ paths:
       - Prompt Dump Viewer
   /prompt-dump/api/records:
     get:
-      description: Reads the local prompt dump JSONL file from GOLANG_CC_DUMP_PROMPT_JSON
-        or /tmp/golang-cc-tui-prompt.jsonl. include_request=true returns full raw
-        model requests and may expose sensitive prompt context.
+      description: Reads the local prompt dump JSONL file from NIUMA_DUMP_PROMPT_JSON
+        or /tmp/niuma-tui-prompt.jsonl. include_request=true returns full raw model
+        requests and may expose sensitive prompt context.
       parameters:
       - description: Filter by TUI session ID
         in: query
@@ -6401,7 +6881,7 @@ paths:
       - Runtime
   /runtime/settings/effective:
     get:
-      description: File settings use only the global settings.json (GOLANG_CC_CONFIG_DIR
+      description: File settings use only the global settings.json (NIUMA_CONFIG_DIR
         relocation supported), without workspace or legacy discovery. File sources
         exclude process environment, CLI, profile and run overrides. Startup or status
         callback values do not represent active run configuration.
@@ -8776,6 +9256,57 @@ paths:
       summary: Validate agent team
       tags:
       - Agent Teams
+  /tenant/agent-types:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowTypes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: List extensible Agent role and execution kind metadata
+      tags:
+      - Team Workflows
   /tenant/audit:
     get:
       parameters:
@@ -12467,6 +12998,710 @@ paths:
       summary: Get Web Agent conversation detail
       tags:
       - Tenant Agent Tasks
+  /tenant/workflow-runs/{id}:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Run ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowRun'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Read an authoritative persisted run snapshot
+      tags:
+      - Team Workflows
+  /tenant/workflow-runs/{id}/cancel:
+    post:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Run ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowRun'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Request run cancellation and bounded executor cleanup
+      tags:
+      - Team Workflows
+  /tenant/workflow-runs/{id}/events:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Run ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Last applied event sequence
+        in: query
+        name: after_sequence
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowEvents'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Read ordered durable execution events
+      tags:
+      - Team Workflows
+  /tenant/workflow-runs/{id}/events/stream:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Run ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Last applied event sequence
+        in: query
+        name: after_sequence
+        type: integer
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Event'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Stream ordered execution events with persisted replay
+      tags:
+      - Team Workflows
+  /tenant/workflow-runs/{id}/recover:
+    post:
+      consumes:
+      - application/json
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Run ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Expected interrupted snapshot revision
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server.SwaggerWorkflowRecovery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowRun'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Explicitly recover an interrupted run using its checkpoint revision
+      tags:
+      - Team Workflows
+  /tenant/workflows:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowTemplates'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: List private Team workflow versions
+      tags:
+      - Team Workflows
+    post:
+      consumes:
+      - application/json
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Workflow with published Profile bindings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowTemplate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Save a new immutable Team workflow version
+      tags:
+      - Team Workflows
+  /tenant/workflows/{key}:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Team key
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: Fixed version; omit for latest
+        in: query
+        name: version
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowTemplate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a Team workflow version
+      tags:
+      - Team Workflows
+  /tenant/workflows/{key}/runs:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Team key
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: Fixed Team version
+        in: query
+        name: version
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowRuns'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: List persisted runs for a Team
+      tags:
+      - Team Workflows
+    post:
+      consumes:
+      - application/json
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Team key
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: Unique submission key; reuse with identical body to replay
+        in: header
+        name: Idempotency-Key
+        required: true
+        type: string
+      - description: Fixed Team version and task objective
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowRun'
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowRun'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Queue an idempotent bounded Team run
+      tags:
+      - Team Workflows
+  /tenant/workflows/templates:
+    get:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowBuiltins'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: List beginner Team workflow starting points
+      tags:
+      - Team Workflows
+  /tenant/workflows/templates/{key}/create:
+    post:
+      description: Workflow V2 uses private Profile/Team resources. Read-only deployment
+        disables mutations; text Agents have no tools.
+      parameters:
+      - description: Tenant key
+        in: header
+        name: X-Tenant-Key
+        required: true
+        type: string
+      - description: User identity
+        in: header
+        name: X-User-Id
+        required: true
+        type: string
+      - description: Built-in template key
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerWorkflowTemplate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_server.SwaggerError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a personal Team and Agents from a starting point
+      tags:
+      - Team Workflows
   /tools:
     get:
       produces:
@@ -12755,7 +13990,7 @@ paths:
       - WebUI
   /webui/{path}:
     get:
-      description: Serves the Vite build from GOLANG_CC_WEBUI_DIR, or an auto-discovered
+      description: Serves the Vite build from NIUMA_WEBUI_DIR, or an auto-discovered
         web/dist next to the working directory or executable. Unknown paths fall back
         to index.html for client-side routing. When no build is present, responds
         503 with a page explaining how to build the frontend.

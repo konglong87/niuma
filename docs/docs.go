@@ -5119,6 +5119,83 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenant/agent-types": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List extensible Agent role and execution kind metadata",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTypes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
         "/tenant/audit": {
             "get": {
                 "security": [
@@ -10779,6 +10856,1062 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenant/workflow-runs/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Read an authoritative persisted run snapshot",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/cancel": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Request run cancellation and bounded executor cleanup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/events": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Read ordered durable execution events",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Last applied event sequence",
+                        "name": "after_sequence",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowEvents"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/events/stream": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Stream ordered execution events with persisted replay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Last applied event sequence",
+                        "name": "after_sequence",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Event"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflow-runs/{id}/recover": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Explicitly recover an interrupted run using its checkpoint revision",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Expected interrupted snapshot revision",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRecovery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List private Team workflow versions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplates"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Save a new immutable Team workflow version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Workflow with published Profile bindings",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/templates": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List beginner Team workflow starting points",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowBuiltins"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/templates/{key}/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Create a personal Team and Agents from a starting point",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Built-in template key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/{key}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Get a Team workflow version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Fixed version; omit for latest",
+                        "name": "version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/tenant/workflows/{key}/runs": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "List persisted runs for a Team",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Fixed Team version",
+                        "name": "version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRuns"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team Workflows"
+                ],
+                "summary": "Queue an idempotent bounded Team run",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant key",
+                        "name": "X-Tenant-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User identity",
+                        "name": "X-User-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Unique submission key; reuse with identical body to replay",
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Fixed Team version and task objective",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerWorkflowRun"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/internal_server.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
         "/tools": {
             "get": {
                 "security": [
@@ -11338,6 +12471,33 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionKind": {
+            "type": "string",
+            "enum": [
+                "text",
+                "computer",
+                "image"
+            ],
+            "x-enum-varnames": [
+                "ExecutionKindText",
+                "ExecutionKindComputer",
+                "ExecutionKindImage"
+            ]
+        },
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKind"
+                },
+                "workflow_supported": {
+                    "type": "boolean"
+                }
+            }
+        },
         "github_com_konglong87_niuma_internal_agentprofile.ExecutionPolicy": {
             "type": "object",
             "properties": {
@@ -11346,6 +12506,9 @@ const docTemplate = `{
                 },
                 "effort": {
                     "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKind"
                 },
                 "max_parallel_read_only_tools": {
                     "type": "integer"
@@ -11374,6 +12537,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "display_name": {
+                    "type": "string"
+                },
+                "role_type": {
                     "type": "string"
                 }
             }
@@ -11494,6 +12660,20 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_konglong87_niuma_internal_agentprofile.SafetyPolicy": {
             "type": "object",
             "properties": {
@@ -11589,6 +12769,564 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Agent": {
+            "type": "object",
+            "properties": {
+                "effort": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "max_output_tokens": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "profile_hash": {
+                    "type": "string"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "profile_key": {
+                    "type": "string"
+                },
+                "profile_version": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "role_type": {
+                    "type": "string"
+                },
+                "route_hash": {
+                    "type": "string"
+                },
+                "system_prompt": {
+                    "type": "string"
+                },
+                "tools": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Artifact": {
+            "type": "object",
+            "properties": {
+                "attempt_no": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "sha256": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Attempt": {
+            "type": "object",
+            "properties": {
+                "budget_reserved": {
+                    "description": "BudgetReserved is the immutable admission reservation, not provider usage.",
+                    "type": "integer"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                },
+                "task_id": {
+                    "type": "integer"
+                },
+                "usage": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Usage"
+                },
+                "usage_known": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Definition": {
+            "type": "object",
+            "properties": {
+                "limits": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Limits"
+                },
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Node"
+                    }
+                },
+                "schema_version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Event": {
+            "type": "object",
+            "properties": {
+                "attempt_no": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "sequence": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.EventType"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.EventType": {
+            "type": "string",
+            "enum": [
+                "run_queued",
+                "run_started",
+                "task_created",
+                "task_waiting_dependency",
+                "agent_started",
+                "agent_output_delta",
+                "agent_phase",
+                "agent_completed",
+                "agent_failed",
+                "task_retry_scheduled",
+                "run_cancel_requested",
+                "run_cancelled",
+                "task_cancelled",
+                "run_completed",
+                "run_failed",
+                "run_timed_out",
+                "run_interrupted",
+                "run_recovered"
+            ],
+            "x-enum-varnames": [
+                "EventQueued",
+                "EventStarted",
+                "EventTaskCreated",
+                "EventWaiting",
+                "EventAgentStarted",
+                "EventDelta",
+                "EventPhase",
+                "EventAgentCompleted",
+                "EventAgentFailed",
+                "EventRetry",
+                "EventCancelRequested",
+                "EventCancelled",
+                "EventTaskCancelled",
+                "EventCompleted",
+                "EventFailed",
+                "EventTimedOut",
+                "EventInterrupted",
+                "EventRecovered"
+            ]
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Failure": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "retryable": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Limits": {
+            "type": "object",
+            "properties": {
+                "max_parallel": {
+                    "type": "integer"
+                },
+                "max_total_tokens": {
+                    "type": "integer"
+                },
+                "run_timeout_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Node": {
+            "type": "object",
+            "properties": {
+                "agent_ref": {
+                    "type": "string"
+                },
+                "depends_on": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "instruction": {
+                    "type": "string"
+                },
+                "retry": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy"
+                },
+                "timeout_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun": {
+            "type": "object",
+            "properties": {
+                "artifact_id": {
+                    "type": "string"
+                },
+                "attempts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Attempt"
+                    }
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "next_retry_at": {
+                    "type": "string"
+                },
+                "node_id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Plan": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Agent"
+                    }
+                },
+                "definition": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition"
+                },
+                "hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy": {
+            "type": "object",
+            "properties": {
+                "backoff_ms": {
+                    "type": "integer"
+                },
+                "max_attempts": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Run": {
+            "type": "object",
+            "properties": {
+                "artifacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Artifact"
+                    }
+                },
+                "cancel_requested_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "failure": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Failure"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "input": {
+                    "type": "string"
+                },
+                "last_sequence": {
+                    "type": "integer"
+                },
+                "lease_owner": {
+                    "type": "string"
+                },
+                "lease_until": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun"
+                    }
+                },
+                "plan": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Plan"
+                },
+                "revision": {
+                    "type": "integer"
+                },
+                "scope": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Scope"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Status"
+                },
+                "team_id": {
+                    "type": "integer"
+                },
+                "team_key": {
+                    "type": "string"
+                },
+                "team_version": {
+                    "type": "integer"
+                },
+                "uncertain_tokens": {
+                    "description": "UncertainTokens includes in-flight and unconfirmed attempt reservations.\nIt is not actual usage or a monetary amount.",
+                    "type": "integer"
+                },
+                "usage": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Usage"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Scope": {
+            "type": "object",
+            "properties": {
+                "tenant_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Status": {
+            "type": "string",
+            "enum": [
+                "queued",
+                "pending",
+                "ready",
+                "running",
+                "retry_wait",
+                "completed",
+                "failed",
+                "timed_out",
+                "cancel_requested",
+                "cancelled",
+                "interrupted",
+                "blocked"
+            ],
+            "x-enum-varnames": [
+                "Queued",
+                "Pending",
+                "Ready",
+                "Running",
+                "RetryWait",
+                "Completed",
+                "Failed",
+                "TimedOut",
+                "CancelRequested",
+                "Cancelled",
+                "Interrupted",
+                "Blocked"
+            ]
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Usage": {
+            "type": "object",
+            "properties": {
+                "cache_read_tokens": {
+                    "type": "integer"
+                },
+                "cache_write_tokens": {
+                    "type": "integer"
+                },
+                "input_tokens": {
+                    "type": "integer"
+                },
+                "output_tokens": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding": {
+            "type": "object",
+            "properties": {
+                "profile_id": {
+                    "type": "integer"
+                },
+                "profile_key": {
+                    "type": "string"
+                },
+                "profile_version": {
+                    "type": "integer"
+                },
+                "ref": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding"
+                    }
+                },
+                "definition": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest": {
+            "type": "object",
+            "properties": {
+                "input": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Template": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding"
+                    }
+                },
+                "definition": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Definition"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
                 }
             }
         },
@@ -18847,6 +20585,100 @@ const docTemplate = `{
                 },
                 "total_tokens": {
                     "type": "integer"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowBuiltins": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin"
+                    }
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowEvents": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Event"
+                    }
+                },
+                "has_more": {
+                    "type": "boolean"
+                },
+                "last_sequence": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowRecovery": {
+            "type": "object",
+            "properties": {
+                "revision": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowRun": {
+            "type": "object",
+            "properties": {
+                "replayed": {
+                    "type": "boolean"
+                },
+                "run": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Run"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowRuns": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflow.Run"
+                    }
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowTemplate": {
+            "type": "object",
+            "properties": {
+                "template": {
+                    "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Template"
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowTemplates": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentteam_workflowapp.Template"
+                    }
+                }
+            }
+        },
+        "internal_server.SwaggerWorkflowTypes": {
+            "type": "object",
+            "properties": {
+                "execution_kinds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor"
+                    }
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor"
+                    }
                 }
             }
         },

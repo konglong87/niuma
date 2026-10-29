@@ -78,6 +78,9 @@ func applyAgentProfileToOptions(opts *options, effective agentprofile.EffectiveP
 	if opts == nil {
 		return fmt.Errorf("agent profile options are nil")
 	}
+	if effective.Config.SchemaVersion == agentprofile.SchemaVersionV2 && effective.Config.Execution.Kind != "" && effective.Config.Execution.Kind != agentprofile.ExecutionKindText {
+		return fmt.Errorf("Agent execution kind %q cannot run through the text session route", effective.Config.Execution.Kind)
+	}
 	input := agentprofile.Apply(effective)
 	opts.promptMode = input.PromptMode
 	if input.RuntimeProfile != "" {

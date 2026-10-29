@@ -4996,6 +4996,104 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/agent-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List extensible Agent role and execution kind metadata
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowTypes"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tenant/audit": {
         parameters: {
             query?: never;
@@ -10170,6 +10268,1215 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/workflow-runs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read an authoritative persisted run snapshot
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Run ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowRun"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflow-runs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request run cancellation and bounded executor cleanup
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Run ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowRun"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflow-runs/{id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read ordered durable execution events
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Last applied event sequence */
+                    after_sequence?: number;
+                };
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Run ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowEvents"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflow-runs/{id}/events/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream ordered execution events with persisted replay
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Last applied event sequence */
+                    after_sequence?: number;
+                };
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Run ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Event"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflow-runs/{id}/recover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Explicitly recover an interrupted run using its checkpoint revision
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Run ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Expected interrupted snapshot revision */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["internal_server.SwaggerWorkflowRecovery"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowRun"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List private Team workflow versions
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowTemplates"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Save a new immutable Team workflow version
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Workflow with published Profile bindings */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowTemplate"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflows/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a Team workflow version
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Fixed version; omit for latest */
+                    version?: number;
+                };
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Team key */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowTemplate"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflows/{key}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List persisted runs for a Team
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Fixed Team version */
+                    version?: number;
+                };
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Team key */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowRuns"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Queue an idempotent bounded Team run
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Unique submission key; reuse with identical body to replay */
+                    "Idempotency-Key": string;
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Team key */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fixed Team version and task objective */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowRun"];
+                    };
+                };
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowRun"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflows/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List beginner Team workflow starting points
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowBuiltins"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/workflows/templates/{key}/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a personal Team and Agents from a starting point
+         * @description Workflow V2 uses private Profile/Team resources. Read-only deployment disables mutations; text Agents have no tools.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description Tenant key */
+                    "X-Tenant-Key": string;
+                    /** @description User identity */
+                    "X-User-Id": string;
+                };
+                path: {
+                    /** @description Built-in template key */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerWorkflowTemplate"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["internal_server.SwaggerError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tools": {
         parameters: {
             query?: never;
@@ -10773,9 +12080,17 @@ export interface components {
             user_memory?: boolean;
             workspace?: boolean;
         };
+        /** @enum {string} */
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionKind": "text" | "computer" | "image";
+        "github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor": {
+            display_name?: string;
+            kind?: components["schemas"]["github_com_konglong87_niuma_internal_agentprofile.ExecutionKind"];
+            workflow_supported?: boolean;
+        };
         "github_com_konglong87_niuma_internal_agentprofile.ExecutionPolicy": {
             auto_compact?: boolean;
             effort?: string;
+            kind?: components["schemas"]["github_com_konglong87_niuma_internal_agentprofile.ExecutionKind"];
             max_parallel_read_only_tools?: number;
             max_tokens?: number;
             max_turns?: number;
@@ -10786,6 +12101,7 @@ export interface components {
         "github_com_konglong87_niuma_internal_agentprofile.IdentityPolicy": {
             description?: string;
             display_name?: string;
+            role_type?: string;
         };
         /** @enum {string} */
         "github_com_konglong87_niuma_internal_agentprofile.PermissionMode": "ask" | "deny" | "allow" | "bypassPermissions";
@@ -10822,6 +12138,11 @@ export interface components {
             persona?: string;
             system_addendum?: string;
         };
+        "github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor": {
+            description?: string;
+            display_name?: string;
+            key?: string;
+        };
         "github_com_konglong87_niuma_internal_agentprofile.SafetyPolicy": {
             allow_unsandboxed_commands?: boolean;
             permission_mode?: components["schemas"]["github_com_konglong87_niuma_internal_agentprofile.PermissionMode"];
@@ -10845,6 +12166,173 @@ export interface components {
             size_bytes?: number;
             type?: string;
             url?: string;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Agent": {
+            effort?: string;
+            kind?: string;
+            max_output_tokens?: number;
+            model?: string;
+            name?: string;
+            profile_hash?: string;
+            profile_id?: number;
+            profile_key?: string;
+            profile_version?: number;
+            provider?: string;
+            ref?: string;
+            role_type?: string;
+            route_hash?: string;
+            system_prompt?: string;
+            tools?: string[];
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Artifact": {
+            attempt_no?: number;
+            content?: string;
+            created_at?: string;
+            id?: string;
+            kind?: string;
+            node_id?: string;
+            sha256?: string;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Attempt": {
+            /** @description BudgetReserved is the immutable admission reservation, not provider usage. */
+            budget_reserved?: number;
+            epoch?: number;
+            failure?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Failure"];
+            finished_at?: string;
+            model?: string;
+            number?: number;
+            provider?: string;
+            started_at?: string;
+            status?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Status"];
+            task_id?: number;
+            usage?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Usage"];
+            usage_known?: boolean;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Definition": {
+            limits?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Limits"];
+            nodes?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Node"][];
+            schema_version?: number;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Event": {
+            attempt_no?: number;
+            created_at?: string;
+            failure?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Failure"];
+            node_id?: string;
+            sequence?: number;
+            status?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Status"];
+            text?: string;
+            type?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.EventType"];
+        };
+        /** @enum {string} */
+        "github_com_konglong87_niuma_internal_agentteam_workflow.EventType": "run_queued" | "run_started" | "task_created" | "task_waiting_dependency" | "agent_started" | "agent_output_delta" | "agent_phase" | "agent_completed" | "agent_failed" | "task_retry_scheduled" | "run_cancel_requested" | "run_cancelled" | "task_cancelled" | "run_completed" | "run_failed" | "run_timed_out" | "run_interrupted" | "run_recovered";
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Failure": {
+            code?: string;
+            message?: string;
+            retryable?: boolean;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Limits": {
+            max_parallel?: number;
+            max_total_tokens?: number;
+            run_timeout_seconds?: number;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Node": {
+            agent_ref?: string;
+            depends_on?: string[];
+            id?: string;
+            instruction?: string;
+            retry?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy"];
+            timeout_seconds?: number;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun": {
+            artifact_id?: string;
+            attempts?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Attempt"][];
+            failure?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Failure"];
+            next_retry_at?: string;
+            node_id?: string;
+            output?: string;
+            status?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Status"];
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Plan": {
+            agents?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Agent"][];
+            definition?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Definition"];
+            hash?: string;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.RetryPolicy": {
+            backoff_ms?: number;
+            max_attempts?: number;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Run": {
+            artifacts?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Artifact"][];
+            cancel_requested_at?: string;
+            created_at?: string;
+            deadline?: string;
+            epoch?: number;
+            failure?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Failure"];
+            finished_at?: string;
+            id?: string;
+            input?: string;
+            last_sequence?: number;
+            lease_owner?: string;
+            lease_until?: string;
+            name?: string;
+            nodes?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.NodeRun"][];
+            plan?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Plan"];
+            revision?: number;
+            scope?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Scope"];
+            started_at?: string;
+            status?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Status"];
+            team_id?: number;
+            team_key?: string;
+            team_version?: number;
+            /**
+             * @description UncertainTokens includes in-flight and unconfirmed attempt reservations.
+             *     It is not actual usage or a monetary amount.
+             */
+            uncertain_tokens?: number;
+            usage?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Usage"];
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Scope": {
+            tenant_id?: number;
+            user_id?: number;
+        };
+        /** @enum {string} */
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Status": "queued" | "pending" | "ready" | "running" | "retry_wait" | "completed" | "failed" | "timed_out" | "cancel_requested" | "cancelled" | "interrupted" | "blocked";
+        "github_com_konglong87_niuma_internal_agentteam_workflow.Usage": {
+            cache_read_tokens?: number;
+            cache_write_tokens?: number;
+            input_tokens?: number;
+            output_tokens?: number;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding": {
+            profile_id?: number;
+            profile_key?: string;
+            profile_version?: number;
+            ref?: string;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin": {
+            description?: string;
+            key?: string;
+            name?: string;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.SaveRequest": {
+            agents?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding"][];
+            definition?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Definition"];
+            description?: string;
+            key?: string;
+            name?: string;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.StartRequest": {
+            input?: string;
+            version?: number;
+        };
+        "github_com_konglong87_niuma_internal_agentteam_workflowapp.Template": {
+            agents?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.Binding"][];
+            definition?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Definition"];
+            description?: string;
+            id?: number;
+            key?: string;
+            name?: string;
+            version?: number;
         };
         "github_com_konglong87_niuma_internal_buildinfo.Info": {
             build_time?: string;
@@ -13310,6 +14798,34 @@ export interface components {
             total_duration_ms?: number;
             total_runs?: number;
             total_tokens?: number;
+        };
+        "internal_server.SwaggerWorkflowBuiltins": {
+            items?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.Builtin"][];
+        };
+        "internal_server.SwaggerWorkflowEvents": {
+            events?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Event"][];
+            has_more?: boolean;
+            last_sequence?: number;
+        };
+        "internal_server.SwaggerWorkflowRecovery": {
+            revision?: number;
+        };
+        "internal_server.SwaggerWorkflowRun": {
+            replayed?: boolean;
+            run?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Run"];
+        };
+        "internal_server.SwaggerWorkflowRuns": {
+            items?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflow.Run"][];
+        };
+        "internal_server.SwaggerWorkflowTemplate": {
+            template?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.Template"];
+        };
+        "internal_server.SwaggerWorkflowTemplates": {
+            items?: components["schemas"]["github_com_konglong87_niuma_internal_agentteam_workflowapp.Template"][];
+        };
+        "internal_server.SwaggerWorkflowTypes": {
+            execution_kinds?: components["schemas"]["github_com_konglong87_niuma_internal_agentprofile.ExecutionKindDescriptor"][];
+            roles?: components["schemas"]["github_com_konglong87_niuma_internal_agentprofile.RoleTypeDescriptor"][];
         };
         "internal_server.traceDiagnostic": {
             code?: string;

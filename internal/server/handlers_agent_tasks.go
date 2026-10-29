@@ -219,6 +219,15 @@ func tenantAgentTaskHandler(opts Options) http.HandlerFunc {
 			}
 			writeJSON(w, item)
 		case http.MethodPatch:
+			if opts.WorkflowTaskOwner != nil {
+				if _, err := ensureTenantOwnsAgentTask(r.Context(), opts.TenantService, taskID); err != nil {
+					writeTenantServiceError(w, err)
+					return
+				}
+				if rejectWorkflowTaskMutation(w, r, opts, taskID) {
+					return
+				}
+			}
 			var req agentTaskUpdateRequest
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 				writeTenantError(w, http.StatusBadRequest, err.Error())
@@ -445,6 +454,9 @@ func tenantAgentTaskMessageHandler(opts Options, queryFn QueryFunc) http.Handler
 		task, err := opts.TenantService.GetAgentTask(r.Context(), taskID)
 		if err != nil {
 			writeTenantServiceError(w, err)
+			return
+		}
+		if rejectWorkflowTaskMutation(w, r, opts, taskID) {
 			return
 		}
 		if isTerminalAgentTaskStatus(task.Status) {
@@ -2031,6 +2043,9 @@ func tenantAgentTaskCancelHandler(opts Options) http.HandlerFunc {
 		task, err := ensureTenantOwnsAgentTask(r.Context(), opts.TenantService, taskID)
 		if err != nil {
 			writeTenantServiceError(w, err)
+			return
+		}
+		if rejectWorkflowTaskMutation(w, r, opts, taskID) {
 			return
 		}
 		if task.Status != agenttasks.StatusRunning {

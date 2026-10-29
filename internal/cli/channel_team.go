@@ -56,6 +56,9 @@ func newChannelTeamRuntime(ctx context.Context, repo *mysqlstore.GormRepository,
 	}
 	bindings := make([]agentteam.Binding, 0)
 	for _, team := range teams {
+		if team.SchemaVersion > 1 {
+			continue
+		}
 		rows, listErr := repo.ListAgentTeamBindings(ctx, tenantID, team.ID, 500)
 		if listErr != nil {
 			return nil, agentteam.Router{}, listErr
@@ -118,6 +121,9 @@ func (r *channelTeamRuntime) loadTeam(ctx context.Context, route agentteam.Route
 			err = mysqlstore.ErrNotFound
 		}
 		return agentteam.Team{}, err
+	}
+	if record.SchemaVersion > 1 {
+		return agentteam.Team{}, fmt.Errorf("Team workflow schema %d is not supported by the V1 channel runtime", record.SchemaVersion)
 	}
 	var policy agentteam.TeamPolicy
 	if err := json.Unmarshal([]byte(record.PolicyJSON), &policy); err != nil {

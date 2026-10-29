@@ -177,6 +177,11 @@ func serverCommand(ctx context.Context, args []string, opts options, stdout io.W
 		}
 		serverOpts.TenantService = tenantSvc
 		serverOpts.PromptTemplateService = prompttemplate.NewService(repo)
+		workflowCleanup, workflowErr := configureWorkflowRuntime(ctx, repo, opts, &serverOpts)
+		if workflowErr != nil {
+			return fmt.Errorf("configure workflow runtime: %w", workflowErr)
+		}
+		defer workflowCleanup()
 		serverOpts.AgentTaskStore = tenantSvc
 		serverOpts.PendingInputQueue = repo
 		serverOpts.SessionControlEvents = tenantSvc
@@ -222,6 +227,11 @@ func serverCommand(ctx context.Context, args []string, opts options, stdout io.W
 		tenantSvc := tenantservice.NewService(repo, nil)
 		serverOpts.TenantService = tenantSvc
 		serverOpts.PromptTemplateService = prompttemplate.NewService(repo)
+		workflowCleanup, workflowErr := configureWorkflowRuntime(ctx, repo, opts, &serverOpts)
+		if workflowErr != nil {
+			return fmt.Errorf("configure workflow runtime: %w", workflowErr)
+		}
+		defer workflowCleanup()
 		scheduleStore := scheduler.DefaultStore()
 		executable, executableErr := os.Executable()
 		if executableErr != nil {

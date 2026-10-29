@@ -116,3 +116,12 @@ func sessionControlTestToolNames(items []tools.Tool) []string {
 	}
 	return names
 }
+
+func TestNonTextProfileCannotSilentlyEnterTextRoute(t *testing.T) {
+	for _, kind := range []agentprofile.ExecutionKind{agentprofile.ExecutionKindComputer, agentprofile.ExecutionKindImage} {
+		config := agentprofile.ProfileDocument{SchemaVersion: agentprofile.SchemaVersionV2, Execution: agentprofile.ExecutionPolicy{Kind: kind}}
+		if err := applyAgentProfileToOptions(&options{}, agentprofile.EffectiveProfile{Config: config}); err == nil {
+			t.Fatalf("kind %q entered text runtime", kind)
+		}
+	}
+}
