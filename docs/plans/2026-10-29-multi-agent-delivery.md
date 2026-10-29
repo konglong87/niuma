@@ -52,3 +52,12 @@ acceptance. Requested native evidence is retained under
 - No native/browser/model acceptance claimed at this stage.
 - Commit/push hashes and later gates are recorded in subsequent entries/final
   report rather than embedding a commit's own hash.
+
+### Profile V2 slice
+
+- Versioned role/kind metadata and extensible registry implemented; V1 canonical
+  hashes preserved. Existing frontend Profile parser accepts versioned documents;
+  new workflow helpers default to text/no tools/no inherited context authority.
+- Main reran Profile Go tests and frontend Profile/helper tests: PASS (32 cases).
+  Worker also passed Profile race tests and existing CLI/server Profile regressions.
+- No new desktop UI acceptance claimed yet; only definitions/helpers in this slice.

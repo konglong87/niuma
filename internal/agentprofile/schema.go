@@ -6,28 +6,31 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 )
 
 const (
-	IssueSchemaVersion       = "schema_version_invalid"
-	IssueDisplayNameTooLong  = "display_name_too_large"
-	IssueDescriptionTooLong  = "description_too_large"
-	IssuePersonaTooLarge     = "persona_too_large"
-	IssueAddendumTooLarge    = "system_addendum_too_large"
-	IssueDocumentTooLarge    = "profile_json_too_large"
-	IssueModeInvalid         = "prompt_mode_invalid"
-	IssueChatWorkspace       = "chat_workspace_forbidden"
-	IssueChatGit             = "chat_git_forbidden"
-	IssueBypassPermission    = "bypass_permission_forbidden"
-	IssueUnsandboxedCommands = "unsandboxed_commands_forbidden"
-	IssueToolNotAllowed      = "tool_not_allowed"
-	IssueSkillNotAllowed     = "skill_not_allowed"
-	IssueMCPNotAllowed       = "mcp_server_not_allowed"
-	IssueMaxTurns            = "max_turns_exceeded"
-	IssueMaxTokens           = "max_tokens_exceeded"
-	IssueMaxParallel         = "max_parallel_workers_exceeded"
+	IssueSchemaVersion        = "schema_version_invalid"
+	IssueRoleTypeInvalid      = "role_type_invalid"
+	IssueExecutionKindInvalid = "execution_kind_invalid"
+	IssueDisplayNameTooLong   = "display_name_too_large"
+	IssueDescriptionTooLong   = "description_too_large"
+	IssuePersonaTooLarge      = "persona_too_large"
+	IssueAddendumTooLarge     = "system_addendum_too_large"
+	IssueDocumentTooLarge     = "profile_json_too_large"
+	IssueModeInvalid          = "prompt_mode_invalid"
+	IssueChatWorkspace        = "chat_workspace_forbidden"
+	IssueChatGit              = "chat_git_forbidden"
+	IssueBypassPermission     = "bypass_permission_forbidden"
+	IssueUnsandboxedCommands  = "unsandboxed_commands_forbidden"
+	IssueToolNotAllowed       = "tool_not_allowed"
+	IssueSkillNotAllowed      = "skill_not_allowed"
+	IssueMCPNotAllowed        = "mcp_server_not_allowed"
+	IssueMaxTurns             = "max_turns_exceeded"
+	IssueMaxTokens            = "max_tokens_exceeded"
+	IssueMaxParallel          = "max_parallel_workers_exceeded"
 )
 
 func DecodeProfileDocument(raw []byte) (ProfileDocument, error) {
@@ -43,11 +46,38 @@ func DecodeProfileDocument(raw []byte) (ProfileDocument, error) {
 	var extra any
 	if err := decoder.Decode(&extra); err == nil {
 		return ProfileDocument{}, fmt.Errorf("decode profile document: multiple JSON values")
+	} else if document.SchemaVersion == SchemaVersionV2 && err != io.EOF {
+		return ProfileDocument{}, fmt.Errorf("decode profile document trailing data: %w", err)
+	}
+	// V1 used to reject these fields as unknown, including explicit empty/null
+	// values. Adding V2 fields to the shared model must not relax that contract.
+	if document.SchemaVersion == SchemaVersionV1 {
+		var fields struct {
+			Identity  map[string]json.RawMessage `json:"identity"`
+			Execution map[string]json.RawMessage `json:"execution"`
+		}
+		if err := json.NewDecoder(bytes.NewReader(raw)).Decode(&fields); err != nil {
+			return ProfileDocument{}, fmt.Errorf("decode profile document: %w", err)
+		}
+		for key := range fields.Identity {
+			if strings.EqualFold(key, "role_type") {
+				return ProfileDocument{}, fmt.Errorf("decode profile document: unknown field %q for V1", key)
+			}
+		}
+		for key := range fields.Execution {
+			if strings.EqualFold(key, "kind") {
+				return ProfileDocument{}, fmt.Errorf("decode profile document: unknown field %q for V1", key)
+			}
+		}
 	}
 	return document, nil
 }
 
 func (d ProfileDocument) Normalize() ProfileDocument {
+	if d.SchemaVersion == SchemaVersionV2 {
+		d.Identity.RoleType = strings.ToLower(strings.TrimSpace(d.Identity.RoleType))
+		d.Execution.Kind = ExecutionKind(strings.ToLower(strings.TrimSpace(string(d.Execution.Kind))))
+	}
 	d.Identity.DisplayName = strings.TrimSpace(d.Identity.DisplayName)
 	d.Identity.Description = strings.TrimSpace(d.Identity.Description)
 	d.Prompt.Mode = PromptMode(strings.ToLower(strings.TrimSpace(string(d.Prompt.Mode))))
@@ -118,8 +148,23 @@ func Validate(document ProfileDocument, context ValidationContext) ValidationRep
 		report.Issues = append(report.Issues, ValidationIssue{Code: code, Field: field, Message: message, Severity: "error"})
 	}
 
-	if document.SchemaVersion != SchemaVersionV1 {
-		add(IssueSchemaVersion, "schema_version", fmt.Sprintf("schema_version must be %d", SchemaVersionV1))
+	switch document.SchemaVersion {
+	case SchemaVersionV1:
+		if document.Identity.RoleType != "" {
+			add(IssueRoleTypeInvalid, "identity.role_type", "role_type requires schema_version 2")
+		}
+		if document.Execution.Kind != "" {
+			add(IssueExecutionKindInvalid, "execution.kind", "execution.kind requires schema_version 2")
+		}
+	case SchemaVersionV2:
+		if _, known := LookupRoleType(document.Identity.RoleType); !known {
+			add(IssueRoleTypeInvalid, "identity.role_type", fmt.Sprintf("unknown role_type %q", document.Identity.RoleType))
+		}
+		if _, known := LookupExecutionKind(document.Execution.Kind); !known {
+			add(IssueExecutionKindInvalid, "execution.kind", fmt.Sprintf("unknown execution.kind %q", document.Execution.Kind))
+		}
+	default:
+		add(IssueSchemaVersion, "schema_version", "schema_version must be 1 or 2")
 	}
 	if len([]byte(document.Identity.DisplayName)) > MaxDisplayNameBytes {
 		add(IssueDisplayNameTooLong, "identity.display_name", "display_name exceeds the maximum size")

@@ -4,6 +4,7 @@ import "time"
 
 const (
 	SchemaVersionV1         = 1
+	SchemaVersionV2         = 2
 	MaxDisplayNameBytes     = 128
 	MaxDescriptionBytes     = 4096
 	MaxPersonaBytes         = 16384
@@ -91,6 +92,7 @@ type ProfileDocument struct {
 }
 
 type IdentityPolicy struct {
+	RoleType    string `json:"role_type,omitempty"`
 	DisplayName string `json:"display_name,omitempty"`
 	Description string `json:"description,omitempty"`
 }
@@ -117,14 +119,15 @@ type ToolPolicy struct {
 }
 
 type ExecutionPolicy struct {
-	Model                    string `json:"model,omitempty"`
-	Provider                 string `json:"provider,omitempty"`
-	RuntimeProfile           string `json:"runtime_profile,omitempty"`
-	Effort                   string `json:"effort,omitempty"`
-	MaxTurns                 int    `json:"max_turns,omitempty"`
-	MaxTokens                int    `json:"max_tokens,omitempty"`
-	MaxParallelReadOnlyTools int    `json:"max_parallel_read_only_tools,omitempty"`
-	AutoCompact              bool   `json:"auto_compact,omitempty"`
+	Kind                     ExecutionKind `json:"kind,omitempty"`
+	Model                    string        `json:"model,omitempty"`
+	Provider                 string        `json:"provider,omitempty"`
+	RuntimeProfile           string        `json:"runtime_profile,omitempty"`
+	Effort                   string        `json:"effort,omitempty"`
+	MaxTurns                 int           `json:"max_turns,omitempty"`
+	MaxTokens                int           `json:"max_tokens,omitempty"`
+	MaxParallelReadOnlyTools int           `json:"max_parallel_read_only_tools,omitempty"`
+	AutoCompact              bool          `json:"auto_compact,omitempty"`
 }
 
 type ContextPolicy struct {

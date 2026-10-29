@@ -52,3 +52,30 @@ func TestMySQLSourceMapsPublishedProfileAndAssignment(t *testing.T) {
 		t.Fatalf("assignment=%+v err=%v", assignment, err)
 	}
 }
+
+func TestMySQLSourcePreservesV2Metadata(t *testing.T) {
+	document := textProfileV2()
+	document.Identity.RoleType = RoleTypeReviewer
+	encoded, err := document.CanonicalJSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := NewMySQLSource(fakeMySQLProfileStore{
+		profiles: []mysqlstore.AgentProfile{{
+			ID: 43, TenantID: 7, OwnerKey: "shared", ProfileKey: "reviewer-v2", Scope: string(ScopeTenantShared),
+			DisplayName: "Reviewer", ProfileVersion: 2, Status: string(StatusPublished), ConfigJSON: string(encoded),
+		}},
+	})
+	profile, err := source.FindPublishedProfile(context.Background(), 7, 11, "reviewer-v2", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if profile.Config.SchemaVersion != SchemaVersionV2 || profile.Config.Identity.RoleType != RoleTypeReviewer || profile.Config.Execution.Kind != ExecutionKindText {
+		t.Fatalf("stored V2 metadata lost: %+v", profile.Config)
+	}
+	before, _ := document.CanonicalHash()
+	after, err := profile.Config.CanonicalHash()
+	if err != nil || before != after {
+		t.Fatalf("stored V2 hash changed: %s != %s, err=%v", before, after, err)
+	}
+}

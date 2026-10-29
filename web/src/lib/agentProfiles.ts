@@ -1,4 +1,12 @@
 import type { AgentProfileDocument, AgentTeamPolicy } from "./types";
+import { parseAgentProfileV2JSON, validateAgentProfileV2Draft, WORKFLOW_PROFILE_SCHEMA_VERSION } from "./workflowAgentProfiles";
+
+// Keep the shared V1 wire types unchanged while preserving typed metadata in
+// the existing advanced editor, copy, and summary paths.
+export type AgentProfileEditorDocument = AgentProfileDocument & {
+  identity: AgentProfileDocument["identity"] & { role_type?: string };
+  execution: AgentProfileDocument["execution"] & { kind?: string };
+};
 
 export type ProfileDraftIssue = { code: string; field: string; message: string };
 
@@ -45,7 +53,7 @@ export function defaultTeamPolicy(): AgentTeamPolicy {
   };
 }
 
-export function parseAgentProfileJSON(text: string): AgentProfileDocument {
+export function parseAgentProfileJSON(text: string): AgentProfileEditorDocument {
   let value: unknown;
   try {
     value = JSON.parse(text);
@@ -55,10 +63,14 @@ export function parseAgentProfileJSON(text: string): AgentProfileDocument {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error("Profile JSON object is required");
   }
-  return value as AgentProfileDocument;
+  if ((value as { schema_version?: unknown }).schema_version === WORKFLOW_PROFILE_SCHEMA_VERSION) {
+    return parseAgentProfileV2JSON(text);
+  }
+  return value as AgentProfileEditorDocument;
 }
 
 export function validateAgentProfileDraft(document: AgentProfileDocument): ProfileDraftReport {
+  if (document.schema_version === WORKFLOW_PROFILE_SCHEMA_VERSION) return validateAgentProfileV2Draft(document);
   const issues: ProfileDraftIssue[] = [];
   if (document.schema_version !== 1) issues.push({ code: "schema_version_invalid", field: "schema_version", message: "schema_version must be 1" });
   if (document.prompt.mode !== "chat" && document.prompt.mode !== "code") issues.push({ code: "prompt_mode_invalid", field: "prompt.mode", message: "prompt.mode must be chat or code" });
