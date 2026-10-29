@@ -8,6 +8,7 @@ export const WORKFLOW = {
 export const WORKFLOW_STATUSES = ["queued", "pending", "ready", "running", "retry_wait", "completed", "failed", "timed_out", "cancel_requested", "cancelled", "interrupted", "blocked"] as const;
 export type WorkflowStatus = typeof WORKFLOW_STATUSES[number];
 export const TERMINAL_STATUSES = new Set<WorkflowStatus>(["completed", "failed", "timed_out", "cancelled"]);
+export const WORKFLOW_FAILURE_CODES = { cancelled: "cancelled" } as const;
 export const WORKFLOW_EVENT_TYPES = ["run_queued", "run_started", "task_created", "task_waiting_dependency", "agent_started", "agent_output_delta", "agent_phase", "agent_completed", "agent_failed", "task_retry_scheduled", "run_cancel_requested", "run_cancelled", "task_cancelled", "run_completed", "run_failed", "run_timed_out", "run_interrupted", "run_recovered"] as const;
 export type WorkflowEventType = typeof WORKFLOW_EVENT_TYPES[number];
 export type RetryPolicy = { max_attempts: number; backoff_ms: number };

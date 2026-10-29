@@ -112,6 +112,14 @@ describe("Workflow workbench", () => {
   });
 });
 describe("Run detail / hierarchy", () => {
+  it("distinguishes cancellation from an error alert", async () => {
+    const client = workflowClientFixture();
+    vi.mocked(client.get).mockResolvedValue(runFixture({ status: "cancelled", failure: { code: "cancelled", message: "Cancelled by the user", retryable: false }, nodes: [{ node_id: "step-1", status: "cancelled", attempts: [] }] }));
+    act(() => root.render(<I18nProvider><WorkflowRunDetail client={client} runID="run-1" /></I18nProvider>)); await settle();
+    expect(host.querySelector(".workflow-run > header .workflow-status")?.textContent).toBe("Cancelled");
+    expect(host.querySelector(".workflow-cancelled")?.getAttribute("role")).toBe("status");
+    expect(host.querySelector(".workflow-cancelled[role=alert]")).toBeNull();
+  });
   it("shows progress first while artifacts and raw events stay available on demand", async () => {
     const client = workflowClientFixture();
     vi.mocked(client.get).mockResolvedValue(runFixture({ status: "completed", nodes: [{ node_id: "step-1", status: "completed", output: "A concise answer", attempts: [] }], artifacts: [{ id: "artifact", node_id: "step-1", attempt_no: 1, kind: "text", content: "A concise answer", sha256: "sha256", created_at: "2026-10-29T00:00:00Z" }] }));

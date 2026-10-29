@@ -219,3 +219,6 @@
 @media (prefers-reduced-motion: reduce) { .workflow-progress-track span { transition: none; } }
 @container workflow-area (max-width: 500px) { .workflow-editor .workflow-heading-fields .workflow-section-heading { flex-wrap: wrap; } }
 .workflow-workbench .workflow-primary:disabled { background: var(--webui2-surface-muted); color: var(--webui2-text-muted); border-color: var(--webui2-border); opacity: 1; }
+
+.workflow-workbench .workflow-cancelled { color: var(--webui2-warning); }
+.workflow-run-step .workflow-cancelled { background: var(--webui2-warning-surface); }

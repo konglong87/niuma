@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { WorkflowClient } from "./client";
 import { useWorkflowText, type WorkflowWord } from "./i18n";
-import { TERMINAL_STATUSES, type Failure, type Usage, type WorkflowEventType, type WorkflowStatus } from "./types";
+import { TERMINAL_STATUSES, WORKFLOW_FAILURE_CODES, type Failure, type Usage, type WorkflowEventType, type WorkflowStatus } from "./types";
 import { message, useWorkflowRun } from "./useWorkflowRun";
 
 const EVENT_LABELS: Record<WorkflowEventType, WorkflowWord> = {
@@ -72,5 +72,7 @@ function UsageView({ usage, known, uncertainTokens }: { usage: Usage; known?: bo
 }
 function FailureView({ failure }: { failure?: Failure }) {
   const text = useWorkflowText();
-  return failure ? <p className="workflow-failure" role="alert"><strong>{failure.code}</strong>: {failure.message} · {text(failure.retryable ? "retryable" : "notRetryable")}</p> : null;
+  if (!failure) return null;
+  const cancelled = failure.code === WORKFLOW_FAILURE_CODES.cancelled;
+  return <p className={cancelled ? "workflow-failure workflow-cancelled" : "workflow-failure"} role={cancelled ? "status" : "alert"}><strong>{failure.code}</strong>: {failure.message} · {text(failure.retryable ? "retryable" : "notRetryable")}</p>;
 }
