@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	MaxQueuedRuns      = 20
 	SchemaVersion      = 2
 	DefaultParallel    = 2
 	MaxParallel        = 4
@@ -61,6 +62,7 @@ const (
 	EventAgentFailed     EventType = "agent_failed"
 	EventRetry           EventType = "task_retry_scheduled"
 	EventCancelRequested EventType = "run_cancel_requested"
+	EventCancelled       EventType = "run_cancelled"
 	EventTaskCancelled   EventType = "task_cancelled"
 	EventCompleted       EventType = "run_completed"
 	EventFailed          EventType = "run_failed"
@@ -99,6 +101,7 @@ type Definition struct {
 // Agent is an immutable, secret-free effective Profile projection. Roles are
 // descriptive; no scheduler branch grants authority based on a role name.
 type Agent struct {
+	RouteHash       string   `json:"route_hash,omitempty"`
 	Ref             string   `json:"ref"`
 	ProfileID       uint64   `json:"profile_id"`
 	ProfileKey      string   `json:"profile_key"`
@@ -136,16 +139,19 @@ type Failure struct {
 	Retryable bool   `json:"retryable"`
 }
 type Attempt struct {
-	Number     int        `json:"number"`
-	Epoch      uint64     `json:"epoch"`
-	TaskID     uint64     `json:"task_id"`
-	Status     Status     `json:"status"`
-	StartedAt  time.Time  `json:"started_at"`
-	FinishedAt *time.Time `json:"finished_at,omitempty"`
-	Usage      Usage      `json:"usage"`
-	Failure    *Failure   `json:"failure,omitempty"`
-	Provider   string     `json:"provider,omitempty"`
-	Model      string     `json:"model,omitempty"`
+	// BudgetReserved is the immutable admission reservation, not provider usage.
+	BudgetReserved int        `json:"budget_reserved"`
+	UsageKnown     bool       `json:"usage_known"`
+	Number         int        `json:"number"`
+	Epoch          uint64     `json:"epoch"`
+	TaskID         uint64     `json:"task_id"`
+	Status         Status     `json:"status"`
+	StartedAt      time.Time  `json:"started_at"`
+	FinishedAt     *time.Time `json:"finished_at,omitempty"`
+	Usage          Usage      `json:"usage"`
+	Failure        *Failure   `json:"failure,omitempty"`
+	Provider       string     `json:"provider,omitempty"`
+	Model          string     `json:"model,omitempty"`
 }
 type NodeRun struct {
 	NodeID      string     `json:"node_id"`
@@ -166,6 +172,9 @@ type Artifact struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 type Run struct {
+	// UncertainTokens includes in-flight and unconfirmed attempt reservations.
+	// It is not actual usage or a monetary amount.
+	UncertainTokens   int        `json:"uncertain_tokens"`
 	LeaseOwner        string     `json:"lease_owner,omitempty"`
 	LeaseUntil        *time.Time `json:"lease_until,omitempty"`
 	ID                string     `json:"id"`
@@ -235,12 +244,13 @@ type Input struct {
 	Dependencies []Artifact
 }
 type Result struct {
-	Status   Status
-	Output   string
-	Usage    Usage
-	Provider string
-	Model    string
-	Failure  *Failure
+	UsageKnown bool
+	Status     Status
+	Output     string
+	Usage      Usage
+	Provider   string
+	Model      string
+	Failure    *Failure
 }
 type Sink func(Event)
 type Executor interface {

@@ -113,7 +113,7 @@ func Compile(def Definition, agents []Agent) (Plan, error) {
 		if n.Retry.BackoffMS < 1 || n.Retry.BackoffMS > 10000 {
 			return Plan{}, invalid("nodes.retry.backoff_ms", "retry delay must be between 1 and 10000 milliseconds")
 		}
-		n.DependsOn = append([]string(nil), n.DependsOn...)
+		n.DependsOn = append([]string{}, n.DependsOn...)
 		sort.Strings(n.DependsOn)
 		def.Nodes[i] = n
 		byNode[n.ID] = i

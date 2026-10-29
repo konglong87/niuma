@@ -1,7 +1,9 @@
 package workflow
 
 import (
+	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -50,5 +52,16 @@ func TestCompileRejectsInvalidGraphsAndAuthority(t *testing.T) {
 				t.Fatal("accepted invalid plan")
 			}
 		})
+	}
+}
+
+func TestCompileEmptyDependenciesHaveArrayJSON(t *testing.T) {
+	p, err := Compile(testDefinition(), []Agent{testAgent("a")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, _ := json.Marshal(p)
+	if strings.Contains(string(raw), `"depends_on":null`) {
+		t.Fatal("wire contract needs [] for root steps", string(raw))
 	}
 }

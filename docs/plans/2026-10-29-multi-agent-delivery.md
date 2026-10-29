@@ -77,3 +77,22 @@ acceptance. Requested native evidence is retained under
 - Remaining priority: finish scheduler/storage/adapter safety checks; commit these
   layers; verify real-backend UI E2E; final regression/build/native acceptance.
   P2 approval/pause and P3 desktop/image execution remain deferred, not simulated.
+
+### Bounded scheduler slice
+
+- Implemented static sequential/parallel/join scheduling, independent step/run
+  deadlines, limited retries, cancellation, durable checkpoints and explicit
+  interrupted-run recovery. Immutable epoch/lease fencing rejects stale workers.
+- Cancellation/stop drains bounded partial results before freezing terminal
+  state. Actual executor lifetime owns concurrency slots; uncooperative calls do
+  not release slots early or permit same-process recovery. Close reports timeout
+  or failed checkpoint instead of claiming successful cleanup.
+- Actual provider usage and unknown admission reservations are separate fields;
+  missing usage is never invented, and remains conservatively budgeted. Completed
+  dependency artifacts are isolated and immutable; root dependencies serialize
+  as [] for UI interoperability.
+- Focused workflow tests/race/vet PASS (worker independently tested 18 safety
+  groups). Full root Go suite now PASS after API coverage regeneration; desktop-v2
+  Go suite PASS. Broad race regression is running before subsequent commits.
+- Remaining: storage/safe text/application/UI commit gates; real-backend E2E;
+  final rebuilt native acceptance. No native/model success claimed here.
