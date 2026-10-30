@@ -1,5 +1,7 @@
 # Team 工作台 UI 重设计：macOS 原生验收
 
+> 后续深色下拉控件修复和最终 `64f2991` 构建验收见 `docs/plans/2026-10-30-team-ui-review-native-acceptance.md`；本页截图只对应旧源码 `633c0ae`。
+
 日期：2026-10-29。范围：桌面 V2 Team 工作台的 UI/UX 改造，不改变编排器、模型设置、Computer Use、单 Agent 或 screen profile。
 
 ## 构建身份和隔离
