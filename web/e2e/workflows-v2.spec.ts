@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type Locator } from "@playwright/test";
 import { resolve } from "node:path";
 import { installWebUIV2Sessions } from "./fixtures/webuiV2Sessions";
 
@@ -100,6 +100,56 @@ test("Agent creation/publish, independent leave guard, interrupted recovery and 
   await expect(page.getByRole("button", { name: "Cancel run", exact: true })).toBeVisible(); await page.getByRole("button", { name: "Cancel run", exact: true }).click();
   await expect(page.locator(".workflow-run > header .workflow-status")).toHaveText("Cancelled"); await expect(page.locator(".workflow-timeline")).toContainText("run_cancelled");
 });
+// Compare the actual rendered foreground/background pair, not just the presence of a hover rule.
+async function renderedButtonContrast(button: Locator) {
+  return button.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const rgb = (value: string) => {
+      const channels = (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      return value.startsWith("color(srgb ") ? channels.map((channel) => channel * 255) : channels;
+    };
+    const luminance = (value: string) => rgb(value).map((channel) => {
+      const normalized = channel / 255;
+      return normalized <= .04045 ? normalized / 12.92 : ((normalized + .055) / 1.055) ** 2.4;
+    }).reduce((sum, channel, index) => sum + channel * [.2126, .7152, .0722][index], 0);
+    const foreground = luminance(style.color);
+    const background = luminance(style.backgroundColor);
+    return { ratio: (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05), background: style.backgroundColor };
+  });
+}
+for (const theme of ["light", "dark"] as const) {
+  test(`Team hover controls retain readable text in ${theme} mode`, async ({ page }) => {
+    await page.addInitScript((selection) => localStorage.setItem("niuma-webui.v2.theme.v1", selection), theme);
+    await installWorkflows(page);
+    await page.goto("/webui/v2/workflows/agents");
+    const primary = page.locator(".workflow-navigation > .workflow-primary");
+    await expect(primary).toBeVisible();
+    const normalPrimary = await renderedButtonContrast(primary);
+    await primary.hover();
+    const hoveredPrimary = await renderedButtonContrast(primary);
+    expect(normalPrimary.ratio).toBeGreaterThanOrEqual(4.5);
+    expect(hoveredPrimary.ratio).toBeGreaterThanOrEqual(4.5);
+    expect(hoveredPrimary.background).not.toBe(normalPrimary.background);
+
+    const tab = page.getByRole("button", { name: "Workflows", exact: true });
+    await tab.hover();
+    expect((await renderedButtonContrast(tab)).ratio).toBeGreaterThanOrEqual(4.5);
+    await page.getByRole("textbox", { name: "Name", exact: true }).fill("Unsaved draft");
+    await tab.click();
+    const dialog = page.getByRole("dialog", { name: "You have unsaved workflow or agent changes." });
+    await expect(dialog).toBeVisible();
+    for (const name of ["Keep editing", "Discard changes"]) {
+      const action = dialog.getByRole("button", { name, exact: true });
+      await page.mouse.move(0, 0);
+      const normal = await renderedButtonContrast(action);
+      await action.hover();
+      const hovered = await renderedButtonContrast(action);
+      expect(normal.ratio).toBeGreaterThanOrEqual(4.5);
+      expect(hovered.ratio).toBeGreaterThanOrEqual(4.5);
+      expect(hovered.background).not.toBe(normal.background);
+    }
+  });
+}
 test("1024px dark Chinese Agent controls stay aligned and legible", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 700 });
   await page.addInitScript(() => { localStorage.setItem("niuma-webui.language.v1", "zh"); localStorage.setItem("niuma-webui.v2.theme.v1", "dark"); });

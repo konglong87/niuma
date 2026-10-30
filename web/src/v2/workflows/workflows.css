@@ -11,10 +11,11 @@
 .workflow-muted { color: var(--webui2-text-muted); font-size: 14px; }
 .workflow-workbench button, .workflow-workbench input, .workflow-workbench select, .workflow-workbench textarea { font: inherit; color: var(--webui2-text); border: 1px solid var(--webui2-border); border-radius: 8px; background: var(--webui2-surface); min-height: 44px; max-width: 100%; }
 .workflow-workbench button { cursor: pointer; padding: 9px 14px; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; }
-.workflow-workbench button:hover { background: var(--webui2-accent-surface); }
+.workflow-workbench button:hover:not(:disabled) { background: var(--webui2-accent-surface); color: var(--webui2-text); }
 .workflow-workbench button:disabled { opacity: .55; cursor: not-allowed; }
 .workflow-workbench :is(button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--webui2-accent); outline-offset: 3px; }
 .workflow-workbench .workflow-primary { background: var(--webui2-accent); color: var(--webui2-accent-text); border-color: var(--webui2-accent); }
+.workflow-workbench .workflow-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--webui2-accent) 88%, var(--webui2-text)); color: var(--webui2-accent-text); border-color: var(--webui2-accent); }
 .workflow-workbench [aria-current="page"] { border-color: var(--webui2-accent); background: var(--webui2-accent-surface); }
 .workflow-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .workflow-card { background: var(--webui2-surface); border: 1px solid var(--webui2-border-subtle); border-radius: 12px; padding: 20px; margin-bottom: 16px; min-width: 0; }
@@ -52,6 +53,9 @@
 .workflow-plain-list li { margin: 8px 0; }
 .workflow-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .workflow-leave-dialog { border: 1px solid var(--webui2-border); border-radius: 12px; background: var(--webui2-surface); color: var(--webui2-text); padding: 24px; width: min(440px, calc(100vw - 32px)); box-shadow: var(--webui2-shadow-card); }
+.workflow-leave-dialog .workflow-actions button { min-height: 40px; padding: 8px 14px; border: 1px solid var(--webui2-border); border-radius: 8px; background: var(--webui2-surface-muted); color: var(--webui2-text); font: inherit; cursor: pointer; }
+.workflow-leave-dialog .workflow-actions button:hover { background: var(--webui2-accent-surface); color: var(--webui2-text); border-color: var(--webui2-accent); }
+.workflow-leave-dialog .workflow-actions button:focus-visible { outline: 2px solid var(--webui2-accent); outline-offset: 3px; }
 .workflow-leave-backdrop { position: fixed; inset: 0; background: var(--webui2-overlay); display: grid; place-items: center; z-index: 110; }
 @media (max-width: 1100px) { .workflow-columns { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 600px) { .workflow-workbench { padding: 60px 16px 24px; } .workflow-card { padding: 16px; } .workflow-topbar nav { width: 100%; } .workflow-topbar nav button { flex: 1; font-size: 14px; padding: 9px 8px; } }
@@ -65,6 +69,7 @@
 .workflow-navigation { margin-left: auto; flex-wrap: wrap; }
 .workflow-tabs { padding: 3px; background: var(--webui2-surface-muted); border-radius: 9px; }
 .workflow-workbench .workflow-tabs button { min-height: 36px; padding: 6px 12px; background: transparent; border: 0; font-size: 13px; }
+.workflow-workbench .workflow-tabs button:hover:not(:disabled) { background: var(--webui2-accent-surface); color: var(--webui2-text); }
 .workflow-workbench .workflow-tabs [aria-current="page"] { background: var(--webui2-surface); color: var(--webui2-text); box-shadow: var(--webui2-shadow-soft); }
 .workflow-workbench .workflow-primary { font-weight: 650; }
 .workflow-workbench .workflow-quiet { background: transparent; border-color: transparent; color: var(--webui2-text-muted); }
