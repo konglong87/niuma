@@ -100,9 +100,9 @@ test("Agent creation/publish, independent leave guard, interrupted recovery and 
   await expect(page.getByRole("button", { name: "Cancel run", exact: true })).toBeVisible(); await page.getByRole("button", { name: "Cancel run", exact: true }).click();
   await expect(page.locator(".workflow-run > header .workflow-status")).toHaveText("Cancelled"); await expect(page.locator(".workflow-timeline")).toContainText("run_cancelled");
 });
-test("1024px Chinese Agent actions stay aligned without wrapping", async ({ page }) => {
+test("1024px dark Chinese Agent controls stay aligned and legible", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 700 });
-  await page.addInitScript(() => localStorage.setItem("niuma-webui.language.v1", "zh"));
+  await page.addInitScript(() => { localStorage.setItem("niuma-webui.language.v1", "zh"); localStorage.setItem("niuma-webui.v2.theme.v1", "dark"); });
   await installWorkflows(page);
   await page.goto("/webui/v2/workflows/agents");
   await expect(page.locator(".workflow-agent-row")).toHaveCount(2);
@@ -116,5 +116,16 @@ test("1024px Chinese Agent actions stay aligned without wrapping", async ({ page
   expect(layout.buttons[0].top).toBeGreaterThanOrEqual(layout.labelBottom - 1);
   expect(layout.buttons[0].top).toBe(layout.buttons[1].top);
   expect(layout.buttons.every((button) => button.height <= 40 && button.right <= layout.directoryRight + 1)).toBe(true);
-  await page.screenshot({ path: evidencePath("1024-zh-light-agents-review") });
+  const styles = await page.locator(".workflow-agent-form").evaluate((form) => {
+    const select = getComputedStyle(form.querySelector("select")!);
+    return { appearance: select.appearance, color: select.color, backgroundImage: select.backgroundImage, paddingRight: select.paddingRight,
+      textColor: getComputedStyle(form.closest(".workflow-workbench")!).color,
+      labelColor: getComputedStyle(form.querySelector("label")!).color,
+      mutedColor: getComputedStyle(form.closest(".workflow-workbench")!.querySelector(".workflow-muted")!).color };
+  });
+  expect(styles).toMatchObject({ appearance: "none", color: styles.textColor, labelColor: styles.mutedColor, paddingRight: "34px" });
+  expect(styles.backgroundImage).toContain("svg+xml");
+  await page.getByRole("combobox", { name: "角色" }).selectOption("reviewer");
+  await expect(page.getByRole("combobox", { name: "角色" })).toHaveValue("reviewer");
+  await page.screenshot({ path: evidencePath("1024-zh-dark-agents-review") });
 });
