@@ -71,9 +71,10 @@
 .workflow-workbench .workflow-tabs button { min-height: 36px; padding: 6px 12px; background: transparent; border: 0; font-size: 13px; }
 .workflow-workbench .workflow-tabs button:hover:not(:disabled) { background: var(--webui2-accent-surface); color: var(--webui2-text); }
 .workflow-workbench .workflow-tabs [aria-current="page"] { background: var(--webui2-surface); color: var(--webui2-text); box-shadow: var(--webui2-shadow-soft); }
+.workflow-workbench .workflow-tabs [aria-current="page"]:hover:not(:disabled) { background: var(--webui2-surface); color: var(--webui2-text); }
 .workflow-workbench .workflow-primary { font-weight: 650; }
 .workflow-workbench .workflow-quiet { background: transparent; border-color: transparent; color: var(--webui2-text-muted); }
-.workflow-workbench .workflow-quiet:hover { background: var(--webui2-surface-muted); color: var(--webui2-text); }
+.workflow-workbench .workflow-quiet:hover:not(:disabled) { background: var(--webui2-surface-muted); color: var(--webui2-text); }
 .workflow-library { display: grid; gap: 24px; }
 .workflow-section-heading { flex-wrap: nowrap; align-items: center; margin: 0 0 10px; }
 .workflow-section-heading h2 { font-size: 16px; margin: 0; }

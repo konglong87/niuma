@@ -131,6 +131,10 @@ for (const theme of ["light", "dark"] as const) {
     expect(hoveredPrimary.ratio).toBeGreaterThanOrEqual(4.5);
     expect(hoveredPrimary.background).not.toBe(normalPrimary.background);
 
+    const activeTab = page.getByRole("button", { name: "Agents", exact: true });
+    const activeBackground = (await renderedButtonContrast(activeTab)).background;
+    await activeTab.hover();
+    expect((await renderedButtonContrast(activeTab)).background).toBe(activeBackground);
     const tab = page.getByRole("button", { name: "Workflows", exact: true });
     await tab.hover();
     expect((await renderedButtonContrast(tab)).ratio).toBeGreaterThanOrEqual(4.5);
@@ -148,6 +152,13 @@ for (const theme of ["light", "dark"] as const) {
       expect(hovered.ratio).toBeGreaterThanOrEqual(4.5);
       expect(hovered.background).not.toBe(normal.background);
     }
+    await dialog.getByRole("button", { name: "Discard changes" }).click();
+    const quiet = page.locator(".workflow-workbench .workflow-quiet").first();
+    await expect(quiet).toBeVisible();
+    await quiet.hover();
+    const quietHover = await renderedButtonContrast(quiet);
+    expect(quietHover.ratio).toBeGreaterThanOrEqual(4.5);
+    expect(quietHover.background).toBe(await page.locator(".workflow-tabs").evaluate((element) => getComputedStyle(element).backgroundColor));
   });
 }
 test("1024px dark Chinese Agent controls stay aligned and legible", async ({ page }) => {
